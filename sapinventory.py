@@ -7,7 +7,6 @@ import shutil
 import yagmail
 import os
 
-#Testing push
 
 # from multiprocessing import Process
 
@@ -302,8 +301,8 @@ class StartGui(tk.Tk):
         self.item_to_be_changed_label_3 = tk.Label(self, font=(self._font, self._font_big))
 
         self.barcode_scanner_label = tk.Label(self, font=(self._font, self._font_big))
-        self.list_of_items_label = tk.Label()
-
+        self.list_of_items_label = tk.Label(self, text='', font=(self._font, self._font_medium))
+        self.list_of_items_words = 'Inventory Changes\n'
 
         # invalid entry label
         self.invalid_entry_error_label = tk.Label(self, font=(self._font, self._font_big), fg='red')
@@ -530,7 +529,8 @@ one special character: !@#$%*?\n''', delay=.25)
             self.choose_an_item_button.place_forget()
             self.clear_barcode_screen()
             self.unbind_return_func()
-
+            #self.list_of_items_words = ''
+            self.list_of_items_label.place_forget()
         # goes back to make a bag screen
         elif words == "make_bag_screen":
             self.make_bag_screen()
@@ -752,6 +752,7 @@ one special character: !@#$%*?\n''', delay=.25)
     # =======================================================
     # in barcode scanner screen
     def barcode_scanner_screen(self):
+        #self.list_of_items_label.config(text=self.list_of_items_words)
         self.clear_adjust_inventory_screen()
         self.previous_view = "adjust_inventory_screen"
         place_object(self.barcode_scanner_add_button, .47, .4)
@@ -768,6 +769,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.barcode_scanner_label.configure(text=direction + 'inventory : begin scanning')
         place_object(self.barcode_scanner_label, .35, .25)
         place_object(self.barcode_scanner_input_entry, .4, .3, True)
+        place_object(self.list_of_items_label, .8, .3)
         self.barcode_scanner_input.set("")
         self.bind('<Return>', lambda x: self.search_for_item_in_food_file(direction, self.barcode_scanner_input.get()))
 
@@ -807,9 +809,17 @@ one special character: !@#$%*?\n''', delay=.25)
                         for ndex in range(len(tokens))[4:]:
                             if str(tokens[ndex].strip()) == str(item_to_find):
                                 if direction == 'adding to ':
+                                    self.list_of_items_words = self.list_of_items_words \
+                                                               + 'added ' + str(item_to_find) + '\n'
+                                    self.list_of_items_label.config(text=self.list_of_items_words)
+                                    print(self.list_of_items_words)
                                     tokens[1] = str(int(tokens[1]) + 1)
                                 if direction == 'removing from ':
-                                    tokens[1] = str(int(tokens[1]) + 1)
+                                    self.list_of_items_words = self.list_of_items_words \
+                                                               + 'removed ' + str(item_to_find) + '\n'
+                                    self.list_of_items_label.config(text=self.list_of_items_words)
+                                    print(self.list_of_items_words)
+                                    tokens[1] = str(int(tokens[1]) - 1)
                                 found = True
                                 dest.write(",".join(tokens) + '\n')
                         if found is False:
@@ -927,7 +937,8 @@ one special character: !@#$%*?\n''', delay=.25)
         self.confirm_inventory_manual_button.place_forget()
         self.cancel_inventory_manual_button.place_forget()
         self.unbind_return_func()
-
+        #self.list_of_items_words = ''
+        self.list_of_items_label.place_forget()
     # clear list boxes
     def clear_list_box(self):
         self.list_box_1.delete(0, tk.END)
