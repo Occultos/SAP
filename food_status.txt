@@ -1,0 +1,24 @@
+1/22 14:29
+
+OUT OF STOCK
+
+LOW INVENTORY
+soup can : 1
+spaghetti sauce can : 6
+tomato sauce can : 2
+peanut butter : 2
+
+REMAINING INVENTORY
+vegetable can : 9
+fruit can : 5
+meat item : 6
+bean can : 5
+ravioli : 5
+jelly : 5
+mac and cheese : 5
+rice bag : 5
+juice drink : 5
+snacks : 5
+miscellaneous item : 5
+cereal : 5
+bag of nuts : 5
