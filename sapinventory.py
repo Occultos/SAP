@@ -558,6 +558,10 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_item.place_forget()
             self.create_new_item_submit_button.place_forget()
             self.create_new_item_input_entry.place_forget()
+            self.create_new_item_input_amount_entry.place_forget()
+            self.create_new_item_input_low_level_entry.place_forget()
+            self.create_new_item_input_weight_entry.place_forget()
+            self.create_new_item_input_barcode_entry.place_forget()
 
             # goes back to add items screen
         #elif words == "adjust_inventory_screen":
@@ -884,8 +888,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.previous_view = "user_screen"
         self.create_new_item.place(relx=.4, rely=.25)
 
-
-
         place_object(self.create_new_item_submit_button, .7, .5)
         place_object(self.create_new_item_input_entry, .4, .3, True)
 
@@ -896,7 +898,10 @@ one special character: !@#$%*?\n''', delay=.25)
 
 
     def create_new_item_submit_button_cmd(self,d):
-        newItem = "\n" + str(self.create_new_item_input.get()) +","+ str(self.create_new_item_input_amount_entry.get()) +", "+ str(self.create_new_item_input_low_level_entry.get()) +", "+ str(self.create_new_item_input_weight_entry.get()) +", "+ str(self.create_new_item_input_barcode_entry.get())
+        newItem = "\n" + str(self.create_new_item_input.get()) +","+ str(self.create_new_item_input_amount_entry.get()) +", "+ \
+                  str(self.create_new_item_input_low_level_entry.get()) +", "+ str(self.create_new_item_input_weight_entry.get()) +", "+ \
+                        str(self.create_new_item_input_barcode_entry.get())
+
         self.append_food(d, newItem)
         self.create_new_item_input.set("")
 
