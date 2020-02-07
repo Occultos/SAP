@@ -325,6 +325,12 @@ class StartGui(tk.Tk):
                                                            text="Barcode: ")
         self.create_new_submit_error = tk.Label(self, font=(self._font, self._font_small),
                                                 text="All boxes need to be filled")
+        self.create_new_submit_error_alpha = tk.Label(self, font=(self._font, self._font_small),
+                                                text="Name needs to be letters only")
+        self.create_new_submit_error_num = tk.Label(self, font=(self._font, self._font_small),
+                                                text="Amount, Low level, Weight, and Barcode\nall need to be numbers only")
+
+
         self.create_new_added = tk.Label(self, font=(self._font, self._font_small),
                                          text="Added item")
 
@@ -579,6 +585,7 @@ one special character: !@#$%*?\n''', delay=.25)
     # =====================================================================================
 
     def backup_button_with_d(self, d):
+        #This is for removing labels from create new item that pass d
         self.create_new_item.place_forget()
         self.create_new_item_name.place_forget()
         self.create_new_item_amount.place_forget()
@@ -594,12 +601,15 @@ one special character: !@#$%*?\n''', delay=.25)
         self.create_new_item_input_barcode_entry.place_forget()
 
         self.create_new_submit_error.place_forget()
+        self.create_new_submit_error_alpha.place_forget()
+        self.create_new_submit_error_num.place_forget()
         self.create_new_added.place_forget()
 
         self.back_button_func("user_screen")
         self.backup_button_with_d_button.place_forget()
 
     def logout_with_d(self, d):
+        # This is for removing labels from create new item that pass d with logout button
         self.backup_button_with_d(d)
         self.logoutButton_with_d.place_forget()
         self.login_screen()
@@ -982,9 +992,29 @@ one special character: !@#$%*?\n''', delay=.25)
         if(self.create_new_item_input.get() == "" or str(self.create_new_item_input_amount_entry.get()) == "" or str(self.create_new_item_input_low_level_entry.get()) == ""
                 or str(self.create_new_item_input_weight_entry.get()) == "" or str(self.create_new_item_input_barcode_entry.get()) == ""):
             place_object(self.create_new_submit_error, .725, .6)
+
+
+            self.create_new_submit_error_alpha.place_forget()
+            self.create_new_submit_error_num.place_forget()
+            return 0
+        elif(self.create_new_item_input.get().isalpha() == False):
+            place_object(self.create_new_submit_error_alpha, .725, .6)
+
+            self.create_new_submit_error.place_forget()
+            self.create_new_submit_error_num.place_forget()
+            return 0
+        elif(str(self.create_new_item_input_amount_entry.get()).isnumeric() == False or str(self.create_new_item_input_low_level_entry.get().isnumeric()) == False or
+                    str(self.create_new_item_input_weight_entry.get()).isnumeric() == False or str(self.create_new_item_input_barcode_entry.get()).isnumeric() == False):
+            place_object(self.create_new_submit_error_num, .725, .6)
+
+            self.create_new_submit_error_alpha.place_forget()
+            self.create_new_submit_error.place_forget()
             return 0
         else:
+            # remove all other error labels
             self.create_new_submit_error.place_forget()
+            self.create_new_submit_error_alpha.place_forget()
+            self.create_new_submit_error_num.place_forget()
             place_object(self.create_new_added, .725, .6)
             return 1
 
