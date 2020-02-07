@@ -129,6 +129,7 @@ class StartGui(tk.Tk):
                                                      command=lambda: self.adjust_item_quantity_button_cmd(self.d))
         self.adjust_item_quantity_button.configure(activebackground=self._activebgcolor, padx=20)
 
+
         # change value of items, currently in manual entry screen
         self.change_value_button = tk.Button(self, text="Change Value",
                                              font=(self._font, self._font_medium), background=self._fgcolor,
@@ -195,8 +196,17 @@ class StartGui(tk.Tk):
         # ==========================================================================
         self.create_new_item_button = tk.Button(self, text="Create New Item",
                                                 font=(self._font, self._font_medium), background=self._fgcolor,
-                                                command=lambda: self.create_new_item_screen())
+                                                command=lambda: self.create_new_item_screen(self.d))
         self.create_new_item_button.configure(activebackground=self._activebgcolor)
+
+
+        # submit changes made with add item
+        self.create_new_item_submit_button = tk.Button(self, text="Submit New Item",
+                                                       background=self._fgcolor, font=(self._font, self._font_medium),
+                                                       command=lambda: self.create_new_item_submit_button_cmd(self.d))
+        self.create_new_item_submit_button.configure(activebackground=self._activebgcolor)
+
+
 
         # ===========================================================================
         #             View inventory in user view
@@ -283,6 +293,9 @@ class StartGui(tk.Tk):
                                               text="food.txt file missing")
         self.bag_of_food_removed_from_inventory = tk.Label(self, font=(self._font, self._font_small),
                                                            text="1 bag of food removed from inventory")
+        self.create_new_item = tk.Label(self, font=(self._font, self._font_small),
+                                                           text="Create new item screen")
+
         self.todo_label = tk.Label(self,
                                    text="TODO: more stuff here and delete this label afterwards",
                                    font=(self._font, self._font_medium))
@@ -357,6 +370,28 @@ one special character: !@#$%*?\n''', delay=.25)
         self.barcode_scanner_input = tk.StringVar()
         self.barcode_scanner_input_entry = tk.Entry(self, font=(self._font, self._font_big),
                                                     textvariable=self.barcode_scanner_input, width=20)
+
+        # create new item entry box (temps)
+        self.create_new_item_input = tk.StringVar()
+        self.create_new_item_input_entry = tk.Entry(self, font=(self._font, self._font_big),
+                                                    textvariable=self.create_new_item_input, width=20)
+
+        self.create_new_item_input_amount = tk.StringVar()
+        self.create_new_item_input_amount_entry = tk.Entry(self, font=(self._font, self._font_big),
+                                                    textvariable=self.create_new_item_input_amount, width=20)
+
+        self.create_new_item_input_low_level = tk.StringVar()
+        self.create_new_item_input_low_level_entry = tk.Entry(self, font=(self._font, self._font_big),
+                                                           textvariable=self.create_new_item_input_low_level, width=20)
+
+        self.create_new_item_input_weight = tk.StringVar()
+        self.create_new_item_input_weight_entry = tk.Entry(self, font=(self._font, self._font_big),
+                                                           textvariable=self.create_new_item_input_weight, width=20)
+
+        self.create_new_item_input_barcode = tk.StringVar()
+        self.create_new_item_input_barcode_entry = tk.Entry(self, font=(self._font, self._font_big),
+                                                           textvariable=self.create_new_item_input_barcode, width=20)
+
 
         # =======================================================================================
         #                                    list boxes and labels - INIT
@@ -518,7 +553,13 @@ one special character: !@#$%*?\n''', delay=.25)
             self.user_screen()
             #self.clear_adjust_inventory_screen()
             self.clear_todo_label()
-        # goes back to add items screen
+
+            # TODO: DT- Turn into one forget "create_new_item" function call
+            self.create_new_item.place_forget()
+            self.create_new_item_submit_button.place_forget()
+            self.create_new_item_input_entry.place_forget()
+
+            # goes back to add items screen
         #elif words == "adjust_inventory_screen":
             #self.adjust_inventory_button_cmd()
             self.clear_todo_label()
@@ -569,6 +610,9 @@ one special character: !@#$%*?\n''', delay=.25)
             self.invalid_entry_error_label.place_forget()
             self.confirm_inventory_manual_button.place_forget()
             self.cancel_inventory_manual_button.place_forget()
+
+
+
 
     # ====================================================================================
     #                                   EMAIL Functions
@@ -666,6 +710,7 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.passwordlabel, .315, .46)
         self.backup_place()
         self.previous_view = "login_screen"
+
 
     # load registration screen
     def registration_info_screen(self):
@@ -832,8 +877,34 @@ one special character: !@#$%*?\n''', delay=.25)
     #               New items screen and functions
     # ==================================================================
 
-    def create_new_item_screen(self):
-        pass
+    def create_new_item_screen(self,d):
+        # creates blank screen
+        self.clear_user_screen()
+        self.backup_place()
+        self.previous_view = "user_screen"
+        self.create_new_item.place(relx=.4, rely=.25)
+
+
+
+        place_object(self.create_new_item_submit_button, .7, .5)
+        place_object(self.create_new_item_input_entry, .4, .3, True)
+
+        place_object(self.create_new_item_input_amount_entry, .4, .4, True)
+        place_object(self.create_new_item_input_low_level_entry, .4, .5, True)
+        place_object(self.create_new_item_input_weight_entry, .4, .6, True)
+        place_object(self.create_new_item_input_barcode_entry, .4, .7, True)
+
+
+    def create_new_item_submit_button_cmd(self,d):
+        newItem = "\n" + str(self.create_new_item_input.get()) +","+ str(self.create_new_item_input_amount_entry.get()) +", "+ str(self.create_new_item_input_low_level_entry.get()) +", "+ str(self.create_new_item_input_weight_entry.get()) +", "+ str(self.create_new_item_input_barcode_entry.get())
+        self.append_food(d, newItem)
+        self.create_new_item_input.set("")
+
+        self.create_new_item_input_amount.set("")
+        self.create_new_item_input_low_level.set("")
+        self.create_new_item_input_weight.set("")
+        self.create_new_item_input_barcode.set("")
+
 
     def manual_entry_screen(self):
         #self.clear_adjust_inventory_screen()
@@ -1042,6 +1113,8 @@ one special character: !@#$%*?\n''', delay=.25)
         self.barcode_scanner_input_entry.place_forget()
         self.clear_todo_label()
 
+    # def clear_create_new_item
+
     # =================================================================================
     #                                            FULL SCREEN
     # =================================================================================
@@ -1134,6 +1207,15 @@ one special character: !@#$%*?\n''', delay=.25)
             for key in item_info:
                 print(key + " : " + str(item_info[key]))
 
+    def append_food(self, d,newItem):
+        #newItem = "\ncanned avocado,17, 5, 1, 7878"
+
+        f = open("food.txt", "a+")
+        f.write(newItem)
+        self.make_dict(d)
+
+
+
     # =============================================================================
     #                Display inventory - user mode
     # =============================================================================
@@ -1164,6 +1246,8 @@ one special character: !@#$%*?\n''', delay=.25)
         self.subtract_button.place_forget()
         self.add_button.place_forget()
         self.previous_view = "manual_entry_screen"
+
+
 
     def choose_an_item_to_change_cmd(self, d):
         try:
@@ -1396,6 +1480,7 @@ one special character: !@#$%*?\n''', delay=.25)
         if box2count == 0:
             self.list_box_2.place_forget()
             self.list_box_2_label.place_forget()
+
 
     # displays the inventory in 3 boxes, out of stock, low inventory, inventory
     def view_inventory_3_list_boxes(self, d):
