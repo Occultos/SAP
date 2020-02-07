@@ -93,6 +93,12 @@ class StartGui(tk.Tk):
                                       command=lambda: self.login_screen())
         self.logoutButton.configure(activebackground=self._activebgcolor, padx=25)
 
+        # logoutButton with dictionary
+        self.logoutButton_with_d = tk.Button(self, text="Logout",
+                                      background=self._bgcolor, font=(self._font, self._font_big),
+                                      command=lambda: self.logout_with_d(self.d))
+        self.logoutButton_with_d.configure(activebackground=self._activebgcolor, padx=25)
+
         # register account button
         self.registerbutton = tk.Button(self, text="Register",
                                         background=self._fgcolor, font=(self._font, self._font_big),
@@ -592,8 +598,11 @@ one special character: !@#$%*?\n''', delay=.25)
 
         self.back_button_func("user_screen")
         self.backup_button_with_d_button.place_forget()
-        #TODO DT - add logout with d
 
+    def logout_with_d(self, d):
+        self.backup_button_with_d(d)
+        self.logoutButton_with_d.place_forget()
+        self.login_screen()
 
     def back_button_func(self, words):
         # goes back to user screen
@@ -924,6 +933,8 @@ one special character: !@#$%*?\n''', delay=.25)
     def create_new_item_screen(self,d):
         # creates blank screen
         self.clear_user_screen()
+        self.logoutButton.place_forget()
+        self.logout_button_place_with_d(d)
         self.backup_place_with_d(d)
         #self.forget_create_new_item_screens(self, d)
 
@@ -951,7 +962,6 @@ one special character: !@#$%*?\n''', delay=.25)
                         str(self.create_new_item_input_barcode_entry.get())
 
         allFilled = self.isAllFilled(newItem)
-        # allFilled = 1
         if allFilled == 0:
             self.create_new_item_input.set("")
             self.create_new_item_input_amount.set("")
@@ -975,7 +985,6 @@ one special character: !@#$%*?\n''', delay=.25)
             return 0
         else:
             self.create_new_submit_error.place_forget()
-
             place_object(self.create_new_added, .725, .6)
             return 1
 
@@ -1001,6 +1010,9 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def logout_button_place(self):
         self.logoutButton.place(relx=.8, rely=.9)
+
+    def logout_button_place_with_d(self, d):
+        self.logoutButton_with_d.place(relx=.8, rely=.9)
 
     def exit_button_place(self):
         self.exitButton.place(relx=.91, rely=.9325)
