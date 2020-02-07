@@ -1,4 +1,5 @@
 import tkinter as tk
+#from tkinter import Tk, Checkbutton, DISABLED
 import re
 from passlib.hash import pbkdf2_sha256
 from time import *
@@ -33,6 +34,7 @@ class StartGui(tk.Tk):
         self._activebgcolor = '#e4fcdc'
         self._font = "Helvetica"
         self._font_big = 26
+        self._font_big_big = 40
         self._font_medium = 22
         self._font_small = 18
         self._fgcolor = '#ff9194'
@@ -75,6 +77,15 @@ class StartGui(tk.Tk):
                                        background=self._bgcolor, font=(self._font, self._font_big),
                                        command=lambda: self.back_button_func(self.previous_view))
         self.backup_button.configure(activebackground=self._activebgcolor, padx=25)
+
+
+        # back button with dictionary
+        self.backup_button_with_d_button = tk.Button(self, text="Back",
+                                       background=self._bgcolor, font=(self._font, self._font_big),
+                                       command=lambda: self.backup_button_with_d(self.d))
+        self.backup_button_with_d_button.configure(activebackground=self._activebgcolor, padx=25)
+
+
 
         # logoutButton
         self.logoutButton = tk.Button(self, text="Logout",
@@ -293,7 +304,7 @@ class StartGui(tk.Tk):
                                               text="food.txt file missing")
         self.bag_of_food_removed_from_inventory = tk.Label(self, font=(self._font, self._font_small),
                                                            text="1 bag of food removed from inventory")
-        self.create_new_item = tk.Label(self, font=(self._font, self._font_small),
+        self.create_new_item = tk.Label(self, font=(self._font, self._font_big),
                                                            text="Create new item screen")
 
         self.create_new_item_name = tk.Label(self, font=(self._font, self._font_small),
@@ -306,6 +317,10 @@ class StartGui(tk.Tk):
                                                            text="Item weight: ")
         self.create_new_item_barcode = tk.Label(self, font=(self._font, self._font_small),
                                                            text="Barcode: ")
+        self.create_new_submit_error = tk.Label(self, font=(self._font, self._font_small),
+                                                text="All boxes need to be filled")
+        self.create_new_added = tk.Label(self, font=(self._font, self._font_small),
+                                         text="Added item")
 
         self.todo_label = tk.Label(self,
                                    text="TODO: more stuff here and delete this label afterwards",
@@ -557,6 +572,29 @@ one special character: !@#$%*?\n''', delay=.25)
     #                                                BACKUP
     # =====================================================================================
 
+    def backup_button_with_d(self, d):
+        self.create_new_item.place_forget()
+        self.create_new_item_name.place_forget()
+        self.create_new_item_amount.place_forget()
+        self.create_new_item_low_level.place_forget()
+        self.create_new_item_weight.place_forget()
+        self.create_new_item_barcode.place_forget()
+
+        self.create_new_item_submit_button.place_forget()
+        self.create_new_item_input_entry.place_forget()
+        self.create_new_item_input_amount_entry.place_forget()
+        self.create_new_item_input_low_level_entry.place_forget()
+        self.create_new_item_input_weight_entry.place_forget()
+        self.create_new_item_input_barcode_entry.place_forget()
+
+        self.create_new_submit_error.place_forget()
+        self.create_new_added.place_forget()
+
+        self.back_button_func("user_screen")
+        self.backup_button_with_d_button.place_forget()
+        #TODO DT - add logout with d
+
+
     def back_button_func(self, words):
         # goes back to user screen
         if words == "user_screen":
@@ -564,21 +602,6 @@ one special character: !@#$%*?\n''', delay=.25)
             self.user_screen()
             #self.clear_adjust_inventory_screen()
             self.clear_todo_label()
-
-            # TODO: DT- Turn into one forget "create_new_item" function call
-            self.create_new_item.place_forget()
-            self.create_new_item_name.place_forget()
-            self.create_new_item_amount.place_forget()
-            self.create_new_item_low_level.place_forget()
-            self.create_new_item_weight.place_forget()
-            self.create_new_item_barcode.place_forget()
-
-            self.create_new_item_submit_button.place_forget()
-            self.create_new_item_input_entry.place_forget()
-            self.create_new_item_input_amount_entry.place_forget()
-            self.create_new_item_input_low_level_entry.place_forget()
-            self.create_new_item_input_weight_entry.place_forget()
-            self.create_new_item_input_barcode_entry.place_forget()
 
             # goes back to add items screen
         #elif words == "adjust_inventory_screen":
@@ -901,9 +924,11 @@ one special character: !@#$%*?\n''', delay=.25)
     def create_new_item_screen(self,d):
         # creates blank screen
         self.clear_user_screen()
-        self.backup_place()
+        self.backup_place_with_d(d)
+        #self.forget_create_new_item_screens(self, d)
+
         self.previous_view = "user_screen"
-        self.create_new_item.place(relx=.4, rely=.25)
+        self.create_new_item.place(relx=.4, rely=.23)
 
         self.create_new_item_name.place(relx=.2, rely=.3)
         self.create_new_item_amount.place(relx=.2, rely=.4)
@@ -921,18 +946,38 @@ one special character: !@#$%*?\n''', delay=.25)
 
 
     def create_new_item_submit_button_cmd(self,d):
-        newItem = "\n" + str(self.create_new_item_input.get()) +","+ str(self.create_new_item_input_amount_entry.get()) +", "+ \
-                  str(self.create_new_item_input_low_level_entry.get()) +", "+ str(self.create_new_item_input_weight_entry.get()) +", "+ \
+        newItem = "\n" + self.create_new_item_input.get() + "," + str(self.create_new_item_input_amount_entry.get()) + ", " + \
+                  str(self.create_new_item_input_low_level_entry.get()) + ", " + str(self.create_new_item_input_weight_entry.get()) + ", " + \
                         str(self.create_new_item_input_barcode_entry.get())
 
-        self.append_food(d, newItem)
-        self.create_new_item_input.set("")
+        allFilled = self.isAllFilled(newItem)
+        # allFilled = 1
+        if allFilled == 0:
+            self.create_new_item_input.set("")
+            self.create_new_item_input_amount.set("")
+            self.create_new_item_input_low_level.set("")
+            self.create_new_item_input_weight.set("")
+            self.create_new_item_input_barcode.set("")
+            self.create_new_item_screen(d)
+        else:
+            self.append_food(d, newItem)
 
-        self.create_new_item_input_amount.set("")
-        self.create_new_item_input_low_level.set("")
-        self.create_new_item_input_weight.set("")
-        self.create_new_item_input_barcode.set("")
+            self.create_new_item_input.set("")
+            self.create_new_item_input_amount.set("")
+            self.create_new_item_input_low_level.set("")
+            self.create_new_item_input_weight.set("")
+            self.create_new_item_input_barcode.set("")
 
+    def isAllFilled(self, d):
+        if(self.create_new_item_input.get() == "" or str(self.create_new_item_input_amount_entry.get()) == "" or str(self.create_new_item_input_low_level_entry.get()) == ""
+                or str(self.create_new_item_input_weight_entry.get()) == "" or str(self.create_new_item_input_barcode_entry.get()) == ""):
+            place_object(self.create_new_submit_error, .725, .6)
+            return 0
+        else:
+            self.create_new_submit_error.place_forget()
+
+            place_object(self.create_new_added, .725, .6)
+            return 1
 
     def manual_entry_screen(self):
         #self.clear_adjust_inventory_screen()
@@ -947,6 +992,9 @@ one special character: !@#$%*?\n''', delay=.25)
     # =================================================================================
     def backup_place(self):
         self.backup_button.place(relx=.02, rely=.9)
+
+    def backup_place_with_d(self, d):
+        self.backup_button_with_d_button.place(relx=.02, rely=.9)
 
     def todo_label_place(self):
         self.todo_label.place(relx=.300, rely=.450)
