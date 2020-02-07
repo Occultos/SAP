@@ -296,6 +296,17 @@ class StartGui(tk.Tk):
         self.create_new_item = tk.Label(self, font=(self._font, self._font_small),
                                                            text="Create new item screen")
 
+        self.create_new_item_name = tk.Label(self, font=(self._font, self._font_small),
+                                                           text="Item Name: ")
+        self.create_new_item_amount = tk.Label(self, font=(self._font, self._font_small),
+                                                           text="Current amount: ")
+        self.create_new_item_low_level = tk.Label(self, font=(self._font, self._font_small),
+                                                           text="Low amount warning at: ")
+        self.create_new_item_weight = tk.Label(self, font=(self._font, self._font_small),
+                                                           text="Item weight: ")
+        self.create_new_item_barcode = tk.Label(self, font=(self._font, self._font_small),
+                                                           text="Barcode: ")
+
         self.todo_label = tk.Label(self,
                                    text="TODO: more stuff here and delete this label afterwards",
                                    font=(self._font, self._font_medium))
@@ -556,6 +567,12 @@ one special character: !@#$%*?\n''', delay=.25)
 
             # TODO: DT- Turn into one forget "create_new_item" function call
             self.create_new_item.place_forget()
+            self.create_new_item_name.place_forget()
+            self.create_new_item_amount.place_forget()
+            self.create_new_item_low_level.place_forget()
+            self.create_new_item_weight.place_forget()
+            self.create_new_item_barcode.place_forget()
+
             self.create_new_item_submit_button.place_forget()
             self.create_new_item_input_entry.place_forget()
             self.create_new_item_input_amount_entry.place_forget()
@@ -888,9 +905,15 @@ one special character: !@#$%*?\n''', delay=.25)
         self.previous_view = "user_screen"
         self.create_new_item.place(relx=.4, rely=.25)
 
-        place_object(self.create_new_item_submit_button, .7, .5)
-        place_object(self.create_new_item_input_entry, .4, .3, True)
+        self.create_new_item_name.place(relx=.2, rely=.3)
+        self.create_new_item_amount.place(relx=.2, rely=.4)
+        self.create_new_item_low_level.place(relx=.2, rely=.5)
+        self.create_new_item_weight.place(relx=.2, rely=.6)
+        self.create_new_item_barcode.place(relx=.2, rely=.7)
 
+        place_object(self.create_new_item_submit_button, .7, .5)
+
+        place_object(self.create_new_item_input_entry, .4, .3, True)
         place_object(self.create_new_item_input_amount_entry, .4, .4, True)
         place_object(self.create_new_item_input_low_level_entry, .4, .5, True)
         place_object(self.create_new_item_input_weight_entry, .4, .6, True)
