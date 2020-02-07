@@ -25,7 +25,7 @@ class StartGui(tk.Tk):
         #                                               MISC. - INIT
         # ============================================================================================
         self.state('zoomed')  # TODO: maxscreensize DOESN"T WORK ON MAC, fix this
-        self.resizable(0, 0)  # TODO: don't allow resizing, DISABLE ON MAC DUE TO 'zoomed' not working
+        self.resizable(1, 1)  # TODO: don't allow resizing, DISABLE ON MAC DUE TO 'zoomed' not working
         self.bind("<F11>", self.toggle_fullscreen)
         self.bind("<Escape>", self.end_fullscreen)
         self.title("Salvation Army Pantry Inventory")  # app title
@@ -991,31 +991,34 @@ one special character: !@#$%*?\n''', delay=.25)
     def isAllFilled(self, d):
         if(self.create_new_item_input.get() == "" or str(self.create_new_item_input_amount_entry.get()) == "" or str(self.create_new_item_input_low_level_entry.get()) == ""
                 or str(self.create_new_item_input_weight_entry.get()) == "" or str(self.create_new_item_input_barcode_entry.get()) == ""):
-            place_object(self.create_new_submit_error, .725, .6)
-
+            place_object(self.create_new_submit_error, .692, .6)
 
             self.create_new_submit_error_alpha.place_forget()
             self.create_new_submit_error_num.place_forget()
+            self.create_new_added.place_forget()
             return 0
         elif(self.create_new_item_input.get().isalpha() == False):
-            place_object(self.create_new_submit_error_alpha, .725, .6)
+            place_object(self.create_new_submit_error_alpha, .68, .6)
 
             self.create_new_submit_error.place_forget()
             self.create_new_submit_error_num.place_forget()
+            self.create_new_added.place_forget()
             return 0
         elif(str(self.create_new_item_input_amount_entry.get()).isnumeric() == False or str(self.create_new_item_input_low_level_entry.get().isnumeric()) == False or
                     str(self.create_new_item_input_weight_entry.get()).isnumeric() == False or str(self.create_new_item_input_barcode_entry.get()).isnumeric() == False):
-            place_object(self.create_new_submit_error_num, .725, .6)
+            place_object(self.create_new_submit_error_num, .655, .6)
 
             self.create_new_submit_error_alpha.place_forget()
             self.create_new_submit_error.place_forget()
+            self.create_new_added.place_forget()
             return 0
         else:
             # remove all other error labels
             self.create_new_submit_error.place_forget()
             self.create_new_submit_error_alpha.place_forget()
             self.create_new_submit_error_num.place_forget()
-            place_object(self.create_new_added, .725, .6)
+            self.create_new_added.place_forget()
+            place_object(self.create_new_added, .73, .6)
             return 1
 
     def manual_entry_screen(self):
