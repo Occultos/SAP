@@ -6,7 +6,6 @@ import shutil
 import yagmail
 import os
 
-
 # git notes:
 #     only do once
 # git clone https://github.com/Occultos/SAP.git
@@ -88,7 +87,7 @@ class StartGui(tk.Tk):
         # TODO: new : back button with dictionary
         self.backup_button_with_d_button = tk.Button(self, text="Back",
                                                      background=self._bgcolor, font=(self._font, self._font_big),
-                                                     command=lambda: self.backup_button_with_d(self.d))
+                                                     command=lambda: self.backup_button_with_d(self.d, "user_screen"))
         self.backup_button_with_d_button.configure(activebackground=self._activebgcolor, padx=25)
 
         # logoutButton
@@ -100,7 +99,7 @@ class StartGui(tk.Tk):
         # TODO: new : logoutButton with dictionary
         self.logoutButton_with_d = tk.Button(self, text="Logout",
                                              background=self._bgcolor, font=(self._font, self._font_big),
-                                             command=lambda: self.logout_with_d(self.d))
+                                             command=lambda: self.logout_with_d(self.d, "user_screen"))
         self.logoutButton_with_d.configure(activebackground=self._activebgcolor, padx=25)
 
         # register account button
@@ -590,35 +589,17 @@ one special character: !@#$%*?\n''', delay=.25)
     #                                                BACKUP
     # =====================================================================================
     # TODO: new:
-    def backup_button_with_d(self, d):
+    def backup_button_with_d(self, d, words):
         # This is for removing labels from create new item that pass d
-        self.create_new_item.place_forget()
-        self.create_new_item_name.place_forget()
-        self.create_new_item_amount.place_forget()
-        self.create_new_item_low_level.place_forget()
-        self.create_new_item_weight.place_forget()
-        self.create_new_item_barcode.place_forget()
+        if words == "user_screen":
+            self.clear_create_new_item(d)
 
-        self.create_new_item_submit_button.place_forget()
-        self.create_new_item_input_entry.place_forget()
-        self.create_new_item_input_amount_entry.place_forget()
-        self.create_new_item_input_low_level_entry.place_forget()
-        self.create_new_item_input_weight_entry.place_forget()
-        self.create_new_item_input_barcode_entry.place_forget()
-
-        self.create_new_submit_error.place_forget()
-        self.create_new_submit_error_alpha.place_forget()
-        self.create_new_submit_error_num.place_forget()
-        self.create_new_added.place_forget()
-
-        self.back_button_func("user_screen")
-        self.backup_button_with_d_button.place_forget()
-
-    def logout_with_d(self, d):
+    def logout_with_d(self, d, words):
         # This is for removing labels from create new item that pass d with logout button
-        self.backup_button_with_d(d)
-        self.logoutButton_with_d.place_forget()
-        self.login_screen()
+        if words == "user_screen":
+            self.backup_button_with_d(d, "user_screen")
+            self.logoutButton_with_d.place_forget()
+            self.login_screen()
 
     def back_button_func(self, words):
         # goes back to user screen
@@ -857,7 +838,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.backup_place()
         self.previous_view = "user_screen"
         '''
-
     # ========================================================
     #                 barcode screen functions
     # =======================================================
@@ -913,16 +893,16 @@ one special character: !@#$%*?\n''', delay=.25)
                             for ndex in range(len(tokens))[4:]:
                                 if str(tokens[ndex].strip()) == str(item_to_find):
                                     if direction == 'adding to ':
-                                        self.list_of_items_words = self.list_of_items_words \
-                                                                   + 'added ' + tokens[0] + ' ' + str(
-                                            item_to_find) + '\n'
+                                        self.list_of_items_words = self.list_of_items_words + \
+                                                                   'added ' + tokens[0] + ' ' + \
+                                                                   str(item_to_find) + '\n'
 
                                         self.list_of_items_label.config(text=self.list_of_items_words)
                                         tokens[1] = str(int(tokens[1]) + 1)
                                     if direction == 'removing from ':
-                                        self.list_of_items_words = self.list_of_items_words \
-                                                                   + 'removed ' + tokens[0] + ' ' + str(
-                                            item_to_find) + '\n'
+                                        self.list_of_items_words = self.list_of_items_words + 'removed ' + \
+                                                                   tokens[0] + ' ' + str(item_to_find) + '\n'
+
                                         self.list_of_items_label.config(text=self.list_of_items_words)
                                         tokens[1] = str(int(tokens[1]) - 1)
                                     found = True
@@ -937,13 +917,12 @@ one special character: !@#$%*?\n''', delay=.25)
     #               New items screen and functions
     # ==================================================================
 
-    # TODO : read the notes i put above def append_food(self, d, newItem):
     def create_new_item_screen(self, d):
         # creates blank screen
         self.clear_user_screen()
         self.logoutButton.place_forget()
-        self.logout_button_place_with_d(d)
-        self.backup_place_with_d(d)
+        self.logout_button_place_with_d(d, "user_screen")
+        self.backup_place_with_d(d, "user_screen")
         # self.forget_create_new_item_screens(self, d)
 
         self.previous_view = "user_screen"
@@ -998,7 +977,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_submit_error_num.place_forget()
             self.create_new_added.place_forget()
             return 0
-        elif (self.create_new_item_input.get().isalpha() == False):
+        elif not self.create_new_item_input.get().isalpha():
             place_object(self.create_new_submit_error_alpha, .68, .6)
 
             self.create_new_submit_error.place_forget()
@@ -1039,7 +1018,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.backup_button.place(relx=.02, rely=.9)
 
     # TODO: new:
-    def backup_place_with_d(self, d):
+    def backup_place_with_d(self, d, words):
         self.backup_button_with_d_button.place(relx=.02, rely=.9)
 
     def todo_label_place(self):
@@ -1048,7 +1027,7 @@ one special character: !@#$%*?\n''', delay=.25)
     def logout_button_place(self):
         self.logoutButton.place(relx=.8, rely=.9)
 
-    def logout_button_place_with_d(self, d):
+    def logout_button_place_with_d(self, d, words):
         self.logoutButton_with_d.place(relx=.8, rely=.9)
 
     def exit_button_place(self):
@@ -1089,6 +1068,29 @@ one special character: !@#$%*?\n''', delay=.25)
         self.username_label.place_forget()
         self.passwordlabel.place_forget()
         self.password_verify_label.place_forget()
+
+    def clear_create_new_item(self, d):
+        self.create_new_item.place_forget()
+        self.create_new_item_name.place_forget()
+        self.create_new_item_amount.place_forget()
+        self.create_new_item_low_level.place_forget()
+        self.create_new_item_weight.place_forget()
+        self.create_new_item_barcode.place_forget()
+
+        self.create_new_item_submit_button.place_forget()
+        self.create_new_item_input_entry.place_forget()
+        self.create_new_item_input_amount_entry.place_forget()
+        self.create_new_item_input_low_level_entry.place_forget()
+        self.create_new_item_input_weight_entry.place_forget()
+        self.create_new_item_input_barcode_entry.place_forget()
+
+        self.create_new_submit_error.place_forget()
+        self.create_new_submit_error_alpha.place_forget()
+        self.create_new_submit_error_num.place_forget()
+        self.create_new_added.place_forget()
+
+        self.back_button_func("user_screen")
+        self.backup_button_with_d_button.place_forget()
 
     # clear everything back to login screen
     def clear_to_login(self):
@@ -1325,11 +1327,10 @@ one special character: !@#$%*?\n''', delay=.25)
             for key in item_info:
                 print(key + " : " + str(item_info[key]))
 
-    # TODO :  with open as f: to write to a file, it closes automatically
     def append_food(self, d, newItem):
-        with open('food.txt', 'a') as dest:
-            dest.write(newItem)
-        self.make_dict(d)
+        with open("food.txt", "a") as f:
+            f.write(newItem)
+        #self.make_dict(d)
 
     # =============================================================================
     #                Display inventory - user mode
