@@ -6,6 +6,7 @@ import shutil
 import yagmail
 import os
 
+
 # git notes:
 #     only do once
 # git clone https://github.com/Occultos/SAP.git
@@ -30,7 +31,7 @@ class StartGui(tk.Tk):
         #                                               MISC. - INIT
         # ============================================================================================
         self.state('zoomed')  # TODO: maxscreensize DOESN"T WORK ON MAC, fix this
-        self.resizable(0, 0) # TODO: don't allow resizing, DISABLE ON MAC DUE TO 'zoomed' not working
+        self.resizable(0, 0)  # TODO: don't allow resizing, DISABLE ON MAC DUE TO 'zoomed' not working
         # self.resizable(1, 1) # TODO: don't allow resizing, DISABLE ON MAC DUE TO 'zoomed' not working
         self.bind("<F11>", self.toggle_fullscreen)
         self.bind("<Escape>", self.end_fullscreen)
@@ -425,7 +426,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         self.create_new_item_input_low_level = tk.StringVar()
         self.create_new_item_input_low_level_entry = tk.Entry(self, font=(self._font, self._font_big),
-                                                              textvariable=self.create_new_item_input_low_level, width=20)
+                                                              textvariable=self.create_new_item_input_low_level,
+                                                              width=20)
 
         self.create_new_item_input_weight = tk.StringVar()
         self.create_new_item_input_weight_entry = tk.Entry(self, font=(self._font, self._font_big),
@@ -855,6 +857,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.backup_place()
         self.previous_view = "user_screen"
         '''
+
     # ========================================================
     #                 barcode screen functions
     # =======================================================
@@ -904,25 +907,28 @@ one special character: !@#$%*?\n''', delay=.25)
                 with open("food.txt" + "~", "r+") as src:
                     src.seek(0, os.SEEK_SET)
                     for line in src:
-                        found = False
-                        tokens = re.split(",", line.strip())
-                        for ndex in range(len(tokens))[4:]:
-                            if str(tokens[ndex].strip()) == str(item_to_find):
-                                if direction == 'adding to ':
-                                    self.list_of_items_words = self.list_of_items_words \
-                                                               + 'added ' + tokens[0] + ' ' + str(item_to_find) + '\n'
+                        if not re.match(r'^\s*$', line):
+                            found = False
+                            tokens = re.split(",", line.strip())
+                            for ndex in range(len(tokens))[4:]:
+                                if str(tokens[ndex].strip()) == str(item_to_find):
+                                    if direction == 'adding to ':
+                                        self.list_of_items_words = self.list_of_items_words \
+                                                                   + 'added ' + tokens[0] + ' ' + str(
+                                            item_to_find) + '\n'
 
-                                    self.list_of_items_label.config(text=self.list_of_items_words)
-                                    tokens[1] = str(int(tokens[1]) + 1)
-                                if direction == 'removing from ':
-                                    self.list_of_items_words = self.list_of_items_words \
-                                                               + 'removed ' + tokens[0] + ' ' + str(item_to_find) + '\n'
-                                    self.list_of_items_label.config(text=self.list_of_items_words)
-                                    tokens[1] = str(int(tokens[1]) - 1)
-                                found = True
-                                dest.write(",".join(tokens) + '\n')
-                        if found is False:
-                            dest.write(line)
+                                        self.list_of_items_label.config(text=self.list_of_items_words)
+                                        tokens[1] = str(int(tokens[1]) + 1)
+                                    if direction == 'removing from ':
+                                        self.list_of_items_words = self.list_of_items_words \
+                                                                   + 'removed ' + tokens[0] + ' ' + str(
+                                            item_to_find) + '\n'
+                                        self.list_of_items_label.config(text=self.list_of_items_words)
+                                        tokens[1] = str(int(tokens[1]) - 1)
+                                    found = True
+                                    dest.write(",".join(tokens) + '\n')
+                            if found is False:
+                                dest.write(line)
             self.barcode_scanner_add_remove_button_cmd(direction)
         except Exception as e:
             print("error writing to food file : " + str(e))
@@ -932,7 +938,7 @@ one special character: !@#$%*?\n''', delay=.25)
     # ==================================================================
 
     # TODO : read the notes i put above def append_food(self, d, newItem):
-    def create_new_item_screen(self,d):
+    def create_new_item_screen(self, d):
         # creates blank screen
         self.clear_user_screen()
         self.logoutButton.place_forget()
@@ -957,10 +963,12 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.create_new_item_input_weight_entry, .4, .6, True)
         place_object(self.create_new_item_input_barcode_entry, .4, .7, True)
 
-    def create_new_item_submit_button_cmd(self,d):
-        newItem = "\n" + self.create_new_item_input.get() + "," + str(self.create_new_item_input_amount_entry.get()) + ", " + \
-                  str(self.create_new_item_input_low_level_entry.get()) + ", " + str(self.create_new_item_input_weight_entry.get()) + ", " + \
-                        str(self.create_new_item_input_barcode_entry.get())
+    def create_new_item_submit_button_cmd(self, d):
+        newItem = "\n" + self.create_new_item_input.get() + "," + \
+                  str(self.create_new_item_input_amount_entry.get()) + ", " + \
+                  str(self.create_new_item_input_low_level_entry.get()) + ", " + \
+                  str(self.create_new_item_input_weight_entry.get()) + ", " + \
+                  str(self.create_new_item_input_barcode_entry.get())
 
         allFilled = self.isAllFilled(newItem)
         if allFilled == 0:
@@ -972,7 +980,6 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_item_screen(d)
         else:
             self.append_food(d, newItem)
-
             self.create_new_item_input.set("")
             self.create_new_item_input_amount.set("")
             self.create_new_item_input_low_level.set("")
@@ -980,23 +987,28 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_item_input_barcode.set("")
 
     def isAllFilled(self, d):
-        if(self.create_new_item_input.get() == "" or str(self.create_new_item_input_amount_entry.get()) == "" or str(self.create_new_item_input_low_level_entry.get()) == ""
-                or str(self.create_new_item_input_weight_entry.get()) == "" or str(self.create_new_item_input_barcode_entry.get()) == ""):
+        if (self.create_new_item_input.get() == "" or
+                str(self.create_new_item_input_amount_entry.get()) == "" or
+                str(self.create_new_item_input_low_level_entry.get()) == "" or
+                str(self.create_new_item_input_weight_entry.get()) == "" or
+                str(self.create_new_item_input_barcode_entry.get()) == ""):
             place_object(self.create_new_submit_error, .692, .6)
 
             self.create_new_submit_error_alpha.place_forget()
             self.create_new_submit_error_num.place_forget()
             self.create_new_added.place_forget()
             return 0
-        elif(self.create_new_item_input.get().isalpha() == False):
+        elif (self.create_new_item_input.get().isalpha() == False):
             place_object(self.create_new_submit_error_alpha, .68, .6)
 
             self.create_new_submit_error.place_forget()
             self.create_new_submit_error_num.place_forget()
             self.create_new_added.place_forget()
             return 0
-        elif(str(self.create_new_item_input_amount_entry.get()).isnumeric() == False or str(self.create_new_item_input_low_level_entry.get().isnumeric()) == False or
-                    str(self.create_new_item_input_weight_entry.get()).isnumeric() == False or str(self.create_new_item_input_barcode_entry.get()).isnumeric() == False):
+        elif (str(self.create_new_item_input_amount_entry.get()).isnumeric() == False or
+              str(self.create_new_item_input_low_level_entry.get().isnumeric()) == False or
+              str(self.create_new_item_input_weight_entry.get()).isnumeric() == False or
+              str(self.create_new_item_input_barcode_entry.get()).isnumeric() == False):
             place_object(self.create_new_submit_error_num, .655, .6)
 
             self.create_new_submit_error_alpha.place_forget()
@@ -1286,25 +1298,23 @@ one special character: !@#$%*?\n''', delay=.25)
                 f.seek(0, os.SEEK_SET)
                 next(f)
                 for line in f:
-                    words = line.split(",")
-                    item = words[0]
-                    amount = int(words[1])
-                    lowlevel = int(words[2])
-                    weight = int(words[3])
-                    d[item] = {}
-                    d[item]['item'] = item
-                    d[item]['amount'] = amount
-                    d[item]['lowlevel'] = lowlevel
-                    d[item]['weight'] = weight
-                    number_of_barcodes = len(words) - 4
-                    n = 1
-                    while n <= number_of_barcodes:
-                        print(" n = " + str(n) + " len(words) = " + str(len(words)))
-                        print(" int(words[3 + n] " + str(int(words[3 + n])))
-                        print("num barcodes " + str(number_of_barcodes))
-                        barcode = 'barcode' + str(n)
-                        d[item][barcode] = int(words[3 + n])
-                        n += 1
+                    if not re.match(r'^\s*$', line):
+                        words = line.split(",")
+                        item = words[0]
+                        amount = int(words[1])
+                        lowlevel = int(words[2])
+                        weight = int(words[3])
+                        d[item] = {}
+                        d[item]['item'] = item
+                        d[item]['amount'] = amount
+                        d[item]['lowlevel'] = lowlevel
+                        d[item]['weight'] = weight
+                        number_of_barcodes = len(words) - 4
+                        n = 1
+                        while n <= number_of_barcodes:
+                            barcode = 'barcode' + str(n)
+                            d[item][barcode] = int(words[3 + n])
+                            n += 1
         except Exception as e:
             self.food_file_error_label.place(relx=.75, rely=.60)
             print("error in open: make dict : " + str(e))
@@ -1315,18 +1325,10 @@ one special character: !@#$%*?\n''', delay=.25)
             for key in item_info:
                 print(key + " : " + str(item_info[key]))
 
-    # TODO : this isn't how you should write to the file
-    # use     with open as f:
-    # using ' with open ' closes the file when your done
-    # why are you making a new dictionary? after updating the file?
-    # maybe its for the logic calling append_food
+    # TODO :  with open as f: to write to a file, it closes automatically
     def append_food(self, d, newItem):
-        # newItem = "\ncanned avocado,17, 5, 1, 7878"
-
-        # f = open("food.txt", "a+")
-        with open("food.txt", "a+") as f:
-            f.seek(os.SEEK_END)
-            f.write(newItem)
+        with open('food.txt', 'a') as dest:
+            dest.write(newItem)
         self.make_dict(d)
 
     # =============================================================================
@@ -1459,12 +1461,13 @@ one special character: !@#$%*?\n''', delay=.25)
                 with open("food.txt" + "~", "r+") as src:
                     src.seek(0, os.SEEK_SET)
                     for line in src:
-                        tokens = re.split(",", line.strip())
-                        if tokens[0] == parsed_name_to_be_changed.strip():
-                            tokens[1] = str(self.new_inventory_amount)
-                            dest.write(",".join(tokens) + '\n')
-                        else:
-                            dest.write(line)
+                        if not re.match(r'^\s*$', line):
+                            tokens = re.split(",", line.strip())
+                            if tokens[0] == parsed_name_to_be_changed.strip():
+                                tokens[1] = str(self.new_inventory_amount)
+                                dest.write(",".join(tokens) + '\n')
+                            else:
+                                dest.write(line)
             self.back_button_func(self.previous_view)
         except Exception as e:
             print("error writing to food file : " + str(e))
@@ -1506,16 +1509,17 @@ one special character: !@#$%*?\n''', delay=.25)
                     with open("username_password_file.txt" + "~", "r+") as src:
                         src.seek(0, os.SEEK_SET)
                         for line in src:
-                            tokens = re.split(" ", line.strip())
-                            if tokens[0] != user_to_be_deleted or tokens[0] == "adminarmy":
-                                dest.write(line)
+                            if not re.match(r'^\s*$', line):
+                                tokens = re.split(" ", line.strip())
+                                if tokens[0] != user_to_be_deleted or tokens[0] == "adminarmy":
+                                    dest.write(line)
             # TODO: change exceptions to pass
             except Exception as e:
                 print("exception in remove_func : writing file : " + str(e))
         except Exception as e:
             print("exception in remove_func : selection : " + str(e))
-            print("if error is : bad listbox index, clicked delete user without selecting a user\n")
-            print("change error to pass for final version")
+            print("if error is : bad listbox index, clicked delete user without selecting a user")
+            print("change error to pass for final version\n")
 
     # swap display inventory button
     def swap_inventory_button(self):
@@ -1550,12 +1554,13 @@ one special character: !@#$%*?\n''', delay=.25)
         self.list_box_2_label.config(text="USERS")
         box2count = 0
         try:
-            with open('username_password_file.txt', "a+") as readf:
+            with open('username_password_file.txt', "r+") as readf:
                 readf.seek(0, os.SEEK_SET)
                 for line in readf:
-                    tokens = re.split(" ", line.strip())
-                    box2count += 1
-                    self.list_box_2.insert(box2count, tokens[0])
+                    if not re.match(r'^\s*$', line):
+                        tokens = re.split(" ", line.strip())
+                        box2count += 1
+                        self.list_box_2.insert(box2count, tokens[0])
         except Exception as e:
             print("error in open: view_users: " + str(e))
         # adjust box height
@@ -1655,17 +1660,18 @@ one special character: !@#$%*?\n''', delay=.25)
                 with open("food.txt" + "~", "r+") as src:
                     n = 0
                     for line in src:
-                        if n == 0:
-                            dest.write(line)
-                            n += 1
-                        else:  # decrease amount by 1
-                            line = line.strip()
-                            words = line.split(",")
-                            words[1] = str(int(words[1]) - 1)
-                            line = ",".join(words)
-                            line.strip()
-                            line = line + '\n'
-                            dest.write(line)
+                        if not re.match(r'^\s*$', line):
+                            if n == 0:
+                                dest.write(line)
+                                n += 1
+                            else:  # decrease amount by 1
+                                line = line.strip()
+                                words = line.split(",")
+                                words[1] = str(int(words[1]) - 1)
+                                line = ",".join(words)
+                                line.strip()
+                                line = line + '\n'
+                                dest.write(line)
             self.bag_of_food_removed_from_inventory.place(relx=.4, rely=.9325)
         except Exception as e:
             self.food_file_error_label.place(relx=.75, rely=.60)
@@ -1729,7 +1735,7 @@ one special character: !@#$%*?\n''', delay=.25)
         # check if username to register already exists
         else:
             try:
-                with open('username_password_file.txt', "a+") as readf:
+                with open('username_password_file.txt', "r+") as readf:
                     readf.seek(0, os.SEEK_SET)
                     for line in readf:
                         tokens = re.split(" ", line.strip())
@@ -1796,8 +1802,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        self.user_screen()
-        # self.admin_screen()
+        # self.user_screen()
+        self.admin_screen()
 
         '''
         # TODO: commnted out if/else to skip login steps while building program,
