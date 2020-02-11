@@ -1328,8 +1328,6 @@ one special character: !@#$%*?\n''', delay=.25)
                 print(key + " : " + str(item_info[key]))
 
     def append_food(self, d, newItem):
-        # Different way to add new item
-        # Adds to dict then rewrites txt file instead of vice versa
         '''
         d.update({str(self.create_new_item_input.get()): {'item': str(self.create_new_item_input.get()),
                                                      'amount': int(self.create_new_item_input_amount_entry.get()),
@@ -1352,9 +1350,6 @@ one special character: !@#$%*?\n''', delay=.25)
         '''
         with open("food.txt", "a") as f:
             f.write(newItem)
-        #self.make_dict(d)
-        # Recompiles dict to update it, unnecessary so long as other functions call make_dict before using it
-        # like view_inventory does to get the "newest" dict, or something like that
 
     # =============================================================================
     #                Display inventory - user mode
