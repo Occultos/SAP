@@ -6,8 +6,6 @@ import shutil
 import yagmail
 import os
 
-#testing pull
-
 # git notes:
 #     only do once
 # git clone https://github.com/Occultos/SAP.git
@@ -1330,9 +1328,33 @@ one special character: !@#$%*?\n''', delay=.25)
                 print(key + " : " + str(item_info[key]))
 
     def append_food(self, d, newItem):
+        # Different way to add new item
+        # Adds to dict then rewrites txt file instead of vice versa
+        '''
+        d.update({str(self.create_new_item_input.get()): {'item': str(self.create_new_item_input.get()),
+                                                     'amount': int(self.create_new_item_input_amount_entry.get()),
+                                                     'lowlevel': int(self.create_new_item_input_low_level_entry.get()),
+                                                     'weight': int(self.create_new_item_input_weight_entry.get()),
+                                                     'barcode1': int(self.create_new_item_input_barcode_entry.get())}})
+        self.make_dict(d)
+        '''
+        # rewrites newest dict to txt
+        # however if an item has more than one barcode it will only write the first one
+        # TODO: allow multiple barcodes to be added via this method, if it is even worth it
+        # open test.txt to see
+        '''
+        with open('test.txt', 'w') as f:
+            print("item, amount, low level, weight, barcode", file=f)
+            standard_item = ""
+            for p_id, p_info in d.items():
+                standard_item = d[p_id]['item'] + "," + str(d[p_id]['amount']) + ", " + str(d[p_id]['lowlevel']) + ", " + str(d[p_id]['weight']) + ", " + str(d[p_id]['barcode1'])
+                print(standard_item, file=f)
+        '''
         with open("food.txt", "a") as f:
             f.write(newItem)
         #self.make_dict(d)
+        # Recompiles dict to update it, unnecessary so long as other functions call make_dict before using it
+        # like view_inventory does to get the "newest" dict, or something like that
 
     # =============================================================================
     #                Display inventory - user mode
