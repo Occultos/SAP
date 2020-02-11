@@ -40,7 +40,7 @@ class StartGui(tk.Tk):
         self._activebgcolor = '#e4fcdc'
         self._font = "Helvetica"
         self._font_big = 26
-        self._font_big_big = 40
+        self._font_big_big = 34
         self._font_medium = 22
         self._font_small = 18
         self._fgcolor = '#ff9194'
@@ -249,6 +249,18 @@ class StartGui(tk.Tk):
                                               font=(self._font, self._font_medium), background=self._fgcolor,
                                               command=lambda: self.swap_display_users_button())
         self.display_users_button.configure(activebackground=self._activebgcolor, padx=32)
+
+        # Edit inventory
+        self.edit_inventory_button = tk.Button(self, text="Edit Inventory",
+                                              font=(self._font, self._font_medium), background=self._fgcolor,
+                                              command=lambda: self.edit_inventory_button_cmd(self.d))
+        self.edit_inventory_button.configure(activebackground=self._activebgcolor, padx=20)
+
+        # choose an item to edit admin
+        self.choose_an_item_to_edit_button = tk.Button(self, text="Choose An Item",
+                                               background=self._fgcolor, font=(self._font, self._font_medium),
+                                               command=lambda: self.choose_an_item_to_edit_button_cmd(self.d))
+        self.choose_an_item_to_edit_button.configure(activebackground=self._activebgcolor, padx=47)
 
         # delete users : in admin screen
         self.delete_user_button = tk.Button(self, text="Delete User", font=(self._font, self._font_medium),
@@ -611,6 +623,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.bag_of_food_removed_from_inventory.place_forget()
             self.adjust_item_quantity_button.place_forget()
             self.choose_an_item_button.place_forget()
+            self.choose_an_item_to_edit_button.place_forget()
             self.clear_barcode_screen()
             self.unbind_return_func()
             self.list_of_items_words = ''
@@ -713,6 +726,7 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.display_inventory_button, .845, .77)
         place_object(self.display_users_button, .845, .705)
         # TODO edit inventory option
+        place_object(self.edit_inventory_button, .845, .64)
 
     def user_screen(self):
         self.clear_login_screen()
@@ -1105,6 +1119,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.make_bag_screen_button.place_forget()
         self.display_inventory_button.place_forget()
         self.display_users_button.place_forget()
+        self.edit_inventory_button.place_forget()
         self.delete_user_button.place_forget()
         # self.clear_adjust_inventory_screen()
         self.clear_barcode_screen()
@@ -1130,6 +1145,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.adjust_item_quantity_button.place_forget()
         self.adjust_item_quantity_button.place_forget()
         self.choose_an_item_button.place_forget()
+        self.choose_an_item_to_edit_button.place_forget()
         self.choose_new_item.place_forget()
         self.adjust_inventory_entry.place_forget()
         self.confirm_inventory_manual_button.place_forget()
@@ -1195,6 +1211,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.admin_email_inventory_button.place_forget()
         self.display_inventory_button.place_forget()
         self.display_users_button.place_forget()
+        self.edit_inventory_button.place_forget()
         self.delete_user_button.place_forget()
 
     # clear remove items screen
@@ -1398,6 +1415,35 @@ one special character: !@#$%*?\n''', delay=.25)
             print("Change to pass")
             print("Error inside choose_an_item_to_change_cmd : " + str(e))
 
+    def choose_an_item_to_edit_button_cmd(self, d):
+        self.selected_item_to_be_changed = self.list_box_2.curselection()
+        if self.selected_item_to_be_changed != ():
+            self.change_inventory_by_this_much.set(0)
+            self.item_to_be_changed = self.list_box_2.get(self.selected_item_to_be_changed)
+            self.invalid_entry_error_label.place_forget()
+            self.item_to_be_changed_label_1.configure(text="Item to be changed")
+            self.item_to_be_changed_label_2.configure(text=self.item_to_be_changed)
+            place_object(self.item_to_be_changed_label_1, .8, .21)
+            place_object(self.item_to_be_changed_label_2, .8, .26)
+
+            string_key = re.split(" :", self.item_to_be_changed.strip())[0]
+            #str(self.item_to_be_changed)
+            #print(open('food.txt', 'r').read().find(string_key))
+            #print(self.d[string_key])
+
+            # turn into string with commas (pre-modified)
+            beautiful_string = str(d[str(self.d[string_key]['item'])].values())
+            beautiful_string = str(re.split("dict_values", beautiful_string))
+            beautiful_string = beautiful_string.replace("[\'\', \"([", '')
+            beautiful_string = beautiful_string.replace('])"]', '')
+            beautiful_string = beautiful_string.replace("'", '')
+
+            print(beautiful_string)
+
+        else:
+            self.invalid_entry_error_label.config(text="Choose an Item")
+            place_object(self.invalid_entry_error_label, .8, .4)
+
     def confirm_item_change(self, direction):
         self.add_button.place_forget()
         self.subtract_button.place_forget()
@@ -1565,6 +1611,29 @@ one special character: !@#$%*?\n''', delay=.25)
             self.display_users_button.config(text="View Users")
             self.delete_user_button.place_forget()
             self.clear_list_box()
+
+    def edit_inventory_button_cmd(self, d):
+        self.clear_admin_screen()
+        # Jump to modify screen and be able to modify and delete items
+        # def modify_inventory()?
+        self.modify_inventory(d)
+        #print("Here!")
+
+
+    def modify_inventory(self,d):
+        # reuse select item code from manual entry
+        self.view_inventory_middle_list_box(d)
+
+        self.list_box_2.place_forget()
+        self.list_box_2_label.place_forget()
+
+        self.list_box_2_label.configure(font=(self._font, self._font_big_big), text="\\\ Select Here! //")
+        place_object(self.list_box_2_label, .0, .23)
+        self.list_box_2.place(relx=.01, rely=.3, relwidth=.15, relheight=.55)
+
+        place_object(self.choose_an_item_to_edit_button, .8, .835)
+
+
 
     # displays users in a box
     def view_users(self):
@@ -1822,8 +1891,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        self.user_screen()
-        # self.admin_screen()
+        # self.user_screen()
+        self.admin_screen()
 
         '''
         # TODO: commnted out if/else to skip login steps while building program,
