@@ -328,8 +328,8 @@ class StartGui(tk.Tk):
                                                text="Current amount: ")
         self.create_new_item_low_level = tk.Label(self, font=(self._font, self._font_small),
                                                   text="Low amount warning at: ")
-        self.create_new_item_weight = tk.Label(self, font=(self._font, self._font_small),
-                                               text="Item weight: ")
+        self.create_new_item_itemsperbag = tk.Label(self, font=(self._font, self._font_small),
+                                               text="Items per bag: ")
         self.create_new_item_barcode = tk.Label(self, font=(self._font, self._font_small),
                                                 text="Barcode: ")
         self.create_new_submit_error = tk.Label(self, font=(self._font, self._font_small),
@@ -337,7 +337,7 @@ class StartGui(tk.Tk):
         self.create_new_submit_error_alpha = tk.Label(self, font=(self._font, self._font_small),
                                                       text="Name needs to be letters only")
         self.create_new_submit_error_num = tk.Label(self, font=(self._font, self._font_small),
-                                                    text="Amount, Low level, Weight, and Barcode\nall need to be numbers only")
+                                                    text="Amount, Low level, Itemsperbag, and Barcode\nall need to be numbers only")
 
         self.create_new_added = tk.Label(self, font=(self._font, self._font_small),
                                          text="Added item")
@@ -442,9 +442,9 @@ one special character: !@#$%*?\n''', delay=.25)
                                                               textvariable=self.create_new_item_input_low_level,
                                                               width=20)
 
-        self.create_new_item_input_weight = tk.StringVar()
-        self.create_new_item_input_weight_entry = tk.Entry(self, font=(self._font, self._font_big),
-                                                           textvariable=self.create_new_item_input_weight, width=20)
+        self.create_new_item_input_itemsperbag = tk.StringVar()
+        self.create_new_item_input_itemsperbag_entry = tk.Entry(self, font=(self._font, self._font_big),
+                                                           textvariable=self.create_new_item_input_itemsperbag, width=20)
 
         self.create_new_item_input_barcode = tk.StringVar()
         self.create_new_item_input_barcode_entry = tk.Entry(self, font=(self._font, self._font_big),
@@ -988,22 +988,22 @@ one special character: !@#$%*?\n''', delay=.25)
         self.create_new_item_name.place(relx=.2, rely=.3)
         self.create_new_item_amount.place(relx=.2, rely=.4)
         self.create_new_item_low_level.place(relx=.2, rely=.5)
-        self.create_new_item_weight.place(relx=.2, rely=.6)
+        self.create_new_item_itemsperbag.place(relx=.2, rely=.6)
         self.create_new_item_barcode.place(relx=.2, rely=.7)
 
         place_object(self.create_new_item_submit_button, .7, .5)
 
         place_object(self.create_new_item_input_entry, .4, .3, True)
-        place_object(self.create_new_item_input_amount_entry, .4, .4, True)
-        place_object(self.create_new_item_input_low_level_entry, .4, .5, True)
-        place_object(self.create_new_item_input_weight_entry, .4, .6, True)
-        place_object(self.create_new_item_input_barcode_entry, .4, .7, True)
+        place_object(self.create_new_item_input_amount_entry, .4, .4)
+        place_object(self.create_new_item_input_low_level_entry, .4, .5)
+        place_object(self.create_new_item_input_itemsperbag_entry, .4, .6)
+        place_object(self.create_new_item_input_barcode_entry, .4, .7)
 
     def create_new_item_submit_button_cmd(self, d):
         newItem = "\n" + self.create_new_item_input.get() + "," + \
                   str(self.create_new_item_input_amount_entry.get()) + ", " + \
                   str(self.create_new_item_input_low_level_entry.get()) + ", " + \
-                  str(self.create_new_item_input_weight_entry.get()) + ", " + \
+                  str(self.create_new_item_input_itemsperbag_entry.get()) + ", " + \
                   str(self.create_new_item_input_barcode_entry.get())
 
         allFilled = self.isAllFilled(newItem)
@@ -1011,7 +1011,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_item_input.set("")
             self.create_new_item_input_amount.set("")
             self.create_new_item_input_low_level.set("")
-            self.create_new_item_input_weight.set("")
+            self.create_new_item_input_itemsperbag.set("")
             self.create_new_item_input_barcode.set("")
             self.create_new_item_screen(d)
         else:
@@ -1019,14 +1019,14 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_item_input.set("")
             self.create_new_item_input_amount.set("")
             self.create_new_item_input_low_level.set("")
-            self.create_new_item_input_weight.set("")
+            self.create_new_item_input_itemsperbag.set("")
             self.create_new_item_input_barcode.set("")
 
     def isAllFilled(self, d):
         if (self.create_new_item_input.get() == "" or
                 str(self.create_new_item_input_amount_entry.get()) == "" or
                 str(self.create_new_item_input_low_level_entry.get()) == "" or
-                str(self.create_new_item_input_weight_entry.get()) == "" or
+                str(self.create_new_item_input_itemsperbag_entry.get()) == "" or
                 str(self.create_new_item_input_barcode_entry.get()) == ""):
             place_object(self.create_new_submit_error, .692, .6)
 
@@ -1043,7 +1043,7 @@ one special character: !@#$%*?\n''', delay=.25)
             return 0
         elif (str(self.create_new_item_input_amount_entry.get()).isnumeric() == False or
               str(self.create_new_item_input_low_level_entry.get().isnumeric()) == False or
-              str(self.create_new_item_input_weight_entry.get()).isnumeric() == False or
+              str(self.create_new_item_input_itemsperbag_entry.get()).isnumeric() == False or
               str(self.create_new_item_input_barcode_entry.get()).isnumeric() == False):
             place_object(self.create_new_submit_error_num, .655, .6)
 
@@ -1131,14 +1131,14 @@ one special character: !@#$%*?\n''', delay=.25)
         self.create_new_item_name.place_forget()
         self.create_new_item_amount.place_forget()
         self.create_new_item_low_level.place_forget()
-        self.create_new_item_weight.place_forget()
+        self.create_new_item_itemsperbag.place_forget()
         self.create_new_item_barcode.place_forget()
 
         self.create_new_item_submit_button.place_forget()
         self.create_new_item_input_entry.place_forget()
         self.create_new_item_input_amount_entry.place_forget()
         self.create_new_item_input_low_level_entry.place_forget()
-        self.create_new_item_input_weight_entry.place_forget()
+        self.create_new_item_input_itemsperbag_entry.place_forget()
         self.create_new_item_input_barcode_entry.place_forget()
 
         self.create_new_submit_error.place_forget()
@@ -1364,12 +1364,12 @@ one special character: !@#$%*?\n''', delay=.25)
                         item = words[0]
                         amount = int(words[1])
                         lowlevel = int(words[2])
-                        weight = int(words[3])
+                        itemsperbag = int(words[3])
                         d[item] = {}
                         d[item]['item'] = item
                         d[item]['amount'] = amount
                         d[item]['lowlevel'] = lowlevel
-                        d[item]['weight'] = weight
+                        d[item]['itemsperbag'] = itemsperbag
                         number_of_barcodes = len(words) - 4
                         n = 1
                         while n <= number_of_barcodes:
@@ -1391,7 +1391,7 @@ one special character: !@#$%*?\n''', delay=.25)
         d.update({str(self.create_new_item_input.get()): {'item': str(self.create_new_item_input.get()),
                                                      'amount': int(self.create_new_item_input_amount_entry.get()),
                                                      'lowlevel': int(self.create_new_item_input_low_level_entry.get()),
-                                                     'weight': int(self.create_new_item_input_weight_entry.get()),
+                                                     'itemsperbag': int(self.create_new_item_input_itemsperbag_entry.get()),
                                                      'barcode1': int(self.create_new_item_input_barcode_entry.get())}})
         self.make_dict(d)
         '''
@@ -1401,10 +1401,10 @@ one special character: !@#$%*?\n''', delay=.25)
         # open test.txt to see
         '''
         with open('test.txt', 'w') as f:
-            print("item, amount, low level, weight, barcode", file=f)
+            print("item, amount, low level, itemsperbag, barcode", file=f)
             standard_item = ""
             for p_id, p_info in d.items():
-                standard_item = d[p_id]['item'] + "," + str(d[p_id]['amount']) + ", " + str(d[p_id]['lowlevel']) + ", " + str(d[p_id]['weight']) + ", " + str(d[p_id]['barcode1'])
+                standard_item = d[p_id]['item'] + "," + str(d[p_id]['amount']) + ", " + str(d[p_id]['lowlevel']) + ", " + str(d[p_id]['itemsperbag']) + ", " + str(d[p_id]['barcode1'])
                 print(standard_item, file=f)
         '''
         with open("food.txt", "a") as f:
@@ -2039,3 +2039,4 @@ def place_object(box, x, y, focus=False):
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
     StartGui().mainloop()
+
