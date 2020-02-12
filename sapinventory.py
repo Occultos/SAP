@@ -986,12 +986,14 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_item_screen(d)
             newItem = self.beautiful_string
             words = newItem.split(", ")
+
             self.create_new_item_input.set(words[0])
             self.create_new_item_input_amount.set(words[1])
             self.create_new_item_input_low_level.set(words[2])
             self.create_new_item_input_weight.set(words[3])
             self.create_new_item_input_barcode.set(words[4])
 
+            self.toDelete = str(words[0])
             self.isModifying = 2
         else:
             allFilled = self.isAllFilled(newItem)
@@ -1414,6 +1416,7 @@ one special character: !@#$%*?\n''', delay=.25)
             # forces a back button press on succsess
             self.previous_view = "admin_edit_main"
             self.backup_button_with_d(d, self.previous_view)
+            del self.d[self.toDelete]
 
             self.edit_inventory_button_cmd(d)
             self.create_new_added.configure(text="Item Modified")
