@@ -30,8 +30,8 @@ class StartGui(tk.Tk):
         #                                               MISC. - INIT
         # ============================================================================================
         self.state('zoomed')  # TODO: maxscreensize DOESN"T WORK ON MAC, fix this
-        self.resizable(0, 0)  # TODO: don't allow resizing, DISABLE ON MAC DUE TO 'zoomed' not working
-        # self.resizable(1, 1) # TODO: don't allow resizing, DISABLE ON MAC DUE TO 'zoomed' not working
+        #self.resizable(0, 0)  # TODO: don't allow resizing, DISABLE ON MAC DUE TO 'zoomed' not working
+        self.resizable(1, 1) # TODO: don't allow resizing, DISABLE ON MAC DUE TO 'zoomed' not working
         self.bind("<F11>", self.toggle_fullscreen)
         self.bind("<Escape>", self.end_fullscreen)
         self.title("Salvation Army Pantry Inventory")  # app title
@@ -40,7 +40,7 @@ class StartGui(tk.Tk):
         self._activebgcolor = '#e4fcdc'
         self._font = "Helvetica"
         self._font_big = 26
-        self._font_big_big = 40
+        self._font_big_big = 34
         self._font_medium = 22
         self._font_small = 18
         self._fgcolor = '#ff9194'
@@ -87,7 +87,7 @@ class StartGui(tk.Tk):
         # TODO: new : back button with dictionary
         self.backup_button_with_d_button = tk.Button(self, text="Back",
                                                      background=self._bgcolor, font=(self._font, self._font_big),
-                                                     command=lambda: self.backup_button_with_d(self.d, "user_screen"))
+                                                     command=lambda: self.backup_button_with_d(self.d, self.previous_view))
         self.backup_button_with_d_button.configure(activebackground=self._activebgcolor, padx=25)
 
         # logoutButton
@@ -257,6 +257,18 @@ class StartGui(tk.Tk):
                                               font=(self._font, self._font_medium), background=self._fgcolor,
                                               command=lambda: self.swap_display_users_button())
         self.display_users_button.configure(activebackground=self._activebgcolor, padx=32)
+
+        # Edit inventory
+        self.edit_inventory_button = tk.Button(self, text="Edit Inventory",
+                                              font=(self._font, self._font_medium), background=self._fgcolor,
+                                              command=lambda: self.edit_inventory_button_cmd(self.d))
+        self.edit_inventory_button.configure(activebackground=self._activebgcolor, padx=20)
+
+        # choose an item to edit admin
+        self.choose_an_item_to_edit_button = tk.Button(self, text="Choose An Item",
+                                               background=self._fgcolor, font=(self._font, self._font_medium),
+                                               command=lambda: self.choose_an_item_to_edit_button_cmd(self.d))
+        self.choose_an_item_to_edit_button.configure(activebackground=self._activebgcolor, padx=47)
 
         # delete users : in admin screen
         self.delete_user_button = tk.Button(self, text="Delete User", font=(self._font, self._font_medium),
@@ -607,13 +619,30 @@ one special character: !@#$%*?\n''', delay=.25)
         # This is for removing labels from create new item that pass d
         if words == "user_screen":
             self.clear_create_new_item(d)
+        elif words == "admin_edit_main":
+            self.clear_create_new_item(d)
+            self.clear_admin_screen()
+            self.clear_to_login()
+            self.invalid_entry_error_label.place_forget()
+            self.edit_inventory_button_cmd(d)
+        elif words == "admin_screen":
+            self.invalid_entry_error_label.place_forget()
+            self.create_new_added.place_forget()
+            self.admin_screen()
+            self.clear_list_box()
+            self.list_box_2.place_forget()
+            self.list_box_2_label.place_forget()
+            self.choose_an_item_to_edit_button.place_forget()
+            self.backup_button_with_d_button.place_forget()
 
     def logout_with_d(self, d, words):
         # This is for removing labels from create new item that pass d with logout button
         if words == "user_screen":
             self.backup_button_with_d(d, "user_screen")
-            self.logoutButton_with_d.place_forget()
-            self.login_screen()
+        elif words == "login_screen":
+            self.backup_button_with_d(d, "admin_screen")
+        self.logoutButton_with_d.place_forget()
+        self.login_screen()
 
     def back_button_func(self, words):
         # goes back to user screen
@@ -625,6 +654,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.bag_of_food_removed_from_inventory.place_forget()
             self.adjust_item_quantity_button.place_forget()
             self.choose_an_item_button.place_forget()
+            self.choose_an_item_to_edit_button.place_forget()
             self.clear_barcode_screen()
             self.unbind_return_func()
             self.list_of_items_words = ''
@@ -721,6 +751,8 @@ one special character: !@#$%*?\n''', delay=.25)
         self.registration_info_button.place(relx=.47, rely=.5)
         # remove other buttons
         self.clear_to_login()
+        # backup_button_with_d
+        self.backup_button_with_d_button.place_forget()
 
     def admin_screen(self):
         self.clear_login_screen()
@@ -732,8 +764,11 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.display_inventory_high_low_outofstock_button, .845, .77)
         place_object(self.display_users_button, .845, .705)
         # TODO edit inventory option
+        place_object(self.edit_inventory_button, .845, .64)
+
 
     def user_screen(self):
+        self.isModifying = 0
         self.clear_login_screen()
         self.logout_button_place()
         self.clear_login_info_error()
@@ -975,14 +1010,12 @@ one special character: !@#$%*?\n''', delay=.25)
     # ==================================================================
 
     def create_new_item_screen(self, d):
-        # creates blank screen
         self.clear_user_screen()
         self.logoutButton.place_forget()
         self.logout_button_place_with_d(d, "user_screen")
-        self.backup_place_with_d(d, "user_screen")
-        # self.forget_create_new_item_screens(self, d)
-
         self.previous_view = "user_screen"
+        self.backup_place_with_d()
+
         self.create_new_item.place(relx=.4, rely=.23)
 
         self.create_new_item_name.place(relx=.2, rely=.3)
@@ -1000,27 +1033,41 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.create_new_item_input_barcode_entry, .4, .7, True)
 
     def create_new_item_submit_button_cmd(self, d):
-        newItem = "\n" + self.create_new_item_input.get() + "," + \
+        newItem = self.create_new_item_input.get() + ", " + \
                   str(self.create_new_item_input_amount_entry.get()) + ", " + \
                   str(self.create_new_item_input_low_level_entry.get()) + ", " + \
                   str(self.create_new_item_input_weight_entry.get()) + ", " + \
                   str(self.create_new_item_input_barcode_entry.get())
 
-        allFilled = self.isAllFilled(newItem)
-        if allFilled == 0:
-            self.create_new_item_input.set("")
-            self.create_new_item_input_amount.set("")
-            self.create_new_item_input_low_level.set("")
-            self.create_new_item_input_weight.set("")
-            self.create_new_item_input_barcode.set("")
+        if self.isModifying == 1:
             self.create_new_item_screen(d)
+            newItem = self.beautiful_string
+            words = newItem.split(", ")
+
+            self.create_new_item_input.set(words[0])
+            self.create_new_item_input_amount.set(words[1])
+            self.create_new_item_input_low_level.set(words[2])
+            self.create_new_item_input_weight.set(words[3])
+            self.create_new_item_input_barcode.set(words[4])
+
+            self.toDelete = str(words[0])
+            self.isModifying = 2
         else:
-            self.append_food(d, newItem)
-            self.create_new_item_input.set("")
-            self.create_new_item_input_amount.set("")
-            self.create_new_item_input_low_level.set("")
-            self.create_new_item_input_weight.set("")
-            self.create_new_item_input_barcode.set("")
+            allFilled = self.isAllFilled(newItem)
+            if allFilled == 0:
+                self.create_new_item_input.set("")
+                self.create_new_item_input_amount.set("")
+                self.create_new_item_input_low_level.set("")
+                self.create_new_item_input_weight.set("")
+                self.create_new_item_input_barcode.set("")
+                self.create_new_item_screen(d)
+            else:
+                self.append_food(d, newItem)
+                self.create_new_item_input.set("")
+                self.create_new_item_input_amount.set("")
+                self.create_new_item_input_low_level.set("")
+                self.create_new_item_input_weight.set("")
+                self.create_new_item_input_barcode.set("")
 
     def isAllFilled(self, d):
         if (self.create_new_item_input.get() == "" or
@@ -1034,7 +1081,8 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_submit_error_num.place_forget()
             self.create_new_added.place_forget()
             return 0
-        elif not self.create_new_item_input.get().isalpha():
+        elif re.search("[^a-zA-Z]\s", self.create_new_item_input.get()):
+            # names of items can now have spaces
             place_object(self.create_new_submit_error_alpha, .68, .6)
 
             self.create_new_submit_error.place_forget()
@@ -1075,8 +1123,14 @@ one special character: !@#$%*?\n''', delay=.25)
         self.backup_button.place(relx=.02, rely=.9)
 
     # TODO: new:
-    def backup_place_with_d(self, d, words):
-        self.backup_button_with_d_button.place(relx=.02, rely=.9)
+    def backup_place_with_d(self):
+        if self.isModifying == 0:
+            self.backup_button_with_d_button.place(relx=.02, rely=.9)
+            self.previous_view = "user_screen"
+        else:# self.isModifying != 0:
+            self.backup_button_with_d_button.configure(text="Back to Choose")
+            self.backup_button_with_d_button.place(relx=.02, rely=.9)
+            self.previous_view = "admin_edit_main"
 
     def todo_label_place(self):
         self.todo_label.place(relx=.300, rely=.450)
@@ -1162,6 +1216,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.make_bag_screen_button.place_forget()
         self.display_inventory_high_low_outofstock_button.place_forget()
         self.display_users_button.place_forget()
+        self.edit_inventory_button.place_forget()
         self.delete_user_button.place_forget()
         # self.clear_adjust_inventory_screen()
         self.clear_barcode_screen()
@@ -1187,6 +1242,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.adjust_item_quantity_button.place_forget()
         self.adjust_item_quantity_button.place_forget()
         self.choose_an_item_button.place_forget()
+        self.choose_an_item_to_edit_button.place_forget()
         self.choose_new_item.place_forget()
         self.adjust_inventory_entry.place_forget()
         self.confirm_inventory_manual_button.place_forget()
@@ -1253,6 +1309,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.admin_email_inventory_button.place_forget()
         self.display_inventory_high_low_outofstock_button.place_forget()
         self.display_users_button.place_forget()
+        self.edit_inventory_button.place_forget()
         self.delete_user_button.place_forget()
 
     # clear remove items screen
@@ -1407,8 +1464,35 @@ one special character: !@#$%*?\n''', delay=.25)
                 standard_item = d[p_id]['item'] + "," + str(d[p_id]['amount']) + ", " + str(d[p_id]['lowlevel']) + ", " + str(d[p_id]['weight']) + ", " + str(d[p_id]['barcode1'])
                 print(standard_item, file=f)
         '''
-        with open("food.txt", "a") as f:
-            f.write(newItem)
+        if self.isModifying == 2:
+            # 'fix' this later
+            s = open("food.txt").read()
+            s = s.replace(self.beautiful_string, newItem)
+            f = open("food.txt", 'w')
+            f.write(s)
+            f.close()
+
+            # forces a back button press on succsess
+            self.previous_view = "admin_edit_main"
+            self.backup_button_with_d(d, self.previous_view)
+            del self.d[self.toDelete]
+
+            self.edit_inventory_button_cmd(d)
+            self.create_new_added.configure(text="Item Modified")
+            self.create_new_added.place_forget()
+            place_object(self.create_new_added, .85, .58)
+
+        else:
+            with open("food.txt", "a") as f:
+                f.write("\n" + newItem)
+
+        # TODO: we either need to have barcodes stored in an array/list or if you can figure out how to deal with varying lengths of the inner dict or how to write to txt without removing the extra barcodes
+        # TODO: because i cant think of a way with either approach currently [approaches being write dict to txt or delete line in txt with 'old' values and paste in new ones]
+        # also don't have leading zeros in barcodes, the dict ignores them --> 0001 = 1 since i guess they are ints and not strings right now
+        # if barcodes are put into an array then the user can just enter a comma or space into the 'create item screen' for multiple barcodes, 'modify screen' could list them all out with
+        # commas or spaces instead of just the first one (like right now)
+        # alsox2 the way duy was modifying the amount per bag was by adding a new value to the dict (like amount and lowlevel etc) 'amountperbag' to keep track of that
+        # if that approach is good with you i can add that variable to creatnewitem and adminmodify screens for inputs
 
     # =============================================================================
     #                Display inventory - user mode
@@ -1456,6 +1540,52 @@ one special character: !@#$%*?\n''', delay=.25)
         except Exception as e:
             print("Change to pass")
             print("Error inside choose_an_item_to_change_cmd : " + str(e))
+
+    def choose_an_item_to_edit_button_cmd(self, d):
+        self.selected_item_to_be_changed = self.list_box_2.curselection()
+        if self.selected_item_to_be_changed != ():
+            self.change_inventory_by_this_much.set(0)
+            self.item_to_be_changed = self.list_box_2.get(self.selected_item_to_be_changed)
+            self.invalid_entry_error_label.place_forget()
+
+            place_object(self.item_to_be_changed_label_1, .42, .21)
+            place_object(self.item_to_be_changed_label_2, .36, .26)
+
+            string_key = re.split(" :", self.item_to_be_changed.strip())[0]
+
+            # turn into string with commas (pre-modified)
+            pre_beautiful_string = str(d[str(self.d[string_key]['item'])].values())
+            pre_beautiful_string = str(re.split("dict_values", pre_beautiful_string))
+            pre_beautiful_string = pre_beautiful_string.replace("[\'\', \"([", '')
+            pre_beautiful_string = pre_beautiful_string.replace('])"]', '')
+            pre_beautiful_string = pre_beautiful_string.replace("'", '')
+            self.beautiful_string = pre_beautiful_string
+
+            self.admin_modify_inventory_screen(d)
+            self.item_to_be_changed_label_1.configure(text="Item to be changed")
+            self.item_to_be_changed_label_2.configure(text="Current: " + self.beautiful_string)
+            self.create_new_added.place_forget()
+
+        else:
+            self.invalid_entry_error_label.config(text="Choose an Item")
+            self.create_new_added.place_forget()
+            place_object(self.invalid_entry_error_label, .8, .4)
+
+    def admin_modify_inventory_screen(self, d):
+        self.isModifying = 1
+        # TODO: add separate delete button
+        # TODO: also fix the back button logic later
+        # clears last screen
+        self.choose_an_item_to_edit_button.place_forget()
+        self.list_box_2_label.place_forget()
+        self.list_box_2.place_forget()
+        # reusing inputs and checks screen passing beautiful/ iteminfo
+        self.create_new_item_submit_button_cmd(d)
+        self.create_new_item_submit_button.configure(text="Submit Edit")
+        self.create_new_item.configure(text="")
+
+        # forgets unneeded reused labels/buttons
+        self.create_new_submit_error.place_forget()
 
     def confirm_item_change(self, direction):
         self.add_button.place_forget()
@@ -1634,6 +1764,28 @@ one special character: !@#$%*?\n''', delay=.25)
             self.display_users_button.config(text="View Users")
             self.delete_user_button.place_forget()
             self.clear_list_box()
+
+    def edit_inventory_button_cmd(self, d):
+        self.previous_view = "admin_screen"
+        self.backup_button_with_d_button.place(relx=.02, rely=.9)
+        self.clear_admin_screen()
+        # Jump to modify screen and be able to modify and delete items
+        self.modify_inventory(d)
+
+
+    def modify_inventory(self,d):
+        # reuse select item code from manual entry
+        self.view_inventory_middle_list_box(d)
+        self.create_new_added.place_forget()
+        self.list_box_2.place_forget()
+        self.list_box_2_label.place_forget()
+
+        self.list_box_2_label.configure(font=(self._font, self._font_big_big), text="\\\ Select Here! //")
+        place_object(self.list_box_2_label, .43, .23)
+        self.list_box_2.place(relx=.44, rely=.3, relwidth=.15, relheight=.55)
+
+        place_object(self.choose_an_item_to_edit_button, .8, .835)
+        self.backup_button_with_d_button.configure(text="Back")
 
     # displays users in a box
     def view_users(self):
@@ -1896,8 +2048,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        self.user_screen()
-        # self.admin_screen()
+        #self.user_screen()
+        self.admin_screen()
 
         '''
         # TODO: commnted out if/else to skip login steps while building program,
