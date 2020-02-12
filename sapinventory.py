@@ -231,18 +231,26 @@ class StartGui(tk.Tk):
         # view inventory button
         self.display_inventory_user_button = tk.Button(self, text="View Inventory",
                                                        font=(self._font, self._font_medium), background=self._fgcolor,
-                                                       command=lambda: self.display_inventory_user_button_cmd())
+                                                       command=lambda: self.display_inventory_user_button_cmd('middle'))
         self.display_inventory_user_button.configure(activebackground=self._activebgcolor, padx=16)
+
+        # view inventory as one list
+        self.display_inventory_left_side_button = tk.Button(self, text="View Inventory",
+                                                            font=(self._font, self._font_medium),
+                                                            background=self._fgcolor,
+                                                            command=lambda: self.swap_inventory_button('left'))
+        self.display_inventory_left_side_button.configure(activebackground=self._activebgcolor, padx=14)
 
         # ========================================================================
         #                    Admin screen buttons
         # ========================================================================
 
-        # view inventory button
-        self.display_inventory_button = tk.Button(self, text="View Inventory",
-                                                  font=(self._font, self._font_medium), background=self._fgcolor,
-                                                  command=lambda: self.swap_inventory_button())
-        self.display_inventory_button.configure(activebackground=self._activebgcolor, padx=14)
+        # view inventory in 3 boxes, high low out of stockbutton
+        self.display_inventory_high_low_outofstock_button = tk.Button(self, text="View Inventory",
+                                                                      font=(self._font, self._font_medium),
+                                                                      background=self._fgcolor,
+                                                                      command=lambda: self.swap_inventory_button('all'))
+        self.display_inventory_high_low_outofstock_button.configure(activebackground=self._activebgcolor, padx=14)
 
         # view users
         self.display_users_button = tk.Button(self, text="View Users",
@@ -411,6 +419,12 @@ one special character: !@#$%*?\n''', delay=.25)
         self.barcode_scanner_input = tk.StringVar()
         self.barcode_scanner_input_entry = tk.Entry(self, font=(self._font, self._font_big),
                                                     textvariable=self.barcode_scanner_input, width=20)
+
+        # barcode scanner amount entry box
+        self.barcode_scanner_amount = tk.StringVar()
+        self.barcode_scanner_amount_entry = tk.Entry(self, font=(self._font, self._font_big),
+                                                     textvariable=self.barcode_scanner_amount, width=4)
+
         # ===============================================================
         #                      new items entry
         # ==============================================================
@@ -615,6 +629,8 @@ one special character: !@#$%*?\n''', delay=.25)
             self.unbind_return_func()
             self.list_of_items_words = ''
             self.list_of_items_label.place_forget()
+            self.invalid_entry_error_label.place_forget()
+            self.display_inventory_left_side_button.place_forget()
         # goes back to make a bag screen
         elif words == "make_bag_screen":
             self.make_bag_screen()
@@ -631,6 +647,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.clear_registration_success()
             self.login_screen()
             self.eyeball_button.place_forget()
+            self.invalid_entry_error_label.place_forget()
         elif words == "manual_entry_screen":
             self.clear_user_screen()
             self.manual_entry_screen()
@@ -642,6 +659,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.item_to_be_changed_label_2.place_forget()
             self.change_value_button.place_forget()
             self.adjust_inventory_entry.place_forget()
+            self.invalid_entry_error_label.place_forget()
         elif words == "choose_item_screen":
             self.item_to_be_changed_label_1.place_forget()
             self.item_to_be_changed_label_2.place_forget()
@@ -653,6 +671,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.invalid_entry_error_label.place_forget()
             self.confirm_inventory_manual_button.place_forget()
             self.cancel_inventory_manual_button.place_forget()
+            self.invalid_entry_error_label.place_forget()
 
     # ====================================================================================
     #                                   EMAIL Functions
@@ -710,7 +729,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.army_image_place()
         self.eyeball_button.place_forget()
         place_object(self.admin_email_inventory_button, .845, .835)
-        place_object(self.display_inventory_button, .845, .77)
+        place_object(self.display_inventory_high_low_outofstock_button, .845, .77)
         place_object(self.display_users_button, .845, .705)
         # TODO edit inventory option
 
@@ -850,6 +869,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.previous_view = "user_screen"
         place_object(self.barcode_scanner_add_button, .47, .4)
         place_object(self.barcode_scanner_remove_button, .47, .5)
+        place_object(self.display_inventory_left_side_button, .8, .84)
         self.list_of_items_words = 'Inventory Changes\n'
         self.list_of_items_label.config(text=self.list_of_items_words)
 
@@ -861,12 +881,17 @@ one special character: !@#$%*?\n''', delay=.25)
         # TODO: else adjust by 1 - use direction
         self.previous_view = "user_screen"
         self.clear_barcode_screen()
+        self.invalid_entry_error_label.place_forget()
         self.barcode_scanner_label.configure(text=direction + 'inventory : begin scanning')
-        place_object(self.barcode_scanner_label, .35, .25)
-        place_object(self.barcode_scanner_input_entry, .4, .3, True)
+        place_object(self.barcode_scanner_label, .3, .25)
+        place_object(self.barcode_scanner_input_entry, .3, .3, True)
+        place_object(self.barcode_scanner_amount_entry, .55, .3)
         place_object(self.list_of_items_label, .7, .3)
         self.barcode_scanner_input.set("")
-        self.bind('<Return>', lambda x: self.search_for_item_in_food_file(direction, self.barcode_scanner_input.get()))
+        self.barcode_scanner_amount.set(1)
+        self.bind('<Return>', lambda x: self.search_for_item_in_food_file(
+            direction, self.barcode_scanner_input.get(),
+            self.barcode_scanner_amount.get()))
 
     def barcode_scanner_submit_button_cmd(self):
         pass
@@ -874,44 +899,76 @@ one special character: !@#$%*?\n''', delay=.25)
     def unbind_return_func(self):
         self.unbind('<Return>')
 
-    def search_for_item_in_food_file(self, direction, item_to_find):
+    def search_for_item_in_food_file(self, direction, item_to_find, qty):
         # TODO: show/hide inventory
         # TODO: add barcode & qty columns
-        # TODO: add entry box
-        # TODO: if entry box != 1, adjust by entry box amount
-        # TODO: else adjust by 1 - use direction
+        # TODO: display inventory in box 1 on the left
+        # TODO: limit size of list_of_items_words so its doesn't go over inventory button
         try:
-            shutil.move("food.txt", "food.txt" + "~")
-            with open("food.txt", "w+") as dest:
-                dest.seek(0, os.SEEK_SET)
-                with open("food.txt" + "~", "r+") as src:
-                    src.seek(0, os.SEEK_SET)
-                    for line in src:
-                        if not re.match(r'^\s*$', line):
-                            found = False
-                            tokens = re.split(",", line.strip())
-                            for ndex in range(len(tokens))[4:]:
-                                if str(tokens[ndex].strip()) == str(item_to_find):
-                                    if direction == 'adding to ':
-                                        self.list_of_items_words = self.list_of_items_words + \
-                                                                   'added ' + tokens[0] + ' ' + \
-                                                                   str(item_to_find) + '\n'
+            place_object(self.display_inventory_high_low_outofstock_button, .845, .77)
+            try:
+                self.invalid_entry_error_label.place_forget()
+                intcheck = int(qty)
+                intcheck = int(item_to_find)
+                try:
+                    shutil.move("food.txt", "food.txt" + "~")
+                    with open("food.txt", "w+") as dest:
+                        dest.seek(0, os.SEEK_SET)
+                        with open("food.txt" + "~", "r+") as src:
+                            src.seek(0, os.SEEK_SET)
+                            newitem = True
+                            for line in src:
+                                if not re.match(r'^\s*$', line):  # skips blank lines
+                                    found = False
+                                    tokens = re.split(",", line.strip())
+                                    for ndex in range(len(tokens))[4:]:
+                                        if str(tokens[ndex].strip()) == str(item_to_find):
+                                            if direction == 'adding to ':
+                                                tokens[1] = str(int(tokens[1]) + int(self.barcode_scanner_amount.get()))
+                                                self.list_of_items_words = self.list_of_items_words + \
+                                                                           'added ' + \
+                                                                           str(self.barcode_scanner_amount.get()) + \
+                                                                           " to '" + tokens[0] + "' " + \
+                                                                           str(item_to_find) + ' New Qty: ' + \
+                                                                           tokens[1] + '\n'
+                                                self.list_of_items_label.config(text=self.list_of_items_words)
 
-                                        self.list_of_items_label.config(text=self.list_of_items_words)
-                                        tokens[1] = str(int(tokens[1]) + 1)
-                                    if direction == 'removing from ':
-                                        self.list_of_items_words = self.list_of_items_words + 'removed ' + \
-                                                                   tokens[0] + ' ' + str(item_to_find) + '\n'
+                                            if direction == 'removing from ':
+                                                tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
+                                                self.list_of_items_words = self.list_of_items_words + \
+                                                                           'removed ' + \
+                                                                           str(self.barcode_scanner_amount.get()) + \
+                                                                           " from '" + tokens[0] + "' " + \
+                                                                           str(item_to_find) + ' New Qty: ' + \
+                                                                           tokens[1] + '\n'
 
-                                        self.list_of_items_label.config(text=self.list_of_items_words)
-                                        tokens[1] = str(int(tokens[1]) - 1)
-                                    found = True
-                                    dest.write(",".join(tokens) + '\n')
-                            if found is False:
-                                dest.write(line)
-            self.barcode_scanner_add_remove_button_cmd(direction)
+                                                self.list_of_items_label.config(text=self.list_of_items_words)
+
+                                            found = True
+                                            newitem = False
+                                            dest.write(",".join(tokens) + '\n')
+                                    if found is False:
+                                        dest.write(line)
+                            if newitem:
+                                self.list_of_items_words = self.list_of_items_words + \
+                                                           ' not found : ' + str(item_to_find) + '\n'
+                                self.list_of_items_label.config(text=self.list_of_items_words)
+                                # TODO : probably call new item screen here
+                                print("new item need to add it to the inventory")
+                                print("new plan?  save items not found to a new list")
+                                print("place a new item screen button")
+                                print("display new item list on the new item screen until back button pushed")
+                    self.barcode_scanner_add_remove_button_cmd(direction)
+                except Exception as e:
+                    print("error writing to food file : " + str(e))
+            except Exception as e:
+                # input a non int value, show error label to user
+                self.invalid_entry_error_label.config(text='Enter numbers only')
+                place_object(self.invalid_entry_error_label, .8, .25)
+                self.barcode_scanner_input.set("")
+                self.barcode_scanner_amount.set(1)
         except Exception as e:
-            print("error writing to food file : " + str(e))
+            print("error displaying inventory")
 
     # ===================================================================
     #               New items screen and functions
@@ -1103,7 +1160,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.admin_email_label.place_forget()
         self.food_file_error_label.place_forget()
         self.make_bag_screen_button.place_forget()
-        self.display_inventory_button.place_forget()
+        self.display_inventory_high_low_outofstock_button.place_forget()
         self.display_users_button.place_forget()
         self.delete_user_button.place_forget()
         # self.clear_adjust_inventory_screen()
@@ -1136,6 +1193,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.cancel_inventory_manual_button.place_forget()
         self.unbind_return_func()
         self.list_of_items_label.place_forget()
+        self.display_inventory_left_side_button.place_forget()
 
     # clear list boxes
     def clear_list_box(self):
@@ -1193,7 +1251,7 @@ one special character: !@#$%*?\n''', delay=.25)
     def clear_admin_screen(self):
         # self.admin_button.place_forget()
         self.admin_email_inventory_button.place_forget()
-        self.display_inventory_button.place_forget()
+        self.display_inventory_high_low_outofstock_button.place_forget()
         self.display_users_button.place_forget()
         self.delete_user_button.place_forget()
 
@@ -1238,6 +1296,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.barcode_scanner_add_button.place_forget()
         self.barcode_scanner_label.place_forget()
         self.barcode_scanner_input_entry.place_forget()
+        self.barcode_scanner_amount_entry.place_forget()
         self.clear_todo_label()
 
     # =================================================================================
@@ -1356,11 +1415,11 @@ one special character: !@#$%*?\n''', delay=.25)
     # =============================================================================
 
     # display full inventory, just to view
-    def display_inventory_user_button_cmd(self):
+    def display_inventory_user_button_cmd(self, side):
         # self.clear_adjust_inventory_screen()
         self.clear_user_screen()
         self.backup_place()
-        self.view_inventory_middle_list_box(self.d)
+        self.view_inventory_one_list_box(self.d, side)
         self.previous_view = "user_screen"
 
     # ===================================================================================
@@ -1369,7 +1428,7 @@ one special character: !@#$%*?\n''', delay=.25)
     # ===================================================================================
     # adjust inventory manually
     def adjust_item_quantity_button_cmd(self, d):
-        self.view_inventory_middle_list_box(d)
+        self.view_inventory_one_list_box(d)
         place_object(self.choose_an_item_button, .8, .835)
         # self.adjust_items_button['state'] = 'disabled'
         self.choose_new_item.place_forget()
@@ -1542,23 +1601,33 @@ one special character: !@#$%*?\n''', delay=.25)
             print("change error to pass for final version\n")
 
     # swap display inventory button
-    def swap_inventory_button(self):
-        inventory_button_text = self.display_inventory_button.cget('text')
-        if inventory_button_text == 'View Inventory':
-            self.display_inventory_button.config(text="Hide Inventory")
-            self.display_users_button.config(text="View Users")
-            self.delete_user_button.place_forget()
-            self.view_inventory_3_list_boxes(self.d)
-        else:
-            self.display_inventory_button.config(text="View Inventory")
-            self.clear_list_box()
+    # TODO: shows inventory button, not forgetting, fix this
+    def swap_inventory_button(self, choice):
+        #inventory_button_for_three_boxes_text = self.display_inventory_high_low_outofstock_button.cget('text')
+        #inventory_button_for_one_box_text = self.display_inventory_left_side_button.cget('text')
+        if choice == 'all':
+            if self.display_inventory_high_low_outofstock_button.cget('text') == 'View Inventory':
+                self.display_inventory_high_low_outofstock_button.config(text="Hide Inventory")
+                self.display_users_button.config(text="View Users")
+                self.delete_user_button.place_forget()
+                self.view_inventory_3_list_boxes(self.d)
+            else:
+                self.display_inventory_high_low_outofstock_button.config(text="View Inventory")
+                self.clear_list_box()
+        if choice == 'left':
+            if self.display_inventory_left_side_button.cget('text') == 'View Inventory':
+                self.display_inventory_left_side_button.config(text="Hide Inventory")
+                self.view_inventory_one_list_box(self.d, choice)
+            else:
+                self.display_inventory_left_side_button.config(text="View Inventory")
+                self.clear_list_box()
 
     # show/hide users
     def swap_display_users_button(self):
         users_button_text = self.display_users_button.cget('text')
         if users_button_text == 'View Users':
             self.display_users_button.config(text="Hide Users")
-            self.display_inventory_button.config(text="View Inventory")
+            self.display_inventory_high_low_outofstock_button.config(text="View Inventory")
             place_object(self.delete_user_button, .845, .640)
             self.view_users()
         else:
@@ -1591,12 +1660,17 @@ one special character: !@#$%*?\n''', delay=.25)
         else:
             self.list_box_2.place(relheight=(box2count * boxheight))
 
-    # display inventory in 1 list box
-    def view_inventory_middle_list_box(self, d):
+    # TODO: do side stuff, left, center for now
+    # display inventory in one list box
+    def view_inventory_one_list_box(self, d, side):
         self.make_dict(d)
         self.clear_list_box()
-        place_object(self.list_box_2, .39, .3, .14)
-        place_object(self.list_box_2_label, .39, .25)
+        if side == 'middle':
+            place_object(self.list_box_2, .39, .3)
+            place_object(self.list_box_2_label, .39, .25)
+        if side == 'left':
+            place_object(self.list_box_2, .07, .3)
+            place_object(self.list_box_2_label, .08, .25)
         self.list_box_2_label.configure(text="Inventory")
         box2count = 0
 
