@@ -928,6 +928,7 @@ one special character: !@#$%*?\n''', delay=.25)
     def search_for_item_in_food_file(self, direction, item_to_find, qty):
         # TODO: add barcode & qty columns
         # TODO: limit size of list_of_items_words so its doesn't go over inventory button
+        # TODO: I suggest to always show inventory box and update every scan instead of needing to toggle to update the box
         try:
             self.invalid_entry_error_label.place_forget()
             intcheck = int(qty)
@@ -1034,8 +1035,14 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_item_input_amount.set(words[1])
             self.create_new_item_input_low_level.set(words[2])
             self.create_new_item_input_itemsperbag.set(words[3])
-            self.create_new_item_input_barcode.set(words[4])
 
+            print(words)
+            n = 4
+            barcodeList = ""
+            while n < words.__len__():
+                barcodeList += words[n] + ", "
+                n+=1
+            self.create_new_item_input_barcode.set(barcodeList[:barcodeList.__len__()-2])
             self.toDelete = str(words[0])
             self.isModifying = 2
         else:
@@ -1077,8 +1084,10 @@ one special character: !@#$%*?\n''', delay=.25)
             return 0
         elif (str(self.create_new_item_input_amount_entry.get()).isnumeric() == False or
               str(self.create_new_item_input_low_level_entry.get().isnumeric()) == False or
-              str(self.create_new_item_input_itemsperbag_entry.get()).isnumeric() == False or
-              str(self.create_new_item_input_barcode_entry.get()).isnumeric() == False):
+              str(self.create_new_item_input_itemsperbag_entry.get()).isnumeric() == False
+              #or str(self.create_new_item_input_barcode_entry.get()).isnumeric() == False
+              # removing last check so commas can be used on barcodes
+             ):
             place_object(self.create_new_submit_error_num, .655, .6)
 
             self.create_new_submit_error_alpha.place_forget()
@@ -1408,6 +1417,8 @@ one special character: !@#$%*?\n''', delay=.25)
                         amount = int(words[1])
                         lowlevel = int(words[2])
                         itemsperbag = int(words[3])
+                        barcodes = [''] * 10
+                        # could use None but '' looks better
                         d[item] = {}
                         d[item]['item'] = item
                         d[item]['amount'] = amount
@@ -1416,9 +1427,9 @@ one special character: !@#$%*?\n''', delay=.25)
                         number_of_barcodes = len(words) - 4
                         n = 1
                         while n <= number_of_barcodes:
-                            barcode = 'barcode' + str(n)
-                            d[item][barcode] = int(words[3 + n])
+                            barcodes[n - 1] = int(words[3 + n])
                             n += 1
+                        d[item]['barcodes'] = barcodes
         except Exception as e:
             self.food_file_error_label.place(relx=.75, rely=.60)
             print("error in open: make dict : " + str(e))
@@ -1458,7 +1469,7 @@ one special character: !@#$%*?\n''', delay=.25)
             f.write(s)
             f.close()
 
-            # forces a back button press on succsess
+            # forces a back button press on success
             self.previous_view = "admin_edit_main"
             self.backup_button_with_d(d, self.previous_view)
             del self.d[self.toDelete]
@@ -1477,8 +1488,6 @@ one special character: !@#$%*?\n''', delay=.25)
         # also don't have leading zeros in barcodes, the dict ignores them --> 0001 = 1 since i guess they are ints and not strings right now
         # if barcodes are put into an array then the user can just enter a comma or space into the 'create item screen' for multiple barcodes, 'modify screen' could list them all out with
         # commas or spaces instead of just the first one (like right now)
-        # alsox2 the way duy was modifying the amount per bag was by adding a new value to the dict (like amount and lowlevel etc) 'amountperbag' to keep track of that
-        # if that approach is good with you i can add that variable to creatnewitem and adminmodify screens for inputs
 
     # =============================================================================
     #                Display inventory - user mode
@@ -1545,6 +1554,14 @@ one special character: !@#$%*?\n''', delay=.25)
             pre_beautiful_string = pre_beautiful_string.replace("[\'\', \"([", '')
             pre_beautiful_string = pre_beautiful_string.replace('])"]', '')
             pre_beautiful_string = pre_beautiful_string.replace("'", '')
+            pre_beautiful_string = pre_beautiful_string.replace("[", '')
+            pre_beautiful_string = pre_beautiful_string.replace("]", '')
+            # to delete list brackets
+            pre_beautiful_string = pre_beautiful_string.replace(", ,", '')
+            pre_beautiful_string = pre_beautiful_string.replace(" , ", '')
+            pre_beautiful_string = pre_beautiful_string.replace("   ", '')
+            pre_beautiful_string = pre_beautiful_string.replace("  ", '')
+            # gets rid of all the empty values in barcodes[]
             self.beautiful_string = pre_beautiful_string
 
             self.admin_modify_inventory_screen(d)
@@ -1560,7 +1577,6 @@ one special character: !@#$%*?\n''', delay=.25)
     def admin_modify_inventory_screen(self, d):
         self.isModifying = 1
         # TODO: add separate delete button
-        # TODO: also fix the back button logic later
         # clears last screen
         self.choose_an_item_to_edit_button.place_forget()
         self.list_box_2_label.place_forget()
@@ -2033,7 +2049,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        # self.user_screen()
+        #self.user_screen()
         self.admin_screen()
 
         '''
