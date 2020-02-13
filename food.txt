@@ -1,17 +1,17 @@
 item, amount, lowlevel, itemsperbag, barcode
-vegetable can, 16, 5, 0, 0000, 0001, 00002
-fruit can, 246, 4, 3, 1234
-meat item, 3, 5, 4, 6543, 6535
-soup can, 48, 3, 4, 1234234, 4532234
-spaghetti sauce can, 3, 6, 5, 67, 3456, 3453
-tomato sauce can, 9, 4, 5, 2345
-bean cans, 2, 4, 5, 2345
-ravioli, 52, 4, 5, 2345
-peanut butter, 0, 4, 0, 2345
-jelly, 50, 4, 5, 2345
-mac and cheese, 50, 4, 5, 2345
-rice bag, 233, 4, 5, 2345
-juice drink, 124, 4, 5, 2345
-snacks, 2, 4, 5
-miscellaneous item, 780, 4, 5, 2345
-cereal, 2, 4, 5, 2345
+vegetable can, 15, 5, 0, 0000, 0001, 00002
+fruit can, 254, 4, 3, 1234
+meat item, 2, 5, 4, 6543, 6535
+soup can, 47, 3, 4, 1234234, 4532234
+spaghetti sauce can, 2, 6, 5, 67664, 34564, 34534
+tomato sauce can, 14, 4, 2, 2345
+bean cans, 7, 4, 5, 2345
+ravioli, 57, 4, 5, 2345
+peanut butter, 10, 4, 0, 234566
+jelly, 55, 4, 5, 2345
+mac and cheese, 55, 4, 5, 234522
+rice bag, 238, 4, 5, 2345
+juice drink, 129, 4, 5, 2345
+snacks, 1, 4, 5, 456
+miscellaneous item, 961, 4, 5, 2345679
+cereal, 7, 4, 5, 2345
