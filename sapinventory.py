@@ -240,7 +240,6 @@ class StartGui(tk.Tk):
                                                             background=self._fgcolor,
                                                             command=lambda: self.swap_inventory_button('left'))
         self.display_inventory_left_side_button.configure(activebackground=self._activebgcolor, padx=14)
-  
         # ========================================================================
         #                    Admin screen buttons
         # ========================================================================
@@ -248,7 +247,7 @@ class StartGui(tk.Tk):
         # view inventory in 3 boxes, high low out of stockbutton
         self.display_inventory_high_low_outofstock_button = tk.Button(self, text="View Inventory",
                                                                       font=(self._font, self._font_medium),
-                                                                      background=self._fgcolor,                                                                                               
+                                                                      background=self._fgcolor,
                                                                       command=lambda: self.swap_inventory_button('all'))
         self.display_inventory_high_low_outofstock_button.configure(activebackground=self._activebgcolor, padx=14)
 
@@ -260,14 +259,14 @@ class StartGui(tk.Tk):
 
         # Edit inventory
         self.edit_inventory_button = tk.Button(self, text="Edit Inventory",
-                                              font=(self._font, self._font_medium), background=self._fgcolor,
-                                              command=lambda: self.edit_inventory_button_cmd(self.d))
+                                               font=(self._font, self._font_medium), background=self._fgcolor,
+                                               command=lambda: self.edit_inventory_button_cmd(self.d))
         self.edit_inventory_button.configure(activebackground=self._activebgcolor, padx=20)
 
         # choose an item to edit admin
         self.choose_an_item_to_edit_button = tk.Button(self, text="Choose An Item",
-                                               background=self._fgcolor, font=(self._font, self._font_medium),
-                                               command=lambda: self.choose_an_item_to_edit_button_cmd(self.d))
+                                                       background=self._fgcolor, font=(self._font, self._font_medium),
+                                                       command=lambda: self.choose_an_item_to_edit_button_cmd(self.d))
         self.choose_an_item_to_edit_button.configure(activebackground=self._activebgcolor, padx=47)
 
         # delete users : in admin screen
@@ -341,7 +340,7 @@ class StartGui(tk.Tk):
         self.create_new_item_low_level = tk.Label(self, font=(self._font, self._font_small),
                                                   text="Low amount warning at: ")
         self.create_new_item_itemsperbag = tk.Label(self, font=(self._font, self._font_small),
-                                               text="Items per bag: ")
+                                                    text="Items per bag: ")
         self.create_new_item_barcode = tk.Label(self, font=(self._font, self._font_small),
                                                 text="Barcode: ")
         self.create_new_submit_error = tk.Label(self, font=(self._font, self._font_small),
@@ -456,8 +455,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         self.create_new_item_input_itemsperbag = tk.StringVar()
         self.create_new_item_input_itemsperbag_entry = tk.Entry(self, font=(self._font, self._font_big),
-                                                           textvariable=self.create_new_item_input_itemsperbag, width=20)
-
+                                                                textvariable=self.create_new_item_input_itemsperbag, width=20)
+        
         self.create_new_item_input_barcode = tk.StringVar()
         self.create_new_item_input_barcode_entry = tk.Entry(self, font=(self._font, self._font_big),
                                                             textvariable=self.create_new_item_input_barcode, width=20)
@@ -702,6 +701,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.confirm_inventory_manual_button.place_forget()
             self.cancel_inventory_manual_button.place_forget()
             self.invalid_entry_error_label.place_forget()
+            
     # ====================================================================================
     #                                   EMAIL Functions
     # ===================================================================================
@@ -907,11 +907,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.list_of_items_label.config(text=self.list_of_items_words)
 
     def barcode_scanner_add_remove_button_cmd(self, direction):
-        # TODO: show/hide inventory
         # TODO: add barcode & qty columns
-        # TODO: add entry box
-        # TODO: if entry box != 1, adjust by entry box amount
-        # TODO: else adjust by 1 - use direction
         self.previous_view = "user_screen"
         self.clear_barcode_screen()
         self.invalid_entry_error_label.place_forget()
@@ -926,82 +922,72 @@ one special character: !@#$%*?\n''', delay=.25)
             direction, self.barcode_scanner_input.get(),
             self.barcode_scanner_amount.get()))
 
-    def barcode_scanner_submit_button_cmd(self):
-        pass
-
     def unbind_return_func(self):
         self.unbind('<Return>')
 
     def search_for_item_in_food_file(self, direction, item_to_find, qty):
-        # TODO: show/hide inventory
         # TODO: add barcode & qty columns
-        # TODO: display inventory in box 1 on the left
         # TODO: limit size of list_of_items_words so its doesn't go over inventory button
-        
         try:
-            place_object(self.display_inventory_high_low_outofstock_button, .845, .77)
+            self.invalid_entry_error_label.place_forget()
+            intcheck = int(qty)
+            intcheck = int(item_to_find)
             try:
-                self.invalid_entry_error_label.place_forget()
-                intcheck = int(qty)
-                intcheck = int(item_to_find)
-                try:
-                    shutil.move("food.txt", "food.txt" + "~")
-                    with open("food.txt", "w+") as dest:
-                        dest.seek(0, os.SEEK_SET)
-                        with open("food.txt" + "~", "r+") as src:
-                            src.seek(0, os.SEEK_SET)
-                            newitem = True
-                            for line in src:
-                                if not re.match(r'^\s*$', line):  # skips blank lines
-                                    found = False
-                                    tokens = re.split(",", line.strip())
-                                    for ndex in range(len(tokens))[4:]:
-                                        if str(tokens[ndex].strip()) == str(item_to_find):
-                                            if direction == 'adding to ':
-                                                tokens[1] = str(int(tokens[1]) + int(self.barcode_scanner_amount.get()))
-                                                self.list_of_items_words = self.list_of_items_words + \
-                                                                           'added ' + \
-                                                                           str(self.barcode_scanner_amount.get()) + \
-                                                                           " to '" + tokens[0] + "' " + \
-                                                                           str(item_to_find) + ' New Qty: ' + \
-                                                                           tokens[1] + '\n'
-                                                self.list_of_items_label.config(text=self.list_of_items_words)
+                shutil.move("food.txt", "food.txt" + "~")
+                with open("food.txt", "w+") as dest:
+                    dest.seek(0, os.SEEK_SET)
+                    with open("food.txt" + "~", "r+") as src:
+                        src.seek(0, os.SEEK_SET)
+                        newitem = True
+                        for line in src:
+                            if not re.match(r'^\s*$', line):  # skips blank lines
+                                found = False
+                                tokens = re.split(",", line.strip())
+                                for ndex in range(len(tokens))[4:]:
+                                    if str(tokens[ndex].strip()) == str(item_to_find):
+                                        if direction == 'adding to ':
+                                            tokens[1] = str(int(tokens[1]) + int(self.barcode_scanner_amount.get()))
+                                            self.list_of_items_words = self.list_of_items_words + \
+                                                                        'added ' + \
+                                                                        str(self.barcode_scanner_amount.get()) + \
+                                                                        " to '" + tokens[0] + "' " + \
+                                                                        str(item_to_find) + ' New Qty: ' + \
+                                                                        tokens[1] + '\n'
+                                            self.list_of_items_label.config(text=self.list_of_items_words)
 
-                                            if direction == 'removing from ':
-                                                tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
-                                                self.list_of_items_words = self.list_of_items_words + \
-                                                                           'removed ' + \
-                                                                           str(self.barcode_scanner_amount.get()) + \
-                                                                           " from '" + tokens[0] + "' " + \
-                                                                           str(item_to_find) + ' New Qty: ' + \
-                                                                           tokens[1] + '\n'
+                                        if direction == 'removing from ':
+                                            tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
+                                            self.list_of_items_words = self.list_of_items_words + \
+                                                                        'removed ' + \
+                                                                        str(self.barcode_scanner_amount.get()) + \
+                                                                        " from '" + tokens[0] + "' " + \
+                                                                        str(item_to_find) + ' New Qty: ' + \
+                                                                        tokens[1] + '\n'
 
-                                                self.list_of_items_label.config(text=self.list_of_items_words)
-                                            found = True
-                                            newitem = False
-                                            dest.write(",".join(tokens) + '\n')
-                                    if found is False:
-                                        dest.write(line)
-                            if newitem:
-                                self.list_of_items_words = self.list_of_items_words + \
-                                                           ' not found : ' + str(item_to_find) + '\n'
-                                self.list_of_items_label.config(text=self.list_of_items_words)
-                                # TODO : probably call new item screen here
-                                print("new item need to add it to the inventory")
-                                print("new plan?  save items not found to a new list")
-                                print("place a new item screen button")
-                                print("display new item list on the new item screen until back button pushed")
-                    self.barcode_scanner_add_remove_button_cmd(direction)
-                except Exception as e:
-                    print("error writing to food file : " + str(e))
+                                            self.list_of_items_label.config(text=self.list_of_items_words)
+                                        found = True
+                                        newitem = False
+                                        dest.write(",".join(tokens) + '\n')
+                                if found is False:
+                                    dest.write(line)
+                        if newitem:
+                            self.list_of_items_words = self.list_of_items_words + \
+                                                       ' not found : ' + str(item_to_find) + '\n'
+                            self.list_of_items_label.config(text=self.list_of_items_words)
+                            # TODO : probably call new item screen here
+                            print("new item need to add it to the inventory")
+                            print("new plan?  save items not found to a new list")
+                            print("place a new item screen button")
+                            print("display new item list on the new item screen until back button pushed")
+                self.barcode_scanner_add_remove_button_cmd(direction)
             except Exception as e:
-                # input a non int value, show error label to user
-                self.invalid_entry_error_label.config(text='Enter numbers only')
-                place_object(self.invalid_entry_error_label, .8, .25)
-                self.barcode_scanner_input.set("")
-                self.barcode_scanner_amount.set(1)
+                print("error writing to food file : " + str(e))
         except Exception as e:
-            print("error displaying inventory")
+            # input a non int value, show error label to user
+            self.invalid_entry_error_label.config(text='Enter numbers only')
+            place_object(self.invalid_entry_error_label, .8, .25)
+            self.barcode_scanner_input.set("")
+            self.barcode_scanner_amount.set(1)
     # ===================================================================
     #               New items screen and functions
     # ==================================================================
@@ -1011,7 +997,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.clear_user_screen()
         self.logoutButton.place_forget()
         self.logout_button_place_with_d(d, "user_screen")
-        self.backup_place_with_d(d, "user_screen")
+        # self.backup_place_with_d(d, "user_screen")
         # self.forget_create_new_item_screens(self, d)
 
         self.previous_view = "user_screen"
@@ -1026,7 +1012,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.create_new_item_barcode.place(relx=.2, rely=.7)
 
         place_object(self.create_new_item_submit_button, .7, .5)
-
         place_object(self.create_new_item_input_entry, .4, .3, True)
         place_object(self.create_new_item_input_amount_entry, .4, .4)
         place_object(self.create_new_item_input_low_level_entry, .4, .5)
@@ -1250,7 +1235,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.cancel_inventory_manual_button.place_forget()
         self.unbind_return_func()
         self.list_of_items_label.place_forget()
-        self.display_inventory_left_side_button.place_forget()                                                     
+        self.display_inventory_left_side_button.place_forget()
 
     # clear list boxes
     def clear_list_box(self):
@@ -1354,7 +1339,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.barcode_scanner_add_button.place_forget()
         self.barcode_scanner_label.place_forget()
         self.barcode_scanner_input_entry.place_forget()
-        self.barcode_scanner_amount_entry.place_forget()                                                        
+        self.barcode_scanner_amount_entry.place_forget()
         self.clear_todo_label()
 
     # =================================================================================
@@ -1513,7 +1498,7 @@ one special character: !@#$%*?\n''', delay=.25)
     # ===================================================================================
     # adjust inventory manually
     def adjust_item_quantity_button_cmd(self, d):
-        self.view_inventory_one_list_box(d)
+        self.view_inventory_one_list_box(d, 'middle')
         place_object(self.choose_an_item_button, .8, .835)
         # self.adjust_items_button['state'] = 'disabled'
         self.choose_new_item.place_forget()
@@ -1734,8 +1719,8 @@ one special character: !@#$%*?\n''', delay=.25)
     # swap display inventory button
     # TODO: shows inventory button, not forgetting, fix this
     def swap_inventory_button(self, choice):
-        #inventory_button_for_three_boxes_text = self.display_inventory_high_low_outofstock_button.cget('text')
-        #inventory_button_for_one_box_text = self.display_inventory_left_side_button.cget('text')
+        # inventory_button_for_three_boxes_text = self.display_inventory_high_low_outofstock_button.cget('text')
+        # inventory_button_for_one_box_text = self.display_inventory_left_side_button.cget('text')
         if choice == 'all':
             if self.display_inventory_high_low_outofstock_button.cget('text') == 'View Inventory':
                 self.display_inventory_high_low_outofstock_button.config(text="Hide Inventory")
@@ -1772,11 +1757,10 @@ one special character: !@#$%*?\n''', delay=.25)
         self.clear_admin_screen()
         # Jump to modify screen and be able to modify and delete items
         self.modify_inventory(d)
-
-
-    def modify_inventory(self,d):
+    
+    def modify_inventory(self, d):
         # reuse select item code from manual entry
-        self.view_inventory_middle_list_box(d)
+        self.view_inventory_one_list_box(d, 'middle')
         self.create_new_added.place_forget()
         self.list_box_2.place_forget()
         self.list_box_2_label.place_forget()
@@ -2049,7 +2033,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        #self.user_screen()
+        # self.user_screen()
         self.admin_screen()
 
         '''
@@ -2192,4 +2176,3 @@ def place_object(box, x, y, focus=False):
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
     StartGui().mainloop()
-
