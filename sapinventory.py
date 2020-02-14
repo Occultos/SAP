@@ -1109,6 +1109,12 @@ one special character: !@#$%*?\n''', delay=.25)
             if int(self.newItem.count(",")) > int(self.barcodesLenght - 2):
                 place_object(self.exceeds_barcode_length, .655, .6)
                 return 0
+            # check to see if barcode limit is reached via comma count
+
+            for index in range(len(self.newItem) - 1):
+                if self.newItem[index] == ',' and self.newItem[index + 1] != " ":
+                    self.newItem = self.newItem[:index] + ", " + self.newItem[index + 1:]
+            # fixes non spaced commas
 
             # remove all other error labels
             self.create_new_submit_error.place_forget()
