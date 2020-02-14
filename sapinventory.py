@@ -1092,7 +1092,7 @@ one special character: !@#$%*?\n''', delay=.25)
               str(self.create_new_item_input_itemsperbag.get()).isnumeric() == False or
               re.search("[^0-9\s,]", str(self.create_new_item_input_barcode.get())) != None or
               str(self.create_new_item_input_barcode.get()).count(",,") > 0 or
-              str(self.create_new_item_input_barcode.get()).count(", ") > 0 or
+              str(self.create_new_item_input_barcode.get()).count(", ,") > 0 or
               str(self.create_new_item_input_barcode.get()).endswith(",") or
               str(self.create_new_item_input_barcode.get()).endswith(" ") or
               str(self.create_new_item_input_barcode.get()).count("  ") > 0):
@@ -2068,8 +2068,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        self.user_screen()
-        #self.admin_screen()
+        #self.user_screen()
+        self.admin_screen()
 
         '''
         # TODO: commnted out if/else to skip login steps while building program,
