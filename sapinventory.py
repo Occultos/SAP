@@ -346,9 +346,11 @@ class StartGui(tk.Tk):
         self.create_new_submit_error = tk.Label(self, font=(self._font, self._font_small),
                                                 text="All boxes need to be filled")
         self.create_new_submit_error_alpha = tk.Label(self, font=(self._font, self._font_small),
-                                                      text="Name needs to be letters only")
+                                                      text="Name needs to be letters and spaces only")
         self.create_new_submit_error_num = tk.Label(self, font=(self._font, self._font_small),
                                                     text="Amount, Low level, Itemsperbag, and Barcode\nall need to be numbers only")
+        self.exceeds_barcode_length = tk.Label(self, font=(self._font, self._font_small),
+                                                    text="Exceeds maximum number of barcodes holdable\nfor this item")
 
         self.create_new_added = tk.Label(self, font=(self._font, self._font_small),
                                          text="Added item")
@@ -690,7 +692,6 @@ one special character: !@#$%*?\n''', delay=.25)
             self.adjust_inventory_entry.place_forget()
             self.invalid_entry_error_label.place_forget()
         elif words == "choose_item_screen":
-            self.item_to_be_changed_label_1.place_forget()
             self.item_to_be_changed_label_2.place_forget()
             self.adjust_item_quantity_button_cmd(self.d)
             self.choose_new_item.place_forget()
@@ -1020,33 +1021,33 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.create_new_item_input_barcode_entry, .4, .7)
 
     def create_new_item_submit_button_cmd(self, d):
-        newItem = self.create_new_item_input.get() + ", " + \
-                  str(self.create_new_item_input_amount_entry.get()) + ", " + \
-                  str(self.create_new_item_input_low_level_entry.get()) + ", " + \
-                  str(self.create_new_item_input_itemsperbag_entry.get()) + ", " + \
-                  str(self.create_new_item_input_barcode_entry.get())
+        self.newItem = self.create_new_item_input.get() + ", " + \
+                  str(self.create_new_item_input_amount.get()) + ", " + \
+                  str(self.create_new_item_input_low_level.get()) + ", " + \
+                  str(self.create_new_item_input_itemsperbag.get()) + ", " + \
+                  str(self.create_new_item_input_barcode.get())
 
         if self.isModifying == 1:
             self.create_new_item_screen(d)
-            newItem = self.beautiful_string
-            words = newItem.split(", ")
+            #newItem = self.beautiful_string
+            words = self.beautiful_string.split(", ")
 
             self.create_new_item_input.set(words[0])
             self.create_new_item_input_amount.set(words[1])
             self.create_new_item_input_low_level.set(words[2])
             self.create_new_item_input_itemsperbag.set(words[3])
 
-            print(words)
             n = 4
             barcodeList = ""
             while n < words.__len__():
                 barcodeList += words[n] + ", "
                 n+=1
             self.create_new_item_input_barcode.set(barcodeList[:barcodeList.__len__()-2])
+
             self.toDelete = str(words[0])
             self.isModifying = 2
         else:
-            allFilled = self.isAllFilled(newItem)
+            allFilled = self.isAllFilled(self.newItem)
             if allFilled == 0:
                 self.create_new_item_input.set("")
                 self.create_new_item_input_amount.set("")
@@ -1055,7 +1056,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 self.create_new_item_input_barcode.set("")
                 self.create_new_item_screen(d)
             else:
-                self.append_food(d, newItem)
+                self.append_food(d, self.newItem)
                 self.create_new_item_input.set("")
                 self.create_new_item_input_amount.set("")
                 self.create_new_item_input_low_level.set("")
@@ -1064,42 +1065,57 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def isAllFilled(self, d):
         if (self.create_new_item_input.get() == "" or
-                str(self.create_new_item_input_amount_entry.get()) == "" or
-                str(self.create_new_item_input_low_level_entry.get()) == "" or
-                str(self.create_new_item_input_itemsperbag_entry.get()) == "" or
-                str(self.create_new_item_input_barcode_entry.get()) == ""):
+                str(self.create_new_item_input_amount.get()) == "" or
+                str(self.create_new_item_input_low_level.get()) == "" or
+                str(self.create_new_item_input_itemsperbag.get()) == "" or
+                str(self.create_new_item_input_barcode.get()) == ""):
             place_object(self.create_new_submit_error, .692, .6)
 
             self.create_new_submit_error_alpha.place_forget()
             self.create_new_submit_error_num.place_forget()
             self.create_new_added.place_forget()
+            self.exceeds_barcode_length.place_forget()
             return 0
-        elif re.search("[^a-zA-Z]\s", self.create_new_item_input.get()):
-            # names of items can now have spaces
+        elif re.search("[^a-zA-Z\s]", self.create_new_item_input.get()) != None or \
+                str(self.create_new_item_input.get()).count("  ") > 0 or str(self.create_new_item_input.get()).endswith(" "):
+            # names of items can now have spaces *fixed I didnt use None
+            # checks for invalid spaces
             place_object(self.create_new_submit_error_alpha, .68, .6)
 
             self.create_new_submit_error.place_forget()
             self.create_new_submit_error_num.place_forget()
             self.create_new_added.place_forget()
+            self.exceeds_barcode_length.place_forget()
             return 0
-        elif (str(self.create_new_item_input_amount_entry.get()).isnumeric() == False or
-              str(self.create_new_item_input_low_level_entry.get().isnumeric()) == False or
-              str(self.create_new_item_input_itemsperbag_entry.get()).isnumeric() == False
-              #or str(self.create_new_item_input_barcode_entry.get()).isnumeric() == False
-              # removing last check so commas can be used on barcodes
-             ):
+        elif (str(self.create_new_item_input_amount.get()).isnumeric() == False or
+              str(self.create_new_item_input_low_level.get().isnumeric()) == False or
+              str(self.create_new_item_input_itemsperbag.get()).isnumeric() == False or
+              re.search("[^0-9\s,]", str(self.create_new_item_input_barcode.get())) != None or
+              str(self.create_new_item_input_barcode.get()).count(",,") > 0 or
+              str(self.create_new_item_input_barcode.get()).count(", ") > 0 or
+              str(self.create_new_item_input_barcode.get()).endswith(",") or
+              str(self.create_new_item_input_barcode.get()).endswith(" ") or
+              str(self.create_new_item_input_barcode.get()).count("  ") > 0):
+            # can have numbers, commas, and spaces for barcodes only, others are nums only
+            # ,, check to see if it is invalid use of commas/ spaces
             place_object(self.create_new_submit_error_num, .655, .6)
 
             self.create_new_submit_error_alpha.place_forget()
             self.create_new_submit_error.place_forget()
             self.create_new_added.place_forget()
+            self.exceeds_barcode_length.place_forget()
             return 0
         else:
+            if int(self.newItem.count(",")) > int(self.barcodesLenght - 2):
+                place_object(self.exceeds_barcode_length, .655, .6)
+                return 0
+
             # remove all other error labels
             self.create_new_submit_error.place_forget()
             self.create_new_submit_error_alpha.place_forget()
             self.create_new_submit_error_num.place_forget()
             self.create_new_added.place_forget()
+            self.exceeds_barcode_length.place_forget()
             place_object(self.create_new_added, .73, .6)
             return 1
 
@@ -1418,6 +1434,7 @@ one special character: !@#$%*?\n''', delay=.25)
                         lowlevel = int(words[2])
                         itemsperbag = int(words[3])
                         barcodes = [''] * 10
+                        self.barcodesLenght = barcodes.__len__()
                         # could use None but '' looks better
                         d[item] = {}
                         d[item]['item'] = item
@@ -1543,8 +1560,8 @@ one special character: !@#$%*?\n''', delay=.25)
             self.item_to_be_changed = self.list_box_2.get(self.selected_item_to_be_changed)
             self.invalid_entry_error_label.place_forget()
 
-            place_object(self.item_to_be_changed_label_1, .42, .21)
-            place_object(self.item_to_be_changed_label_2, .36, .26)
+            self.item_to_be_changed_label_2.place(x=960, y=275, anchor="center")
+            # New, use anchor to force the label to remain at same center regardless of length
 
             string_key = re.split(" :", self.item_to_be_changed.strip())[0]
 
@@ -1561,12 +1578,13 @@ one special character: !@#$%*?\n''', delay=.25)
             pre_beautiful_string = pre_beautiful_string.replace(" , ", '')
             pre_beautiful_string = pre_beautiful_string.replace("   ", '')
             pre_beautiful_string = pre_beautiful_string.replace("  ", '')
+            if pre_beautiful_string.endswith(" ") or pre_beautiful_string.endswith(","):
+                pre_beautiful_string = pre_beautiful_string[:pre_beautiful_string.__len__()-1]
             # gets rid of all the empty values in barcodes[]
             self.beautiful_string = pre_beautiful_string
 
             self.admin_modify_inventory_screen(d)
-            self.item_to_be_changed_label_1.configure(text="Item to be changed")
-            self.item_to_be_changed_label_2.configure(text="Current: " + self.beautiful_string)
+            self.item_to_be_changed_label_2.configure(text="Currently:\n" + self.beautiful_string)
             self.create_new_added.place_forget()
 
         else:
@@ -1576,6 +1594,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def admin_modify_inventory_screen(self, d):
         self.isModifying = 1
+        self.create_new_submit_error_num.configure(text="Amount, Low level, Itemsperbag\nall need to be numbers only\n\n Barcode can have\nspaces, commas, and numbers only")
         # TODO: add separate delete button
         # clears last screen
         self.choose_an_item_to_edit_button.place_forget()
@@ -2049,8 +2068,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        #self.user_screen()
-        self.admin_screen()
+        self.user_screen()
+        #self.admin_screen()
 
         '''
         # TODO: commnted out if/else to skip login steps while building program,
