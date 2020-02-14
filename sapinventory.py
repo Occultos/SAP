@@ -1038,11 +1038,11 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_item_input_itemsperbag.set(words[3])
 
             n = 4
-            barcodeList = ""
+            self.barcodeList = ""
             while n < words.__len__():
-                barcodeList += words[n] + ", "
+                self.barcodeList += words[n] + ", "
                 n+=1
-            self.create_new_item_input_barcode.set(barcodeList[:barcodeList.__len__()-2])
+            self.create_new_item_input_barcode.set(self.barcodeList[:self.barcodeList.__len__()-2])
 
             self.toDelete = str(words[0])
             self.isModifying = 2
@@ -1111,10 +1111,13 @@ one special character: !@#$%*?\n''', delay=.25)
                 return 0
             # check to see if barcode limit is reached via comma count
 
-            for index in range(len(self.newItem) - 1):
+            for index in range(str(self.newItem).find(","), len(self.newItem) - 1):
                 if self.newItem[index] == ',' and self.newItem[index + 1] != " ":
                     self.newItem = self.newItem[:index] + ", " + self.newItem[index + 1:]
-            # fixes non spaced commas
+                if self.newItem[index] == ' ' and self.newItem[index - 1] != ",":
+                    self.newItem = self.newItem[:index] + ", " + self.newItem[index + 1:]
+            # fixes non spaced commas in barcode
+            # fixes non comma'd spaces in barcode
 
             # remove all other error labels
             self.create_new_submit_error.place_forget()
