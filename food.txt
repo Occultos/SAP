@@ -1,17 +1,18 @@
 item, amount, lowlevel, itemsperbag, barcode
-vegetable can, 15, 5, 0, 1000, 1000, 3000
-fruit can, 254, 4, 3, 1234
-meat item, 2, 5, 4, 6543, 6535
-soup can, 47, 3, 4, 1234234, 4532234
-spaghetti sauce can, 22, 6, 5, 67664, 34564, 999989, 165165
-tomato sauce can, 14, 4, 2, 2345
-bean cans, 7, 4, 5, 2345
-ravioli, 57, 4, 5, 2345, 6156, 46565, 6515
-peanut butter, 10, 4, 0, 234566
-jelly, 55, 4, 5, 2345
-mac and cheeses, 55, 4, 5, 234522
-rice bag, 238, 4, 5, 2345
-juice drink, 129, 4, 5, 2345
-snacks, 1, 4, 5, 456
-miscellaneous item, 961, 4, 5, 2345679, 65161
-cereal, 7, 4, 5, 2345
+vegetable can, 15, 20, 4, 1000, 2000, 3000
+fruit can, 254, 20, 3, 1234
+meat item, 2, 20, 3, 6543, 6535
+soup can, 47, 20, 1, 1234234, 4532234
+spaghetti sauce can, 22, 20, 1, 67664, 34564, 999989, 165165
+tomato sauce can, 14, 20, 2, 2345
+bean cans, 7, 20, 1, 2345
+ravioli, 57, 20, 1, 2345, 6156, 46565, 6515
+peanut butter, 10, 20, 1, 234566
+jelly, 55, 20, 1, 2345
+mac and cheeses, 55, 20, 2, 234522
+rice bag, 238, 20, 1, 2345
+juice drink, 129, 20, 1, 2345
+snacks, 1, 20, 5, 456
+miscellaneous item, 961, 20, 1, 2345679, 65161
+cereal, 7, 20, 1, 2345
+large bag of nuts, 56, 20, 1, 66516
