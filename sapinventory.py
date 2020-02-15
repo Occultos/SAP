@@ -119,7 +119,7 @@ class StartGui(tk.Tk):
                                         command=lambda: self.swap_eyeball())
 
         # bag photo
-        self.food_bag_photo = tk.PhotoImage(file="foodbag.png").subsample(3, 3)
+        self.food_bag_photo = tk.PhotoImage(file="foodbag.png").subsample(2, 2)
 
         self.food_bag_photo_label = tk.Label(self, text="Ffooouwudd", font=(self._font, self._font_big), image=self.food_bag_photo)
 
@@ -317,14 +317,19 @@ class StartGui(tk.Tk):
                                                 command=lambda: self.make_bag_screen())
         self.make_bag_screen_button.configure(activebackground=self._activebgcolor)
 
-        # make A bag button
-        self.make_ONE_bag_button = tk.Button(self, text="Make ONE Full bag",
+        # make many bags button
+        self.make_many_bags_button = tk.Button(self, text="Make Full bag(s)",
                                              background=self._fgcolor, font=(self._font, self._font_medium),
                                              command=lambda: self.made_a_bag_screen(self.d))
-        self.make_ONE_bag_button.configure(activebackground=self._activebgcolor)
+        self.make_many_bags_button.configure(activebackground=self._activebgcolor)
+
+        # many bags entry box
+        self.many_bags = tk.StringVar()
+        self.many_bags_entry = tk.Entry(self, font=(self._font, self._font_big),
+                                             textvariable=self.many_bags, width=20)
 
         # make ANOTHER bag
-        self.make_another_bag_button = tk.Button(self, text="Make ANOTHER bag",
+        self.make_another_bag_button = tk.Button(self, text="Make more bags",
                                                  background=self._fgcolor, font=(self._font, self._font_medium),
                                                  command=lambda: self.back_button_func(self.previous_view))
         self.make_another_bag_button.configure(activebackground=self._activebgcolor, padx=10)
@@ -861,56 +866,59 @@ one special character: !@#$%*?\n''', delay=.25)
 
     # made a bag
     def made_a_bag_screen(self, d):
-        # TODO: lowerinventory by appropriate ammount according to check buttons
-        self.lower_inventory(d)
-        # checkbuttons.placeforget & make_ONE_bag.placeforget
-        self.clear_makebag_screen()
-        self.previous_view = "make_bag_screen"
-        self.make_another_bag_button.place(relx=.8, rely=.3)
-        self.view_inventory_3_list_boxes(d)
+        if str(self.many_bags.get()).isnumeric() == True and int(self.many_bags.get()) > 0:
+            self.numberofBags = int(self.many_bags.get())
+            self.many_bags.set("")
+
+            n = self.numberofBags
+            while n > 0:
+                n-=1
+                self.lower_inventory(d)
+
+            self.clear_makebag_screen()
+            self.previous_view = "make_bag_screen"
+            self.make_another_bag_button.place(relx=.8, rely=.3)
+            self.view_inventory_3_list_boxes(d)
+        else:
+            self.make_bag_screen()
+            self.delete_label.configure(text="Enter number > 0")
+            self.delete_label.place(relx=.75, rely=.3, anchor="center")
+            self.many_bags.set("")
 
     # make bag screen
     def make_bag_screen(self):
         self.clear_user_screen()
-        self.food_bag_photo_label.place(relx=0.7, rely=0.5)
-        self.checkbutton_label.place(relx=.75, rely=.4)
-        self.make_ONE_bag_button.place(relx=.8, rely=.3)
-        self.vegetable_cans_4_checkbutton.place(relx=0.067, rely=0.271)
-        self.vegetable_cans_4_checkbutton.deselect()
-        self.fruit_cans_3_checkbutton.place(relx=0.067, rely=0.33)
-        self.fruit_cans_3_checkbutton.deselect()
-        self.meat_3_checkbutton.place(relx=0.067, rely=0.388)
-        self.meat_3_checkbutton.deselect()
-        self.soup_can_1_large_checkbutton.place(relx=0.067, rely=0.447)
-        self.soup_can_1_large_checkbutton.deselect()
-        self.spaghetti_sauce_1_checkbutton.place(relx=0.067, rely=0.506)
-        self.spaghetti_sauce_1_checkbutton.deselect()
-        self.tomato_sauce_2_checkbutton.place(relx=0.067, rely=0.564)
-        self.tomato_sauce_2_checkbutton.deselect()
-        self.beans_can_1_checkbutton.place(relx=0.067, rely=0.623)
-        self.beans_can_1_checkbutton.deselect()
-        self.ravioli_1_checkbutton.place(relx=0.067, rely=0.681)
-        self.ravioli_1_checkbutton.deselect()
-        self.peanut_butter_1_checkbutton.place(relx=0.067, rely=0.74)
-        self.peanut_butter_1_checkbutton.deselect()
-        self.jelly_1_checkbutton.place(relx=0.4, rely=0.271)
-        self.jelly_1_checkbutton.deselect()
-        self.mac_cheese_2_checkbutton.place(relx=0.4, rely=0.33)
-        self.mac_cheese_2_checkbutton.deselect()
-        self.bag_rice_1_checkbutton.place(relx=0.4, rely=0.388)
-        self.bag_rice_1_checkbutton.deselect()
-        self.juice_1_checkbutton.place(relx=0.4, rely=0.447)
-        self.juice_1_checkbutton.deselect()
-        self.snacks_5_checkbutton.place(relx=0.4, rely=0.506)
-        self.snacks_5_checkbutton.deselect()
-        self.misc_1_checkbutton.place(relx=0.4, rely=0.564)
-        self.misc_1_checkbutton.deselect()
-        self.cereal_1_checkbutton.place(relx=0.4, rely=0.623)
-        self.cereal_1_checkbutton.deselect()
-        self.nuts_1_checkbutton.place(relx=0.4, rely=0.681)
-        self.nuts_1_checkbutton.deselect()
+
+        # calculate max number of bag that can be made now
+        # get the lowest ratio (amount / itmesperbag)
+        self.calculate_max_bags()
+        self.numberofBags = 1
+
+        self.food_bag_photo_label.place(relx=0.15, rely=0.25)
+        # entry box for many bags
+        self.make_many_bags_button.place(relx=.75, rely=.4, anchor="center")
+        self.many_bags_entry.place(relx=.75, rely=.47, anchor="center")
+        self.checkbutton_label.configure(text=f"Enter number of Bags to make\n\n\n{int(self.LowestRatio)} Full bags left\n\n\n{self.nameofLowest}: is the bottleneck")
+        self.checkbutton_label.place(relx=.75, rely=.6, anchor="center")
+
         self.backup_place()
         self.previous_view = "user_screen"
+
+    def calculate_max_bags(self):
+        self.make_dict(self.d)
+        self.LowestRatio = 9999.9
+        self.nameofLowest = ""
+        with open("food.txt", "r+") as src:
+            n = 0
+            for line in src:
+                if not re.match(r'^\s*$', line):
+                    if n == 0:
+                        n += 1
+                    else:
+                        words = line.split(", ")
+                        if (int(words[1]) / int(words[3])) < self.LowestRatio:
+                            self.LowestRatio = int(words[1]) / int(words[3])
+                            self.nameofLowest = words[0]
 
     '''
     # in add items screen
@@ -1328,25 +1336,12 @@ one special character: !@#$%*?\n''', delay=.25)
 
     # clear check buttons
     def clear_makebag_screen(self):
-        self.make_ONE_bag_button.place_forget()
         self.checkbutton_label.place_forget()
-        self.vegetable_cans_4_checkbutton.place_forget()
-        self.fruit_cans_3_checkbutton.place_forget()
-        self.meat_3_checkbutton.place_forget()
-        self.soup_can_1_large_checkbutton.place_forget()
-        self.spaghetti_sauce_1_checkbutton.place_forget()
-        self.tomato_sauce_2_checkbutton.place_forget()
-        self.beans_can_1_checkbutton.place_forget()
-        self.ravioli_1_checkbutton.place_forget()
-        self.peanut_butter_1_checkbutton.place_forget()
-        self.jelly_1_checkbutton.place_forget()
-        self.mac_cheese_2_checkbutton.place_forget()
-        self.bag_rice_1_checkbutton.place_forget()
-        self.juice_1_checkbutton.place_forget()
-        self.snacks_5_checkbutton.place_forget()
-        self.misc_1_checkbutton.place_forget()
-        self.cereal_1_checkbutton.place_forget()
-        self.nuts_1_checkbutton.place_forget()
+
+        self.many_bags_entry.place_forget()
+        self.make_many_bags_button.place_forget()
+        self.delete_label.place_forget()
+
         self.food_bag_photo_label.place_forget()
 
     # clears user screen
@@ -2043,6 +2038,7 @@ one special character: !@#$%*?\n''', delay=.25)
                                 if count <= totalLines - 1:
                                     line = line + '\n'
                                 dest.write(line)
+            self.bag_of_food_removed_from_inventory.configure(text=f"{int(self.numberofBags)} bag(s) of food removed")
             self.bag_of_food_removed_from_inventory.place(relx=.4, rely=.9325)
             # [fixed] the \n at the end of txt file, would leave gaps when bag was made then createnewitem appended
         except Exception as e:
@@ -2174,8 +2170,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        #self.user_screen()
-        self.admin_screen()
+        self.user_screen()
+        #self.admin_screen()
 
         '''
         # TODO: commnted out if/else to skip login steps while building program,
