@@ -30,8 +30,8 @@ class StartGui(tk.Tk):
         #                                               MISC. - INIT
         # ============================================================================================
         self.state('zoomed')  # TODO: maxscreensize DOESN"T WORK ON MAC, fix this
-        self.resizable(0, 0)  # TODO: don't allow resizing, DISABLE ON MAC DUE TO 'zoomed' not working
-        # self.resizable(1, 1) # TODO: don't allow resizing, DISABLE ON MAC DUE TO 'zoomed' not working
+        #self.resizable(0, 0)  # TODO: don't allow resizing, DISABLE ON MAC DUE TO 'zoomed' not working
+        self.resizable(1, 1) # TODO: don't allow resizing, DISABLE ON MAC DUE TO 'zoomed' not working
         self.bind("<F11>", self.toggle_fullscreen)
         self.bind("<Escape>", self.end_fullscreen)
         self.title("Salvation Army Pantry Inventory")  # app title
@@ -269,6 +269,18 @@ class StartGui(tk.Tk):
                                                        command=lambda: self.choose_an_item_to_edit_button_cmd(self.d))
         self.choose_an_item_to_edit_button.configure(activebackground=self._activebgcolor, padx=47)
 
+        # choose item to delete 'admin'
+        self.choose_an_item_to_delete_button = tk.Button(self, text="Delete This Item!",
+                                                       background=self._fgcolor, font=(self._font, self._font_medium),
+                                                       command=lambda: self.choose_an_item_to_delete_button_cmd(self.d))
+        self.choose_an_item_to_delete_button.configure(activebackground=self._activebgcolor, padx=47)
+
+        # confirm delete calls deleteItem
+        self.deleteItem_button = tk.Button(self, text="Confirm Deletion",
+                                                       background=self._fgcolor, font=(self._font, self._font_medium),
+                                                       command=lambda: self.deleteItem(self.delete_confirm.get()))
+        self.deleteItem_button.configure(activebackground=self._activebgcolor)
+
         # delete users : in admin screen
         self.delete_user_button = tk.Button(self, text="Delete User", font=(self._font, self._font_medium),
                                             background=self._fgcolor2,
@@ -380,6 +392,7 @@ class StartGui(tk.Tk):
         self.list_of_items_label.configure(justify=tk.LEFT)
         # invalid entry label
         self.invalid_entry_error_label = tk.Label(self, font=(self._font, self._font_big), fg='red')
+        self.delete_label = tk.Label(self, font=(self._font, self._font_big), fg='red')
 
         # ======================================================================================
         #                                         SA army logo - INIT
@@ -462,6 +475,11 @@ one special character: !@#$%*?\n''', delay=.25)
         self.create_new_item_input_barcode = tk.StringVar()
         self.create_new_item_input_barcode_entry = tk.Entry(self, font=(self._font, self._font_big),
                                                             textvariable=self.create_new_item_input_barcode, width=20)
+
+        # Delete confirm box
+        self.delete_confirm = tk.StringVar()
+        self.delete_confirm_entry = tk.Entry(self, font=(self._font, self._font_big),
+                                            textvariable=self.delete_confirm, width=20)
 
         # =======================================================================================
         #                                    list boxes and labels - INIT
@@ -626,6 +644,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.clear_to_login()
             self.invalid_entry_error_label.place_forget()
             self.edit_inventory_button_cmd(d)
+            self.deleteItem_button.place_forget()
         elif words == "admin_screen":
             self.invalid_entry_error_label.place_forget()
             self.create_new_added.place_forget()
@@ -634,6 +653,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.list_box_2.place_forget()
             self.list_box_2_label.place_forget()
             self.choose_an_item_to_edit_button.place_forget()
+            self.choose_an_item_to_delete_button.place_forget()
             self.backup_button_with_d_button.place_forget()
 
     def logout_with_d(self, d, words):
@@ -643,6 +663,9 @@ one special character: !@#$%*?\n''', delay=.25)
         elif words == "login_screen":
             self.backup_button_with_d(d, "admin_screen")
         self.logoutButton_with_d.place_forget()
+        self.delete_confirm_entry.place_forget()
+        self.deleteItem_button.place_forget()
+        self.delete_label.place_forget()
         self.login_screen()
 
     def back_button_func(self, words):
@@ -999,8 +1022,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.clear_user_screen()
         self.logoutButton.place_forget()
         self.logout_button_place_with_d(d, "user_screen")
-        # self.backup_place_with_d(d, "user_screen")
-        # self.forget_create_new_item_screens(self, d)
 
         self.previous_view = "user_screen"
         self.backup_place_with_d()
@@ -1263,6 +1284,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.adjust_item_quantity_button.place_forget()
         self.choose_an_item_button.place_forget()
         self.choose_an_item_to_edit_button.place_forget()
+        self.choose_an_item_to_delete_button.place_forget()
         self.choose_new_item.place_forget()
         self.adjust_inventory_entry.place_forget()
         self.confirm_inventory_manual_button.place_forget()
@@ -1499,21 +1521,16 @@ one special character: !@#$%*?\n''', delay=.25)
             self.previous_view = "admin_edit_main"
             self.backup_button_with_d(d, self.previous_view)
             del self.d[self.toDelete]
+            #print(self.toDelete)
 
             self.edit_inventory_button_cmd(d)
             self.create_new_added.configure(text="Item Modified")
             self.create_new_added.place_forget()
-            place_object(self.create_new_added, .85, .58)
+            place_object(self.create_new_added, .74, .58)
 
         else:
             with open("food.txt", "a") as f:
                 f.write("\n" + newItem)
-
-        # TODO: we either need to have barcodes stored in an array/list or if you can figure out how to deal with varying lengths of the inner dict or how to write to txt without removing the extra barcodes
-        # TODO: because i cant think of a way with either approach currently [approaches being write dict to txt or delete line in txt with 'old' values and paste in new ones]
-        # also don't have leading zeros in barcodes, the dict ignores them --> 0001 = 1 since i guess they are ints and not strings right now
-        # if barcodes are put into an array then the user can just enter a comma or space into the 'create item screen' for multiple barcodes, 'modify screen' could list them all out with
-        # commas or spaces instead of just the first one (like right now)
 
     # =============================================================================
     #                Display inventory - user mode
@@ -1574,23 +1591,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
             string_key = re.split(" :", self.item_to_be_changed.strip())[0]
 
-            # turn into string with commas (pre-modified)
-            pre_beautiful_string = str(d[str(self.d[string_key]['item'])].values())
-            pre_beautiful_string = str(re.split("dict_values", pre_beautiful_string))
-            pre_beautiful_string = pre_beautiful_string.replace("[\'\', \"([", '')
-            pre_beautiful_string = pre_beautiful_string.replace('])"]', '')
-            pre_beautiful_string = pre_beautiful_string.replace("'", '')
-            pre_beautiful_string = pre_beautiful_string.replace("[", '')
-            pre_beautiful_string = pre_beautiful_string.replace("]", '')
-            # to delete list brackets
-            pre_beautiful_string = pre_beautiful_string.replace(", ,", '')
-            pre_beautiful_string = pre_beautiful_string.replace(" , ", '')
-            pre_beautiful_string = pre_beautiful_string.replace("   ", '')
-            pre_beautiful_string = pre_beautiful_string.replace("  ", '')
-            if pre_beautiful_string.endswith(" ") or pre_beautiful_string.endswith(","):
-                pre_beautiful_string = pre_beautiful_string[:pre_beautiful_string.__len__()-1]
-            # gets rid of all the empty values in barcodes[]
-            self.beautiful_string = pre_beautiful_string
+            self.beautifulString(string_key)
 
             self.admin_modify_inventory_screen(d)
             self.item_to_be_changed_label_2.configure(text="Currently:\n" + self.beautiful_string)
@@ -1599,14 +1600,79 @@ one special character: !@#$%*?\n''', delay=.25)
         else:
             self.invalid_entry_error_label.config(text="Choose an Item")
             self.create_new_added.place_forget()
-            place_object(self.invalid_entry_error_label, .8, .4)
+            place_object(self.invalid_entry_error_label, .715, .4)
+
+    def beautifulString(self, string_key):
+        # turn into string with commas (pre-modified)
+        pre_beautiful_string = str(self.d[str(self.d[string_key]['item'])].values())
+        pre_beautiful_string = str(re.split("dict_values", pre_beautiful_string))
+        pre_beautiful_string = pre_beautiful_string.replace("[\'\', \"([", '')
+        pre_beautiful_string = pre_beautiful_string.replace('])"]', '')
+        pre_beautiful_string = pre_beautiful_string.replace("'", '')
+        pre_beautiful_string = pre_beautiful_string.replace("[", '')
+        pre_beautiful_string = pre_beautiful_string.replace("]", '')
+        # to delete list brackets
+        pre_beautiful_string = pre_beautiful_string.replace(", ,", '')
+        pre_beautiful_string = pre_beautiful_string.replace(" , ", '')
+        pre_beautiful_string = pre_beautiful_string.replace("   ", '')
+        pre_beautiful_string = pre_beautiful_string.replace("  ", '')
+        # deletes bad commas/spaces
+        if pre_beautiful_string.endswith(" ") or pre_beautiful_string.endswith(","):
+            pre_beautiful_string = pre_beautiful_string[:pre_beautiful_string.__len__() - 1]
+        # gets rid of all the empty values in barcodes[]
+        self.beautiful_string = pre_beautiful_string
+
+    def choose_an_item_to_delete_button_cmd(self, d):
+        self.logout_button_place_with_d(d, "admin_edit_main")
+        self.selected_item_to_be_changed = self.list_box_2.curselection()
+        if self.selected_item_to_be_changed != ():
+            self.change_inventory_by_this_much.set(0)
+            self.item_to_be_changed = self.list_box_2.get(self.selected_item_to_be_changed)
+            self.invalid_entry_error_label.place_forget()
+            self.previous_view = "admin_edit_main"
+            self.backup_button_with_d_button.configure(text="Back to choose")
+
+            self.list_box_2_label.configure(font=(self._font, self._font_big), text=f"Are you sure you want to delete\n{re.split(' :', self.item_to_be_changed.strip())[0]}?\n\n\n\n"
+                                                                                    f"Enter YES to delete\n{re.split(' :', self.item_to_be_changed.strip())[0]}")
+            place_object(self.delete_confirm_entry, .435, .5)
+            self.deleteItem_button.place(relx=.47, rely=.55)
+            self.delete_label.place_forget()
+
+            self.choose_an_item_to_edit_button.place_forget()
+            self.choose_an_item_to_delete_button.place_forget()
+            self.list_box_2.place_forget()
+            self.create_new_added.place_forget()
+        else:
+            self.invalid_entry_error_label.config(text="Choose an Item")
+            self.create_new_added.place_forget()
+            place_object(self.invalid_entry_error_label, .175, .4)
+
+    def deleteItem(self, testWord):
+        string_key = re.split(' :', self.item_to_be_changed.strip())[0]
+        self.delete_confirm.set("")
+        if testWord == "YES":
+            self.beautifulString(string_key)
+            s = open("food.txt").read()
+            s = s.replace(self.beautiful_string, '')
+            s = s.replace("\n\n", '\n')
+            f = open("food.txt", 'w')
+            f.write(s)
+            f.close()
+            del self.d[string_key]
+            self.delete_label.configure(text="Item was Deleted")
+        else:
+            self.delete_label.configure(text="Not Deleted\nType YES to delete")
+
+        # jump to last page with message
+        self.backup_button_with_d(self.d, self.previous_view)
+        place_object(self.delete_label, .16, .57)
 
     def admin_modify_inventory_screen(self, d):
         self.isModifying = 1
         self.create_new_submit_error_num.configure(text="Amount, Low level, Itemsperbag\nall need to be numbers only\n\n Barcode can have\nspaces, commas, and numbers only")
-        # TODO: add separate delete button
         # clears last screen
         self.choose_an_item_to_edit_button.place_forget()
+        self.choose_an_item_to_delete_button.place_forget()
         self.list_box_2_label.place_forget()
         self.list_box_2.place_forget()
         # reusing inputs and checks screen passing beautiful/ iteminfo
@@ -1616,6 +1682,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # forgets unneeded reused labels/buttons
         self.create_new_submit_error.place_forget()
+        self.delete_label.place_forget()
 
     def confirm_item_change(self, direction):
         self.add_button.place_forget()
@@ -1808,12 +1875,16 @@ one special character: !@#$%*?\n''', delay=.25)
         self.create_new_added.place_forget()
         self.list_box_2.place_forget()
         self.list_box_2_label.place_forget()
+        self.delete_confirm_entry.place_forget()
 
         self.list_box_2_label.configure(font=(self._font, self._font_big_big), text="\\\ Select Here! //")
-        place_object(self.list_box_2_label, .43, .23)
+        place_object(self.list_box_2_label, .41, .23)
         self.list_box_2.place(relx=.44, rely=.3, relwidth=.15, relheight=.55)
 
-        place_object(self.choose_an_item_to_edit_button, .8, .835)
+        self.choose_an_item_to_edit_button.configure(text="Edit This Item")
+        place_object(self.choose_an_item_to_edit_button, .7, .5)
+        # New add delete button/ screen
+        place_object(self.choose_an_item_to_delete_button, .15, .5)
         self.backup_button_with_d_button.configure(text="Back")
 
     # displays users in a box
