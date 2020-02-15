@@ -123,13 +123,6 @@ class StartGui(tk.Tk):
 
         self.food_bag_photo_label = tk.Label(self, text="Ffooouwudd", font=(self._font, self._font_big), image=self.food_bag_photo)
 
-        '''
-        # add items button screen
-        self.adjust_inventory_button = tk.Button(self, text="Adjust Inventory",
-                                                 background=self._fgcolor, font=(self._font, self._font_medium),
-                                                 command=lambda: self.adjust_inventory_button_cmd())
-        self.adjust_inventory_button.configure(activebackground=self._activebgcolor, padx=9)
-        '''
         # =================================================================================
         # buttons in user add items screen
         # ==================================================================================
@@ -376,6 +369,8 @@ class StartGui(tk.Tk):
                                                     text="Amount, Low level, Itemsperbag, and Barcode\nall need to be numbers only")
         self.exceeds_barcode_length = tk.Label(self, font=(self._font, self._font_small),
                                                     text="Exceeds maximum number of barcodes holdable\nfor this item")
+        self.exist_already_label = tk.Label(self, font=(self._font, self._font_small),
+                                               text="Already Exist")
 
         self.create_new_added = tk.Label(self, font=(self._font, self._font_small),
                                          text="Added item")
@@ -515,109 +510,6 @@ one special character: !@#$%*?\n''', delay=.25)
 
         self.checkbutton_label = tk.Label(self, text="only select MISSING items",
                                           font=(self._font, self._font_medium))
-
-        self.vegetable_can_var = tk.IntVar()
-        self.vegetable_cans_4_checkbutton = tk.Checkbutton(self,
-                                                           text="4 cans of vegetable items",
-                                                           variable=self.vegetable_can_var,
-                                                           font=(self._font, self._font_medium), onvalue=0, offvalue=4)
-        self.vegetable_cans_4_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.fruit_can_var = tk.IntVar()
-        self.fruit_cans_3_checkbutton = tk.Checkbutton(self, text="3 fruit cans",
-                                                       variable=self.fruit_can_var,
-                                                       font=(self._font, self._font_medium), onvalue=0, offvalue=3)
-        self.fruit_cans_3_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.meat_var = tk.IntVar()
-        self.meat_3_checkbutton = tk.Checkbutton(self, text="3 meat items",
-                                                 variable=self.meat_var,
-                                                 font=(self._font, self._font_medium), onvalue=0, offvalue=3)
-        self.meat_3_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.soup_can_var = tk.IntVar()
-        self.soup_can_1_large_checkbutton = tk.Checkbutton(self, variable=self.soup_can_var,
-                                                           text="1 large soup can or 2 small cans",
-                                                           font=(self._font, self._font_medium), onvalue=0, offvalue=1)
-        self.soup_can_1_large_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.spaghetti_sauce_var = tk.IntVar()
-        self.spaghetti_sauce_1_checkbutton = tk.Checkbutton(self, text="1 spaghetti sauce can",
-                                                            variable=self.spaghetti_sauce_var,
-                                                            font=(self._font, self._font_medium), onvalue=0, offvalue=1)
-        self.spaghetti_sauce_1_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.tomato_sauce_var = tk.IntVar()
-        self.tomato_sauce_2_checkbutton = tk.Checkbutton(self, text="2 cans of tomato sauce",
-                                                         variable=self.tomato_sauce_var,
-                                                         font=(self._font, self._font_medium), onvalue=0, offvalue=2)
-        self.tomato_sauce_2_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.bean_can_var = tk.IntVar()
-        self.beans_can_1_checkbutton = tk.Checkbutton(self, text="1 can of beans",
-                                                      variable=self.bean_can_var,
-                                                      font=(self._font, self._font_medium), onvalue=0, offvalue=2)
-        self.beans_can_1_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.ravioli_var = tk.IntVar()
-        self.ravioli_1_checkbutton = tk.Checkbutton(self, text="1 can of ravioli",
-                                                    variable=self.ravioli_var,
-                                                    font=(self._font, self._font_medium), onvalue=0, offvalue=1)
-        self.ravioli_1_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.peanut_butter_var = tk.IntVar()
-        self.peanut_butter_1_checkbutton = tk.Checkbutton(self, text="1 peanut butter",
-                                                          variable=self.peanut_butter_var,
-                                                          font=(self._font, self._font_medium), onvalue=0, offvalue=1)
-        self.peanut_butter_1_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.jelly_var = tk.IntVar()
-        self.jelly_1_checkbutton = tk.Checkbutton(self, text="1 jelly",
-                                                  variable=self.jelly_var,
-                                                  font=(self._font, self._font_medium), onvalue=0, offvalue=1)
-        self.jelly_1_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.mac_cheese_var = tk.IntVar()
-        self.mac_cheese_2_checkbutton = tk.Checkbutton(self, text="2 boxes of mac and cheese",
-                                                       variable=self.mac_cheese_var,
-                                                       font=(self._font, self._font_medium), onvalue=0, offvalue=2)
-        self.mac_cheese_2_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.bag_rice_var = tk.IntVar()
-        self.bag_rice_1_checkbutton = tk.Checkbutton(self, text="1 bag of rice/bean",
-                                                     variable=self.bag_rice_var,
-                                                     font=(self._font, self._font_medium), onvalue=0, offvalue=1)
-        self.bag_rice_1_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.juice_var = tk.IntVar()
-        self.juice_1_checkbutton = tk.Checkbutton(self, text="1 juice or drink",
-                                                  variable=self.juice_var,
-                                                  font=(self._font, self._font_medium), onvalue=0, offvalue=1)
-        self.juice_1_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.snacks_var = tk.IntVar()
-        self.snacks_5_checkbutton = tk.Checkbutton(self, text="5 snacks",
-                                                   variable=self.snacks_var,
-                                                   font=(self._font, self._font_medium), onvalue=0, offvalue=5)
-        self.snacks_5_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.misc_var = tk.IntVar()
-        self.misc_1_checkbutton = tk.Checkbutton(self, text="1 miscellaneous item",
-                                                 variable=self.misc_var,
-                                                 font=(self._font, self._font_medium), onvalue=0, offvalue=1)
-        self.misc_1_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.cereal_var = tk.IntVar()
-        self.cereal_1_checkbutton = tk.Checkbutton(self, text="1 cereal",
-                                                   variable=self.cereal_var,
-                                                   font=(self._font, self._font_medium), onvalue=0, offvalue=1)
-        self.cereal_1_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.nuts_var = tk.IntVar()
-        self.nuts_1_checkbutton = tk.Checkbutton(self, text="1 large bag of nuts",
-                                                 variable=self.nuts_var,
-                                                 font=(self._font, self._font_medium), onvalue=0, offvalue=1)
-        self.nuts_1_checkbutton.configure(activebackground=self._activebgcolor, padx=10)
 
         # starting program at the login screen
         self.login_screen()
@@ -898,7 +790,7 @@ one special character: !@#$%*?\n''', delay=.25)
         # entry box for many bags
         self.make_many_bags_button.place(relx=.75, rely=.4, anchor="center")
         self.many_bags_entry.place(relx=.75, rely=.47, anchor="center")
-        self.checkbutton_label.configure(text=f"Enter number of Bags to make\n\n\n{int(self.LowestRatio)} Full bags left\n\n\n{self.nameofLowest}: is the bottleneck")
+        self.checkbutton_label.configure(text=f"Enter number of Bags to make\n\n\n{int(self.lowestRatio)} Full bags left\n\n\n{self.nameofLowest}: is the bottleneck")
         self.checkbutton_label.place(relx=.75, rely=.6, anchor="center")
 
         self.backup_place()
@@ -906,7 +798,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def calculate_max_bags(self):
         self.make_dict(self.d)
-        self.LowestRatio = 9999.9
+        self.lowestRatio = 9999.9
         self.nameofLowest = ""
         with open("food.txt", "r+") as src:
             n = 0
@@ -916,23 +808,11 @@ one special character: !@#$%*?\n''', delay=.25)
                         n += 1
                     else:
                         words = line.split(", ")
-                        if (int(words[1]) / int(words[3])) < self.LowestRatio:
-                            self.LowestRatio = int(words[1]) / int(words[3])
-                            self.nameofLowest = words[0]
+                        if int(words[3]) != 0:
+                            if (int(words[1]) / int(words[3])) < self.lowestRatio:
+                                self.lowestRatio = int(words[1]) / int(words[3])
+                                self.nameofLowest = words[0]
 
-    '''
-    # in add items screen
-    def adjust_inventory_button_cmd(self):
-        # remove extra stuff
-        self.clear_user_screen()
-        # input options
-        place_object(self.manual_entry_button, .47, .4)
-        place_object(self.barcode_scanner_button, .47, .5)
-        place_object(self.display_inventory_user_button, .47, .6)
-        place_object(self.create_new_item_button, .47, .7)
-        self.backup_place()
-        self.previous_view = "user_screen"
-        '''
     # ========================================================
     #                 barcode screen functions
     # =======================================================
@@ -1124,6 +1004,14 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_submit_error_num.place_forget()
             self.create_new_added.place_forget()
             self.exceeds_barcode_length.place_forget()
+            self.exist_already_label.place_forget()
+            return 0
+        elif (str(self.create_new_item_input.get()) in self.d) == True:
+            place_object(self.exist_already_label, .725, .6)
+            self.create_new_submit_error_alpha.place_forget()
+            self.create_new_submit_error.place_forget()
+            self.create_new_added.place_forget()
+            self.exceeds_barcode_length.place_forget()
             return 0
         elif re.search("[^a-zA-Z\s]", self.create_new_item_input.get()) != None or \
                 str(self.create_new_item_input.get()).count("  ") > 0 or str(self.create_new_item_input.get()).endswith(" "):
@@ -1135,6 +1023,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_submit_error_num.place_forget()
             self.create_new_added.place_forget()
             self.exceeds_barcode_length.place_forget()
+            self.exist_already_label.place_forget()
             return 0
         elif (str(self.create_new_item_input_amount.get()).isnumeric() == False or
               str(self.create_new_item_input_low_level.get().isnumeric()) == False or
@@ -1153,6 +1042,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_submit_error.place_forget()
             self.create_new_added.place_forget()
             self.exceeds_barcode_length.place_forget()
+            self.exist_already_label.place_forget()
             return 0
         else:
             if int(self.newItem.count(",")) > int(self.barcodesLenght - 2):
@@ -1174,6 +1064,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_submit_error_num.place_forget()
             self.create_new_added.place_forget()
             self.exceeds_barcode_length.place_forget()
+            self.exist_already_label.place_forget()
             place_object(self.create_new_added, .73, .6)
             return 1
 
@@ -1267,6 +1158,8 @@ one special character: !@#$%*?\n''', delay=.25)
         self.create_new_submit_error.place_forget()
         self.create_new_submit_error_alpha.place_forget()
         self.create_new_submit_error_num.place_forget()
+        self.exist_already_label.place_forget()
+        self.exceeds_barcode_length.place_forget()
         self.create_new_added.place_forget()
 
         self.back_button_func("user_screen")
@@ -1352,15 +1245,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.barcode_scanner_button.place_forget()
         self.display_inventory_user_button.place_forget()
         self.create_new_item_button.place_forget()
-
-    '''  
-    # clears if one of the options is selected
-    def clear_adjust_inventory_screen(self):
-        self.manual_entry_button.place_forget()
-        self.barcode_scanner_button.place_forget()
-        self.display_inventory_user_button.place_forget()
-        self.create_new_item_button.place_forget()
-    '''
 
     def clear_admin_screen(self):
         # self.admin_button.place_forget()
@@ -1505,26 +1389,6 @@ one special character: !@#$%*?\n''', delay=.25)
                 print(key + " : " + str(item_info[key]))
 
     def append_food(self, d, newItem):
-        '''
-        d.update({str(self.create_new_item_input.get()): {'item': str(self.create_new_item_input.get()),
-                                                     'amount': int(self.create_new_item_input_amount_entry.get()),
-                                                     'lowlevel': int(self.create_new_item_input_low_level_entry.get()),
-                                                     'itemsperbag': int(self.create_new_item_input_itemsperbag_entry.get()),
-                                                     'barcode1': int(self.create_new_item_input_barcode_entry.get())}})
-        self.make_dict(d)
-        '''
-        # rewrites newest dict to txt
-        # however if an item has more than one barcode it will only write the first one
-        # TODO: allow multiple barcodes to be added via this method, if it is even worth it
-        # open test.txt to see
-        '''
-        with open('test.txt', 'w') as f:
-            print("item, amount, low level, itemsperbag, barcode", file=f)
-            standard_item = ""
-            for p_id, p_info in d.items():
-                standard_item = d[p_id]['item'] + "," + str(d[p_id]['amount']) + ", " + str(d[p_id]['lowlevel']) + ", " + str(d[p_id]['itemsperbag']) + ", " + str(d[p_id]['barcode1'])
-                print(standard_item, file=f)
-        '''
         if self.isModifying == 2:
             # 'fix' this later
             s = open("food.txt").read()
@@ -1537,7 +1401,6 @@ one special character: !@#$%*?\n''', delay=.25)
             self.previous_view = "admin_edit_main"
             self.backup_button_with_d(d, self.previous_view)
             del self.d[self.toDelete]
-            #print(self.toDelete)
 
             self.edit_inventory_button_cmd(d)
             self.create_new_added.configure(text="Item Modified")
