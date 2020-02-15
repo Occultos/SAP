@@ -47,6 +47,8 @@ class StartGui(tk.Tk):
         self._fgcolor2 = '#ac73fb'
         # make a dict
         self.d = {}
+        self.make_dict(self.d)
+        # fixed some weirdness
 
         # ============================================================================================
         #                                              buttons - INIT
@@ -115,6 +117,12 @@ class StartGui(tk.Tk):
 
         self.eyeball_button = tk.Button(self, image=self.eyeball_closed_photo, text='closed',
                                         command=lambda: self.swap_eyeball())
+
+        # bag photo
+        self.food_bag_photo = tk.PhotoImage(file="foodbag.png").subsample(3, 3)
+
+        self.food_bag_photo_label = tk.Label(self, text="Ffooouwudd", font=(self._font, self._font_big), image=self.food_bag_photo)
+
         '''
         # add items button screen
         self.adjust_inventory_button = tk.Button(self, text="Adjust Inventory",
@@ -655,6 +663,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.choose_an_item_to_edit_button.place_forget()
             self.choose_an_item_to_delete_button.place_forget()
             self.backup_button_with_d_button.place_forget()
+            self.delete_label.place_forget()
 
     def logout_with_d(self, d, words):
         # This is for removing labels from create new item that pass d with logout button
@@ -685,6 +694,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.list_of_items_label.place_forget()
             self.invalid_entry_error_label.place_forget()
             self.display_inventory_left_side_button.place_forget()
+            self.food_bag_photo_label.place_forget()
         # goes back to make a bag screen
         elif words == "make_bag_screen":
             self.make_bag_screen()
@@ -862,6 +872,7 @@ one special character: !@#$%*?\n''', delay=.25)
     # make bag screen
     def make_bag_screen(self):
         self.clear_user_screen()
+        self.food_bag_photo_label.place(relx=0.7, rely=0.5)
         self.checkbutton_label.place(relx=.75, rely=.4)
         self.make_ONE_bag_button.place(relx=.8, rely=.3)
         self.vegetable_cans_4_checkbutton.place(relx=0.067, rely=0.271)
@@ -1004,6 +1015,10 @@ one special character: !@#$%*?\n''', delay=.25)
                             print("new plan?  save items not found to a new list")
                             print("place a new item screen button")
                             print("display new item list on the new item screen until back button pushed")
+                            # addition to plan, make a "append barcode to existing fooditem" page instead of assuming it is
+                            # a brand new fooditem every time, ask if it would fall under any foods already in the dict
+                            # if not then they can make a new item
+
                 self.barcode_scanner_add_remove_button_cmd(direction)
             except Exception as e:
                 print("error writing to food file : " + str(e))
@@ -1033,6 +1048,11 @@ one special character: !@#$%*?\n''', delay=.25)
         self.create_new_item_low_level.place(relx=.2, rely=.5)
         self.create_new_item_itemsperbag.place(relx=.2, rely=.6)
         self.create_new_item_barcode.place(relx=.2, rely=.7)
+
+        self.create_new_item_input_amount.set(1)
+        self.create_new_item_input_low_level.set(20)
+        self.create_new_item_input_itemsperbag.set(0)
+        # prefilling defaults for new item, user can set different values if they want
 
         place_object(self.create_new_item_submit_button, .7, .5)
         place_object(self.create_new_item_input_entry, .4, .3, True)
@@ -1071,17 +1091,17 @@ one special character: !@#$%*?\n''', delay=.25)
             allFilled = self.isAllFilled(self.newItem)
             if allFilled == 0:
                 self.create_new_item_input.set("")
-                self.create_new_item_input_amount.set("")
-                self.create_new_item_input_low_level.set("")
-                self.create_new_item_input_itemsperbag.set("")
+                self.create_new_item_input_amount.set(1)
+                self.create_new_item_input_low_level.set(20)
+                self.create_new_item_input_itemsperbag.set(0)
                 self.create_new_item_input_barcode.set("")
                 self.create_new_item_screen(d)
             else:
                 self.append_food(d, self.newItem)
                 self.create_new_item_input.set("")
-                self.create_new_item_input_amount.set("")
-                self.create_new_item_input_low_level.set("")
-                self.create_new_item_input_itemsperbag.set("")
+                self.create_new_item_input_amount.set(1)
+                self.create_new_item_input_low_level.set(20)
+                self.create_new_item_input_itemsperbag.set(0)
                 self.create_new_item_input_barcode.set("")
 
     def isAllFilled(self, d):
@@ -1327,6 +1347,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.misc_1_checkbutton.place_forget()
         self.cereal_1_checkbutton.place_forget()
         self.nuts_1_checkbutton.place_forget()
+        self.food_bag_photo_label.place_forget()
 
     # clears user screen
     def clear_user_screen(self):
@@ -1997,28 +2018,33 @@ one special character: !@#$%*?\n''', delay=.25)
             self.list_box_3.place_forget()
             self.list_box_3_label.place_forget()
 
-    # TODO : make this relative to the checkboxes, currently reduces all inventory by one
+    # TODO: [Done] new decreases by 'itemsperbag' var from dict
     def lower_inventory(self, d):
         try:
             self.make_dict(d)
+            totalLines = len(open("food.txt").readlines())
             shutil.move("food.txt", "food.txt" + "~")
             with open("food.txt", "w+") as dest:
                 with open("food.txt" + "~", "r+") as src:
                     n = 0
+                    count = 0
                     for line in src:
+                        count += 1
                         if not re.match(r'^\s*$', line):
                             if n == 0:
                                 dest.write(line)
                                 n += 1
-                            else:  # decrease amount by 1
+                            else:  # decrease amount by 'itemsperbag'
                                 line = line.strip()
-                                words = line.split(",")
-                                words[1] = str(int(words[1]) - 1)
-                                line = ",".join(words)
+                                words = line.split(", ")
+                                words[1] = str(int(words[1]) - int(words[3]))
+                                line = ", ".join(words)
                                 line.strip()
-                                line = line + '\n'
+                                if count <= totalLines - 1:
+                                    line = line + '\n'
                                 dest.write(line)
             self.bag_of_food_removed_from_inventory.place(relx=.4, rely=.9325)
+            # [fixed] the \n at the end of txt file, would leave gaps when bag was made then createnewitem appended
         except Exception as e:
             self.food_file_error_label.place(relx=.75, rely=.60)
             print("error in lower inventory " + str(e))
