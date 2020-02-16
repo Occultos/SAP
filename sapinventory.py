@@ -49,6 +49,8 @@ class StartGui(tk.Tk):
         self.d = {}
         self.make_dict(self.d)
         # fixed some weirdness
+        self.notFound = []
+        self.isBarcode = False
 
         # ============================================================================================
         #                                              buttons - INIT
@@ -210,6 +212,24 @@ class StartGui(tk.Tk):
                                                        command=lambda: self.barcode_scanner_add_remove_button_cmd(
                                                            'removing from '))
         self.barcode_scanner_remove_button.configure(activebackground=self._activebgcolor)
+
+        # add_barcode_to_existing function
+        self.add_barcode_to_existing_button = tk.Button(self, text="Add Barcode(s) to inventory",
+                                                       background=self._fgcolor, font=(self._font, self._font_medium),
+                                                       command=lambda: self.add_barcode_to_existing())
+        self.add_barcode_to_existing_button.configure(activebackground=self._activebgcolor)
+
+        # append barcode function
+        self.append_barcode_button = tk.Button(self, text="Add barcode to item",
+                                                        background=self._fgcolor, font=(self._font, self._font_medium),
+                                                        command=lambda: self.append_barcode())
+        self.append_barcode_button.configure(activebackground=self._activebgcolor)
+
+        # added barcode function
+        self.added_barcode_button = tk.Button(self, text="Submit",
+                                               background=self._fgcolor, font=(self._font, self._font_medium),
+                                               command=lambda: self.added_barcode())
+        self.added_barcode_button.configure(activebackground=self._activebgcolor)
 
         # ==========================================================================
         #                     Create new inventory item
@@ -374,6 +394,10 @@ class StartGui(tk.Tk):
 
         self.create_new_added = tk.Label(self, font=(self._font, self._font_small),
                                          text="Added item")
+
+        # notFound barcode list
+        self.notFound_label = tk.Label(self, font=(self._font, self._font_small), fg='blue')
+
         # ==================================================================
         #                    end new item labels
         # ==================================================================
@@ -578,7 +602,6 @@ one special character: !@#$%*?\n''', delay=.25)
         # goes back to user screen
         if words == "user_screen":
             self.clear_makebag_screen()
-            self.user_screen()
             self.clear_todo_label()
             self.clear_list_box()
             self.bag_of_food_removed_from_inventory.place_forget()
@@ -589,9 +612,15 @@ one special character: !@#$%*?\n''', delay=.25)
             self.unbind_return_func()
             self.list_of_items_words = ''
             self.list_of_items_label.place_forget()
+            self.list_box_2_label.place_forget()
             self.invalid_entry_error_label.place_forget()
             self.display_inventory_left_side_button.place_forget()
             self.food_bag_photo_label.place_forget()
+            self.append_barcode_button.place_forget()
+            self.clear_add_barcode_to_existing()
+            self.clear_append_barcode()
+            self.user_screen()
+
         # goes back to make a bag screen
         elif words == "make_bag_screen":
             self.make_bag_screen()
@@ -632,6 +661,10 @@ one special character: !@#$%*?\n''', delay=.25)
             self.confirm_inventory_manual_button.place_forget()
             self.cancel_inventory_manual_button.place_forget()
             self.invalid_entry_error_label.place_forget()
+        elif words == "add_barcode_to_existing":
+            #self.clear_add_barcode_to_existing()
+            self.add_barcode_to_existing()
+            self.clear_append_barcode()
             
     # ====================================================================================
     #                                   EMAIL Functions
@@ -710,6 +743,7 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.barcode_scanner_button, .47, .6)
         place_object(self.manual_entry_button, .47, .7)
         place_object(self.create_new_item_button, .47, .8)
+        self.isBarcode = False
         # self.backup_place()
         # self.previous_view = "user_screen"
 
@@ -850,6 +884,8 @@ one special character: !@#$%*?\n''', delay=.25)
         self.bind('<Return>', lambda x: self.search_for_item_in_food_file(
             direction, self.barcode_scanner_input.get(),
             self.barcode_scanner_amount.get()))
+        if self.notFound.__len__() > 0:
+            self.add_barcode_to_existing_button.place(relx=.02, rely=.5)
 
     def unbind_return_func(self):
         self.unbind('<Return>')
@@ -872,7 +908,7 @@ one special character: !@#$%*?\n''', delay=.25)
                         for line in src:
                             if not re.match(r'^\s*$', line):  # skips blank lines
                                 found = False
-                                tokens = re.split(",", line.strip())
+                                tokens = re.split(", ", line.strip())
                                 for ndex in range(len(tokens))[4:]:
                                     if str(tokens[ndex].strip()) == str(item_to_find):
                                         if direction == 'adding to ':
@@ -897,21 +933,27 @@ one special character: !@#$%*?\n''', delay=.25)
                                             self.list_of_items_label.config(text=self.list_of_items_words)
                                         found = True
                                         newitem = False
-                                        dest.write(",".join(tokens) + '\n')
+                                        dest.write(", ".join(tokens) + '\n')
                                 if found is False:
                                     dest.write(line)
                         if newitem:
                             self.list_of_items_words = self.list_of_items_words + \
                                                        ' not found : ' + str(item_to_find) + '\n'
                             self.list_of_items_label.config(text=self.list_of_items_words)
-                            # TODO : probably call new item screen here
+                            if (str(item_to_find) in self.notFound) == False:
+                                self.notFound.append(str(item_to_find))
+                            # place add_barcode_to_existing button
+                            # self.add_barcode_to_existing()
+                            self.add_barcode_to_existing_button.place(relx=.02, rely=.5)
+
+                            '''# TODO : probably call new item screen here
                             print("new item need to add it to the inventory")
                             print("new plan?  save items not found to a new list")
                             print("place a new item screen button")
                             print("display new item list on the new item screen until back button pushed")
                             # addition to plan, make a "append barcode to existing fooditem" page instead of assuming it is
                             # a brand new fooditem every time, ask if it would fall under any foods already in the dict
-                            # if not then they can make a new item
+                            # if not then they can make a new item'''
 
                 self.barcode_scanner_add_remove_button_cmd(direction)
             except Exception as e:
@@ -922,15 +964,124 @@ one special character: !@#$%*?\n''', delay=.25)
             place_object(self.invalid_entry_error_label, .8, .25)
             self.barcode_scanner_input.set("")
             self.barcode_scanner_amount.set(1)
+
+    def add_barcode_to_existing(self):
+        # pulls up list of notfound
+        # lets user select from box for which item to add barcode to
+        # if new item needs to be made then createnewitem screen passing notfound?
+        self.previous_view = "user_screen"
+        self.clear_barcode_screen()
+        self.display_inventory_left_side_button.place_forget()
+
+        self.list_box_2.delete(0, tk.END)
+        box2count = 0
+        for item_id, item_info in self.d.items():
+            box2count += 1
+            self.list_box_2.insert(box2count, str(item_info['item']))
+
+        self.list_box_2.place(relx=.02, rely=.3, relwidth=.125, relheight=.55)
+        self.list_box_2_label.configure(font=(self._font, self._font_big_big),
+                                        text="If item falls under one from the list\nselect from the list\n\n\nIf not, then create a new item,\nthe barcode(s) will carry over", fg='red')
+        self.list_box_2_label.place(x=1050, y=600, anchor="center")
+
+        self.isBarcode = True
+        # place create new item button
+        self.create_new_item_button.place(x=1700, y=600, anchor="center")
+        # place append_barcode button
+        self.append_barcode_button.place(x=450, y=600, anchor="center")
+
+    def append_barcode(self):
+        self.selected_item_to_be_changed = self.list_box_2.curselection()
+        if self.selected_item_to_be_changed != ():
+            self.previous_view = "add_barcode_to_existing"
+            self.clear_add_barcode_to_existing()
+
+            self.change_inventory_by_this_much.set(0)
+            self.item_to_be_changed = self.list_box_2.get(self.selected_item_to_be_changed)
+            self.invalid_entry_error_label.place_forget()
+
+            # self.item_to_be_changed for the name of item
+
+            self.list_box_3.delete(0, tk.END)
+            box3count = 0
+            for bar in self.notFound:
+                box3count += 1
+                self.list_box_3.insert(box3count, str(bar))
+
+            self.list_box_3.place(relx=.02, rely=.3, relwidth=.125, relheight=.55)
+            self.list_box_3_label.configure(font=(self._font, self._font_big),
+                                            text=f"Now select which barcode to add to {str(self.item_to_be_changed).upper()}")
+            self.list_box_3_label.place(x=960, y=400, anchor="center")
+
+            # place added_barcode button
+            self.added_barcode_button.place(x=450, y=600, anchor="center")
+
+        else:
+            self.invalid_entry_error_label.place_forget()
+            self.invalid_entry_error_label.config(text="Choose an Item")
+            place_object(self.invalid_entry_error_label, .17, .45)
+
+    def added_barcode(self):
+        self.selected_item_to_be_changed = self.list_box_3.curselection()
+        if self.selected_item_to_be_changed != ():
+            #self.previous_view = "added_barcode" need to add this
+
+            self.change_inventory_by_this_much.set(0)
+            self.barcode_to_be_added = self.list_box_3.get(self.selected_item_to_be_changed)
+            self.invalid_entry_error_label.place_forget()
+
+            # everything else
+            self.invalid_entry_error_label.config(text=f"Added {self.barcode_to_be_added} to {self.item_to_be_changed}",fg='blue')
+            self.invalid_entry_error_label.place(x=1050, y=320, anchor="center")
+
+            # do the appending
+            self.beautifulString(self.item_to_be_changed)
+
+            s = open("food.txt").read()
+            s = s.replace(self.beautiful_string, self.beautiful_string + ", " +self.barcode_to_be_added)
+            f = open("food.txt", 'w')
+            f.write(s)
+            f.close()
+
+            # clear only the item from self.notfound selected
+            self.notFound.remove(self.barcode_to_be_added)
+
+            # Force a back press
+            self.back_button_func(self.previous_view)
+
+        else:
+            self.invalid_entry_error_label.config(text="Choose an Item")
+            place_object(self.invalid_entry_error_label, .17, .45)
+
+    def clear_add_barcode_to_existing(self):
+        self.list_box_2.place_forget()
+        self.list_box_2_label.place_forget()
+        self.create_new_item_button.place_forget()
+        self.append_barcode_button.place_forget()
+
+    def clear_append_barcode(self):
+        self.list_box_3.place_forget()
+        self.list_box_3_label.place_forget()
+        self.added_barcode_button.place_forget()
+
     # ===================================================================
     #               New items screen and functions
     # ==================================================================
 
     def create_new_item_screen(self, d):
         # creates blank screen
+        self.invalid_entry_error_label.place_forget()
+        self.clear_add_barcode_to_existing()
         self.clear_user_screen()
         self.logoutButton.place_forget()
         self.logout_button_place_with_d(d, "user_screen")
+
+        if self.isBarcode == True:
+            codeList = ''
+            for codes in self.notFound:
+                codeList = codeList + "\n" + codes
+            self.notFound_label.configure(text="BARCODES\n" + codeList)
+            self.notFound_label.place(relx=.05, rely=.3)
 
         self.previous_view = "user_screen"
         self.backup_place_with_d()
@@ -1012,7 +1163,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.exceeds_barcode_length.place_forget()
             self.exist_already_label.place_forget()
             return 0
-        elif (str(self.create_new_item_input.get()) in self.d) == True:
+        elif (str(self.create_new_item_input.get()) in self.d) == True and self.isModifying == 0:
             place_object(self.exist_already_label, .725, .6)
             self.create_new_submit_error_alpha.place_forget()
             self.create_new_submit_error.place_forget()
@@ -1171,6 +1322,8 @@ one special character: !@#$%*?\n''', delay=.25)
         self.back_button_func("user_screen")
         self.backup_button_with_d_button.place_forget()
 
+        self.notFound_label.place_forget()
+
     # clear everything back to login screen
     def clear_to_login(self):
         self.username_for_event_log.place_forget()
@@ -1219,6 +1372,8 @@ one special character: !@#$%*?\n''', delay=.25)
         self.unbind_return_func()
         self.list_of_items_label.place_forget()
         self.display_inventory_left_side_button.place_forget()
+        self.clear_append_barcode()
+        self.clear_add_barcode_to_existing()
 
     # clear list boxes
     def clear_list_box(self):
@@ -1303,6 +1458,9 @@ one special character: !@#$%*?\n''', delay=.25)
         self.barcode_scanner_input_entry.place_forget()
         self.barcode_scanner_amount_entry.place_forget()
         self.clear_todo_label()
+        self.list_of_items_label.place_forget()
+        self.list_box_2_label.place_forget()
+        self.add_barcode_to_existing_button.place_forget()
 
     # =================================================================================
     #                                            FULL SCREEN
@@ -1777,7 +1935,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.clear_list_box()
         self.list_box_2.place(relx=.39, rely=.3, relwidth=.14)
         self.list_box_2_label.place(relx=.42, rely=.25)
-        self.list_box_2_label.config(text="USERS")
+        self.list_box_2_label.config(font=(self._font, self._font_medium),text="USERS",fg='black')
         box2count = 0
         try:
             with open('username_password_file.txt', "r+") as readf:
@@ -1808,7 +1966,7 @@ one special character: !@#$%*?\n''', delay=.25)
         if side == 'left':
             place_object(self.list_box_2, .07, .3)
             place_object(self.list_box_2_label, .08, .25)
-        self.list_box_2_label.configure(text="Inventory")
+        self.list_box_2_label.configure(font=(self._font, self._font_medium),text="Inventory", fg='black')
         box2count = 0
 
         # fill boxes
@@ -1838,7 +1996,8 @@ one special character: !@#$%*?\n''', delay=.25)
         self.list_box_1_label.place(relx=.14, rely=.25)
         self.list_box_2_label.place(relx=.39, rely=.25)
         self.list_box_3_label.place(relx=.65, rely=.25)
-        self.list_box_2_label.config(text="LOW INVENTORY")
+        self.list_box_3_label.configure(font=(self._font, self._font_medium), fg='black',text="INVENTORY")
+        self.list_box_2_label.config(font=(self._font, self._font_medium),text="LOW INVENTORY")
         box1count = 0
         box2count = 0
         box3count = 0
