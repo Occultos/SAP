@@ -311,7 +311,7 @@ class StartGui(tk.Tk):
         self.make_bag_screen_button.configure(activebackground=self._activebgcolor)
 
         # make many bags button
-        self.make_many_bags_button = tk.Button(self, text="Make Full bag(s)",
+        self.make_many_bags_button = tk.Button(self, text="Make Food bag(s)",
                                              background=self._fgcolor, font=(self._font, self._font_medium),
                                              command=lambda: self.made_a_bag_screen(self.d))
         self.make_many_bags_button.configure(activebackground=self._activebgcolor)
@@ -790,7 +790,13 @@ one special character: !@#$%*?\n''', delay=.25)
         # entry box for many bags
         self.make_many_bags_button.place(relx=.75, rely=.4, anchor="center")
         self.many_bags_entry.place(relx=.75, rely=.47, anchor="center")
-        self.checkbutton_label.configure(text=f"Enter number of Bags to make\n\n\n{int(self.lowestRatio)} Full bags left\n\n\n{self.nameofLowest}: is the bottleneck")
+        if int(self.lowestRatio) > 0:
+            self.checkbutton_label.configure(
+                text=f"Enter number of Bags to make\n\n\n{int(self.lowestRatio)} Full bag(s) left\n\n\n{self.nameofLowest}: is the bottleneck")
+        else:
+            self.checkbutton_label.configure(
+                text=f"Enter number of Bags to make\n\n\n{-1*int(self.lowestRatio)} Partial bag(s) made\n\n\n{self.nameofLowest}: is the bottleneck")
+        # TODO: decide what to do with partial bags
         self.checkbutton_label.place(relx=.75, rely=.6, anchor="center")
 
         self.backup_place()
