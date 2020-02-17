@@ -869,7 +869,9 @@ one special character: !@#$%*?\n''', delay=.25)
         self.previous_view = "user_screen"
         place_object(self.barcode_scanner_add_button, .47, .4)
         place_object(self.barcode_scanner_remove_button, .47, .5)
-        place_object(self.display_inventory_left_side_button, .8, .84)
+        #place_object(self.display_inventory_left_side_button, .8, .84)
+        self.view_inventory_one_list_box(self.d, 'left')
+
         self.list_of_items_words = 'Inventory Changes\n'
         self.list_of_items_label.config(text=self.list_of_items_words)
 
@@ -877,6 +879,7 @@ one special character: !@#$%*?\n''', delay=.25)
         # TODO: add barcode & qty columns
         self.previous_view = "user_screen"
         self.clear_barcode_screen()
+        place_object(self.list_box_2_label, .08, .25)
         self.invalid_entry_error_label.place_forget()
         self.barcode_scanner_label.configure(text=direction + '\t\t\t Enter amount')
         place_object(self.barcode_scanner_label, .3, .25)
@@ -968,6 +971,9 @@ one special character: !@#$%*?\n''', delay=.25)
             place_object(self.invalid_entry_error_label, .8, .25)
             self.barcode_scanner_input.set("")
             self.barcode_scanner_amount.set(1)
+        self.view_inventory_one_list_box(self.d, 'left')
+        self.clear_list_box()
+        self.view_inventory_one_list_box(self.d, 'left')
 
     def add_barcode_to_existing(self):
         # pulls up list of notfound
@@ -2265,8 +2271,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        #self.user_screen()
-        self.admin_screen()
+        self.user_screen()
+        #self.admin_screen()
 
         '''
         # TODO: commnted out if/else to skip login steps while building program,
