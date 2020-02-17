@@ -204,7 +204,7 @@ class StartGui(tk.Tk):
         self.barcode_scanner_add_button = tk.Button(self, text="Add items",
                                                     background=self._fgcolor, font=(self._font, self._font_medium),
                                                     command=lambda: self.barcode_scanner_add_remove_button_cmd(
-                                                        'adding to '))
+                                                        'Barcodes'))
         self.barcode_scanner_add_button.configure(activebackground=self._activebgcolor, padx=29)
 
         # go to add or remove items screen using barcode
@@ -733,6 +733,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def user_screen(self):
         self.isModifying = 0
+        self.isPassingBarcode = 0
         self.clear_login_screen()
         self.logout_button_place()
         self.clear_login_info_error()
@@ -876,7 +877,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.previous_view = "user_screen"
         self.clear_barcode_screen()
         self.invalid_entry_error_label.place_forget()
-        self.barcode_scanner_label.configure(text=direction + 'inventory : begin scanning')
+        self.barcode_scanner_label.configure(text=direction + '\t\t\t Enter amount')
         place_object(self.barcode_scanner_label, .3, .25)
         place_object(self.barcode_scanner_input_entry, .3, .3, True)
         place_object(self.barcode_scanner_amount_entry, .55, .3)
@@ -887,7 +888,7 @@ one special character: !@#$%*?\n''', delay=.25)
             direction, self.barcode_scanner_input.get(),
             self.barcode_scanner_amount.get()))
         if self.notFound.__len__() > 0:
-            self.add_barcode_to_existing_button.place(relx=.02, rely=.5)
+            self.add_barcode_to_existing_button.place(relx=.35, rely=.5)
 
     def unbind_return_func(self):
         self.unbind('<Return>')
@@ -913,7 +914,7 @@ one special character: !@#$%*?\n''', delay=.25)
                                 tokens = re.split(", ", line.strip())
                                 for ndex in range(len(tokens))[4:]:
                                     if str(tokens[ndex].strip()) == str(item_to_find):
-                                        if direction == 'adding to ':
+                                        if direction == 'Barcodes':
                                             tokens[1] = str(int(tokens[1]) + int(self.barcode_scanner_amount.get()))
                                             self.list_of_items_words = self.list_of_items_words + \
                                                                         'added ' + \
@@ -980,6 +981,8 @@ one special character: !@#$%*?\n''', delay=.25)
         for item_id, item_info in self.d.items():
             box2count += 1
             self.list_box_2.insert(box2count, str(item_info['item']))
+
+        self.isPassingBarcode = 1
 
         self.list_box_2.place(relx=.02, rely=.3, relwidth=.125, relheight=.55)
         self.list_box_2_label.configure(font=(self._font, self._font_big_big),
@@ -1082,10 +1085,10 @@ one special character: !@#$%*?\n''', delay=.25)
             self.is_modifying_3_clears()
 
         if self.isBarcode == True:
-            codeList = ''
+            self.codeList = ''
             for codes in self.notFound:
-                codeList = codeList + "\n" + codes
-            self.notFound_label.configure(text="BARCODES\n" + codeList)
+                self.codeList = self.codeList + "\n" + codes
+            self.notFound_label.configure(text="BARCODES\n" + self.codeList)
             self.notFound_label.place(relx=.05, rely=.3)
 
         self.previous_view = "user_screen"
@@ -1102,6 +1105,11 @@ one special character: !@#$%*?\n''', delay=.25)
         self.create_new_item_input_amount.set(1)
         self.create_new_item_input_low_level.set(20)
         self.create_new_item_input_itemsperbag.set(0)
+        self.create_new_item_input_barcode.set('')
+
+        if self.isPassingBarcode == 1:
+            if self.notFound.__len__() > 0:
+                self.create_new_item_input_barcode.set(int(self.notFound[0]))
         # prefilling defaults for new item, user can set different values if they want
 
         place_object(self.create_new_item_submit_button, .7, .5)
@@ -1144,14 +1152,23 @@ one special character: !@#$%*?\n''', delay=.25)
                 self.create_new_item_input_low_level.set(20)
                 self.create_new_item_input_itemsperbag.set(0)
                 self.create_new_item_input_barcode.set("")
+
+                if self.isPassingBarcode == 1:
+                    if self.notFound.__len__() > 0:
+                        self.create_new_item_input_barcode.set(int(self.notFound[0]))
+
                 self.create_new_item_screen(d)
             else:
                 self.append_food(d, self.newItem)
                 self.create_new_item_input.set("")
                 self.create_new_item_input_amount.set(1)
-                self.create_new_item_input_low_level.set(20)
+                self.create_new_item_input_low_level.set(90)
                 self.create_new_item_input_itemsperbag.set(0)
                 self.create_new_item_input_barcode.set("")
+
+                if self.isPassingBarcode == 1:
+                    if self.notFound.__len__() > 0:
+                        self.create_new_item_input_barcode.set(int(self.notFound[0]))
 
     def isAllFilled(self, d):
         self.make_dict(self.d)
@@ -1251,10 +1268,14 @@ one special character: !@#$%*?\n''', delay=.25)
     def manual_entry_screen(self):
         # self.clear_adjust_inventory_screen()
         self.clear_user_screen()
-        self.backup_place()
-        self.view_inventory_3_list_boxes(self.d)
+        #self.backup_place()
+        #self.view_inventory_3_list_boxes(self.d)
+        #self.previous_view = "user_screen"
+        #place_object(self.adjust_item_quantity_button, .8, .835)
+
+        self.adjust_item_quantity_button_cmd(self.d)
         self.previous_view = "user_screen"
-        place_object(self.adjust_item_quantity_button, .8, .835)
+        self.backup_place()
 
     # =================================================================================
     #                                             Place functions
@@ -1577,6 +1598,19 @@ one special character: !@#$%*?\n''', delay=.25)
                 print(key + " : " + str(item_info[key]))
 
     def append_food(self, d, newItem):
+        if (str(self.create_new_item_input_barcode.get()) in self.notFound) == True:
+            self.notFound.remove(str(self.create_new_item_input_barcode.get()))
+
+            if self.isBarcode == True:
+                self.codeList = ''
+                for codes in self.notFound:
+                    self.codeList = self.codeList + "\n" + codes
+                self.notFound_label.configure(text="BARCODES\n" + self.codeList)
+                self.notFound_label.place(relx=.05, rely=.3)
+
+                print(self.notFound)
+
+
         if self.isModifying == 2:
             # 'fix' this later
             s = open("food.txt").read()
@@ -1608,7 +1642,8 @@ one special character: !@#$%*?\n''', delay=.25)
         # self.clear_adjust_inventory_screen()
         self.clear_user_screen()
         self.backup_place()
-        self.view_inventory_one_list_box(self.d, side)
+        #self.view_inventory_one_list_box(self.d, side)
+        self.view_inventory_3_list_boxes(self.d)
         self.previous_view = "user_screen"
 
     # ===================================================================================
@@ -1628,7 +1663,8 @@ one special character: !@#$%*?\n''', delay=.25)
         self.item_to_be_changed_label_2.place_forget()
         self.subtract_button.place_forget()
         self.add_button.place_forget()
-        self.previous_view = "manual_entry_screen"
+        #self.previous_view = "manual_entry_screen"
+        self.previous_view = "user_screen"
 
     def choose_an_item_to_change_cmd(self, d):
         try:
@@ -1864,7 +1900,10 @@ one special character: !@#$%*?\n''', delay=.25)
             self.choose_an_item_button.place_forget()
             self.list_box_2_label.place_forget()
             # backup
-            self.previous_view = "choose_item_screen"
+            #self.previous_view = "choose_item_screen"
+            self.previous_view = "manual_entry_screen"
+            #self.backup_button.place_forget()
+
         # TODO: change to pass
         except Exception as e:
             print("Change to pass")
