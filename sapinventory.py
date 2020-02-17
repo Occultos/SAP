@@ -51,6 +51,7 @@ class StartGui(tk.Tk):
         # fixed some weirdness
         self.notFound = []
         self.isBarcode = False
+        self.isModifying = 0
 
         # ============================================================================================
         #                                              buttons - INIT
@@ -585,6 +586,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.choose_an_item_to_delete_button.place_forget()
             self.backup_button_with_d_button.place_forget()
             self.delete_label.place_forget()
+            self.create_new_item_button.place_forget()
 
     def logout_with_d(self, d, words):
         # This is for removing labels from create new item that pass d with logout button
@@ -792,7 +794,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     # made a bag
     def made_a_bag_screen(self, d):
-        if str(self.many_bags.get()).isnumeric() == True and int(self.many_bags.get()) > 0:
+        if str(self.many_bags.get()).isnumeric() == True and int(self.many_bags.get()) <= int(self.lowestRatio):
             self.numberofBags = int(self.many_bags.get())
             self.many_bags.set("")
 
@@ -807,7 +809,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.view_inventory_3_list_boxes(d)
         else:
             self.make_bag_screen()
-            self.delete_label.configure(text="Enter number > 0")
+            self.delete_label.configure(text="Enter number > 0\nand needs to be less than bags left")
             self.delete_label.place(relx=.75, rely=.3, anchor="center")
             self.many_bags.set("")
 
@@ -829,7 +831,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 text=f"Enter number of Bags to make\n\n\n{int(self.lowestRatio)} Full bag(s) left\n\n\n{self.nameofLowest}: is the bottleneck")
         else:
             self.checkbutton_label.configure(
-                text=f"Enter number of Bags to make\n\n\n{-1*int(self.lowestRatio)} Partial bag(s) made\n\n\n{self.nameofLowest}: is the bottleneck")
+                text=f"Full bags can't be made\n\n\n{self.nameofLowest}: is the bottleneck")
         # TODO: decide what to do with partial bags
         self.checkbutton_label.place(relx=.75, rely=.6, anchor="center")
 
@@ -1076,6 +1078,9 @@ one special character: !@#$%*?\n''', delay=.25)
         self.logoutButton.place_forget()
         self.logout_button_place_with_d(d, "user_screen")
 
+        if self.isModifying == 3:
+            self.is_modifying_3_clears()
+
         if self.isBarcode == True:
             codeList = ''
             for codes in self.notFound:
@@ -1115,7 +1120,6 @@ one special character: !@#$%*?\n''', delay=.25)
 
         if self.isModifying == 1:
             self.create_new_item_screen(d)
-            #newItem = self.beautiful_string
             words = self.beautiful_string.split(", ")
 
             self.create_new_item_input.set(words[0])
@@ -1150,6 +1154,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 self.create_new_item_input_barcode.set("")
 
     def isAllFilled(self, d):
+        self.make_dict(self.d)
         if (self.create_new_item_input.get() == "" or
                 str(self.create_new_item_input_amount.get()) == "" or
                 str(self.create_new_item_input_low_level.get()) == "" or
@@ -1163,7 +1168,8 @@ one special character: !@#$%*?\n''', delay=.25)
             self.exceeds_barcode_length.place_forget()
             self.exist_already_label.place_forget()
             return 0
-        elif (str(self.create_new_item_input.get()) in self.d) == True and self.isModifying == 0:
+        elif ((str(self.create_new_item_input.get()) in self.d) == True and self.isModifying == 0) or \
+                (self.isModifying == 3 and (str(self.create_new_item_input.get()) in self.d) == True):
             place_object(self.exist_already_label, .725, .6)
             self.create_new_submit_error_alpha.place_forget()
             self.create_new_submit_error.place_forget()
@@ -1224,6 +1230,23 @@ one special character: !@#$%*?\n''', delay=.25)
             self.exist_already_label.place_forget()
             place_object(self.create_new_added, .73, .6)
             return 1
+    def is_modifying_3_clears(self):
+        self.previous_view = "admin_screen"
+        self.choose_an_item_to_edit_button.place_forget()
+        self.choose_an_item_to_delete_button.place_forget()
+        self.list_box_2_label.place_forget()
+        self.list_box_2.place_forget()
+        self.delete_label.place_forget()
+        self.create_new_added.place_forget()
+        self.create_new_added.configure(text="Item added")
+        self.create_new_item.place(relx=.4, rely=.23)
+        self.create_new_item_input.set('')
+        self.create_new_item_input_amount.set('')
+        self.create_new_item_input_low_level.set('')
+        self.create_new_item_input_itemsperbag.set('')
+        self.create_new_item_input_barcode.set("")
+        self.backup_button_with_d_button.place_forget()
+        self.backup_place()
 
     def manual_entry_screen(self):
         # self.clear_adjust_inventory_screen()
@@ -1414,6 +1437,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.display_users_button.place_forget()
         self.edit_inventory_button.place_forget()
         self.delete_user_button.place_forget()
+        self.create_new_item_button.place_forget()
 
     # clear remove items screen
     def clear_todo_label(self):
@@ -1672,6 +1696,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.change_inventory_by_this_much.set(0)
             self.item_to_be_changed = self.list_box_2.get(self.selected_item_to_be_changed)
             self.invalid_entry_error_label.place_forget()
+            self.create_new_item_button.place_forget()
             self.previous_view = "admin_edit_main"
             self.backup_button_with_d_button.configure(text="Back to choose")
 
@@ -1721,7 +1746,7 @@ one special character: !@#$%*?\n''', delay=.25)
         # reusing inputs and checks screen passing beautiful/ iteminfo
         self.create_new_item_submit_button_cmd(d)
         self.create_new_item_submit_button.configure(text="Submit Edit")
-        self.create_new_item.configure(text="")
+        self.create_new_item.place_forget()
 
         # forgets unneeded reused labels/buttons
         self.create_new_submit_error.place_forget()
@@ -1919,6 +1944,8 @@ one special character: !@#$%*?\n''', delay=.25)
         self.list_box_2.place_forget()
         self.list_box_2_label.place_forget()
         self.delete_confirm_entry.place_forget()
+        self.isModifying = 3
+        place_object(self.create_new_item_button, .715, .625)
 
         self.list_box_2_label.configure(font=(self._font, self._font_big_big), text="\\\ Select Here! //")
         place_object(self.list_box_2_label, .41, .23)
