@@ -52,6 +52,7 @@ class StartGui(tk.Tk):
         self.notFound = []
         self.isBarcode = False
         self.isModifying = 0
+        self.isPassingBarcode = 99
 
         # ============================================================================================
         #                                              buttons - INIT
@@ -2264,8 +2265,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        self.user_screen()
-        #self.admin_screen()
+        #self.user_screen()
+        self.admin_screen()
 
         '''
         # TODO: commnted out if/else to skip login steps while building program,
