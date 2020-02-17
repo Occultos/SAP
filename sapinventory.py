@@ -212,7 +212,7 @@ class StartGui(tk.Tk):
         self.barcode_scanner_remove_button = tk.Button(self, text="Remove items",
                                                        background=self._fgcolor, font=(self._font, self._font_medium),
                                                        command=lambda: self.barcode_scanner_add_remove_button_cmd(
-                                                           'removing from '))
+                                                           'Barcodes '))
         self.barcode_scanner_remove_button.configure(activebackground=self._activebgcolor)
 
         # add_barcode_to_existing function
@@ -881,7 +881,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.clear_barcode_screen()
         place_object(self.list_box_2_label, .08, .25)
         self.invalid_entry_error_label.place_forget()
-        self.barcode_scanner_label.configure(text=direction + '\t\t\t Enter amount')
+        self.barcode_scanner_label.configure(text=direction + '    \t\tEnter amount')
         place_object(self.barcode_scanner_label, .3, .25)
         place_object(self.barcode_scanner_input_entry, .3, .3, True)
         place_object(self.barcode_scanner_amount_entry, .55, .3)
@@ -928,7 +928,7 @@ one special character: !@#$%*?\n''', delay=.25)
                                                                         tokens[1] + '\n'
                                             self.list_of_items_label.config(text=self.list_of_items_words)
 
-                                        if direction == 'removing from ':
+                                        if direction == 'Barcodes ':
                                             tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
                                             self.list_of_items_words = self.list_of_items_words + \
                                                                         'removed ' + \
