@@ -7,8 +7,11 @@ Use this to jot down TODOs and ideas [whether or not we will add them]
 
 retroactivly add unknown barcode item amount scanned after it is 
 	assigned to a food
+		(one list that holds both the barcode and the scan amount one index over)?
+		(set both then remove both on use)
 
 
 create new item screen can use barcode scanner directly to add a new 
 	barcode if barcode does not already exist 
+
 
