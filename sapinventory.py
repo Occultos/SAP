@@ -1169,7 +1169,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 self.append_food(d, self.newItem)
                 self.create_new_item_input.set("")
                 self.create_new_item_input_amount.set(1)
-                self.create_new_item_input_low_level.set(90)
+                self.create_new_item_input_low_level.set(20)
                 self.create_new_item_input_itemsperbag.set(0)
                 self.create_new_item_input_barcode.set("")
 
