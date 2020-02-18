@@ -349,6 +349,12 @@ class StartGui(tk.Tk):
                                                  command=lambda: self.back_button_func(self.previous_view))
         self.make_another_bag_button.configure(activebackground=self._activebgcolor, padx=10)
 
+        # assign substitution of items
+        self.substitute_foods_screen_button = tk.Button(self, text="Start substitution of food",
+                                                 background=self._fgcolor, font=(self._font, self._font_medium),
+                                                 command=lambda: self.substitute_foods_screen())
+        self.substitute_foods_screen_button.configure(activebackground=self._activebgcolor, padx=10)
+
         # ========================================================================================
         #                                            labels - INIT
         # =======================================================================================
@@ -834,7 +840,10 @@ one special character: !@#$%*?\n''', delay=.25)
         else:
             self.checkbutton_label.configure(
                 text=f"Full bags can't be made\n\n\n{self.nameofLowest}: is the bottleneck")
-        # TODO: decide what to do with partial bags
+            # TODO: decide what to do with partial bags
+            #place substitution button page here
+            self.substitute_foods_screen_button.place(relx=.75, rely=.7, anchor="center")
+
         self.checkbutton_label.place(relx=.75, rely=.6, anchor="center")
 
         self.backup_place()
@@ -856,6 +865,17 @@ one special character: !@#$%*?\n''', delay=.25)
                             if (int(words[1]) / int(words[3])) < self.lowestRatio:
                                 self.lowestRatio = int(words[1]) / int(words[3])
                                 self.nameofLowest = words[0]
+
+    def substitute_foods_screen(self):
+        self.clear_makebag_screen()
+        self.previous_view = "make_bag_screen"
+        # show box of food that is empty and lower than their itemsperbag var
+        # to select from (could start using radial buttons now with pictures)
+        # show another box of items in stock that will be substituting
+        # and a entry box to type new number, aka we set emtpy food's itemsperbag to 0
+        # then add the entry box number to current itmesperbag to the substituting item
+        # only temporarily, because if they restock then the 'empty' item's itemsperbag
+        # needs to be reset to what it was before
 
     # ========================================================
     #                 barcode screen functions
@@ -1448,6 +1468,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.delete_label.place_forget()
 
         self.food_bag_photo_label.place_forget()
+        self.substitute_foods_screen_button.place_forget()
 
     # clears user screen
     def clear_user_screen(self):
@@ -1466,6 +1487,9 @@ one special character: !@#$%*?\n''', delay=.25)
         self.edit_inventory_button.place_forget()
         self.delete_user_button.place_forget()
         self.create_new_item_button.place_forget()
+        self.enter_email_add_label.place_forget()
+        self.enter_email_add_entry.place_forget()
+        self.admin_email_send_button.place_forget()
 
     # clear remove items screen
     def clear_todo_label(self):
@@ -2269,8 +2293,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        #self.user_screen()
-        self.admin_screen()
+        self.user_screen()
+        #self.admin_screen()
 
         '''
         # TODO: commnted out if/else to skip login steps while building program,
