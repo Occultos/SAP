@@ -1615,9 +1615,6 @@ one special character: !@#$%*?\n''', delay=.25)
                 self.notFound_label.configure(text="BARCODES\n" + self.codeList)
                 self.notFound_label.place(relx=.05, rely=.3)
 
-                print(self.notFound)
-
-
         if self.isModifying == 2:
             # 'fix' this later
             s = open("food.txt").read()
@@ -1743,8 +1740,8 @@ one special character: !@#$%*?\n''', delay=.25)
             self.previous_view = "admin_edit_main"
             self.backup_button_with_d_button.configure(text="Back to choose")
 
-            self.list_box_2_label.configure(font=(self._font, self._font_big), text=f"Are you sure you want to delete\n{re.split(' :', self.item_to_be_changed.strip())[0]}?\n\n\n\n"
-                                                                                    f"Enter YES to delete\n{re.split(' :', self.item_to_be_changed.strip())[0]}")
+            self.list_box_2_label.configure(font=(self._font, self._font_big), text=f"Are you sure you want to delete\n{str(re.split(' :', self.item_to_be_changed.strip())[0]).upper()}?\n\n\n\n"
+                                                                                    f"Enter YES to delete\n{str(re.split(' :', self.item_to_be_changed.strip())[0]).upper()}")
             place_object(self.delete_confirm_entry, .435, .5)
             self.deleteItem_button.place(relx=.47, rely=.55)
             self.delete_label.place_forget()
@@ -1769,14 +1766,15 @@ one special character: !@#$%*?\n''', delay=.25)
             f = open("food.txt", 'w')
             f.write(s)
             f.close()
+
+            self.delete_label.configure(text=f"{str(string_key).upper()}\nWas Deleted")
             del self.d[string_key]
-            self.delete_label.configure(text="Item was Deleted")
         else:
             self.delete_label.configure(text="Not Deleted\nType YES to delete")
 
         # jump to last page with message
         self.backup_button_with_d(self.d, self.previous_view)
-        place_object(self.delete_label, .16, .57)
+        self.delete_label.place(relx=.24, rely=.6, anchor="center")
 
     def admin_modify_inventory_screen(self, d):
         self.isModifying = 1
@@ -2271,8 +2269,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        self.user_screen()
-        #self.admin_screen()
+        #self.user_screen()
+        self.admin_screen()
 
         '''
         # TODO: commnted out if/else to skip login steps while building program,
