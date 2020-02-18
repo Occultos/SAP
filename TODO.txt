@@ -9,6 +9,6 @@ retroactivly add unknown barcode item amount scanned after it is
 	assigned to a food
 
 
-create new item can use barcode scanner directly to add a new barcode
-          if barcode does not already exist 
+create new item screen can use barcode scanner directly to add a new 
+	barcode if barcode does not already exist 
 
