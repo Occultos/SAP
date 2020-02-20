@@ -3,9 +3,11 @@ import re
 from passlib.hash import pbkdf2_sha256
 from time import *
 import shutil
+from shutil import copyfile                        
 import yagmail
 import os
-
+import difflib
+import sys
 
 # git notes:
 #     only do once
@@ -56,6 +58,9 @@ class StartGui(tk.Tk):
         # does unknown barcode exist
         self.isModifying = "as_user"
         self.isPassingBarcode = "default"
+        self.login_time = tk.StringVar()
+        self.logout_time = tk.StringVar()
+        self.logged_in = tk.BooleanVar()                               
 
         # ============================================================================================
         #                                              buttons - INIT
@@ -63,7 +68,7 @@ class StartGui(tk.Tk):
         # exit program button
         self.exitButton = tk.Button(self, text="Exit",
                                     background=self._bgcolor, font=(self._font, self._font_big),
-                                    command=quit)
+                                    command=lambda: self.exit_program())
         self.exitButton.configure(activebackground=self._activebgcolor, padx=25)
         self.exitButton.place(relx=.9, rely=.9)
 
@@ -551,6 +556,7 @@ one special character: !@#$%*?\n''', delay=.25)
                                           font=(self._font, self._font_medium))
 
         # starting program at the login screen
+        self.logged_in = False    
         self.login_screen()
 
     # =====================================================================================
@@ -718,6 +724,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
     # main login screen
     def login_screen(self):
+        if self.logged_in:
+            self.snapshot_comparison_on_logout("food.txt")                                         
         #    SA army logo
         self.army_image_place()
         # login screen label
@@ -1693,6 +1701,47 @@ one special character: !@#$%*?\n''', delay=.25)
         self.view_inventory_3_list_boxes(self.d)
         self.previous_view = "user_screen"
 
+    # =============================================================================
+    #                Change Log
+    # =============================================================================
+
+    def snapshot_of_file_on_login(self, file):
+        copyfile(file, file + "_login")
+        printlocaltime = localtime(time())
+        monthday = str(printlocaltime.tm_mon) + "/" + str(printlocaltime.tm_mday) + " "
+        currenttime = monthday + str(printlocaltime.tm_hour) + ":" + str(printlocaltime.tm_min)
+        self.login_time = currenttime
+        self.logged_in = True
+        print(self.username_for_event_log.cget("text") + " logging in " + str(self.login_time))
+
+
+    def snapshot_comparison_on_logout(self, file):
+        copyfile(file, file + "_logout")
+        self.compare_files(file + "_login", file + "_logout")
+        printlocaltime = localtime(time())
+        monthday = str(printlocaltime.tm_mon) + "/" + str(printlocaltime.tm_mday) + " "
+        currenttime = monthday + str(printlocaltime.tm_hour) + ":" + str(printlocaltime.tm_min)
+        self.logout_time = currenttime
+        self.logged_in = False
+        print(self.username_for_event_log.cget("text") + " logging out " + str(self.logout_time))
+
+    def compare_files(self, file_one, file_two):
+        with open(file_one, 'r') as file1, open(file_two, 'r') as file2:
+            line_form = '{:3d} {}'.format
+            file1_lines = [line_form(i, line) for i, line in enumerate(file1, 1)]
+            file2_lines = [line_form(i, line) for i, line in enumerate(file2, 1)]
+            results = difflib.Differ().compare(file1_lines, file2_lines)
+            for line in results:
+                if line[0] == '+' or line[0] == '-' or line[0] == '?':
+                    sys.stdout.writelines(line)
+        print("comparing files here")
+        print(str(file_one) + " " + str(file_two))
+
+
+    def exit_program(self):
+        if self.logged_in:
+            self.snapshot_comparison_on_logout("food.txt")
+        self.destroy()
     # ===================================================================================
     #                   View and/or change Inventory & users
     #                  TODO: split these into 2-3 sections for easier viewing
@@ -1924,7 +1973,7 @@ one special character: !@#$%*?\n''', delay=.25)
                         if not re.match(r'^\s*$', line):
                             tokens = re.split(",", line.strip())
                             if tokens[0] == parsed_name_to_be_changed.strip():
-                                tokens[1] = str(self.new_inventory_amount)
+                                tokens[1] = ' ' + str(self.new_inventory_amount)
                                 dest.write(",".join(tokens) + '\n')
                             else:
                                 dest.write(line)
@@ -2326,6 +2375,15 @@ one special character: !@#$%*?\n''', delay=.25)
             self.clear_login_screen()
             self.username_for_event_log.configure(text=str(tokens[0]))
             place_object(self.username_for_event_log, .02, .85)
+            # logging in,
+            # snapshot of inventory on login - timestamp, username_for_event_log
+            # check that logged in
+            # on logout :
+            # snapshot of inventory on logout - timestamp
+            # compare snapshots
+            # append changes from snapshot to changelog
+            # email changelog button simliar to email inventory
+            self.snapshot_of_file_on_login("food.txt")                                                                  
             if tokens[0] == 'adminarmy':
                 self.admin_screen()
             else:
