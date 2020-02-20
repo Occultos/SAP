@@ -4,7 +4,6 @@ Use this to jot down TODOs and ideas [whether or not we will add them]
 
 #######################################################################
 
-
 retroactivly add unknown barcode item amount scanned after it is 
 	assigned to a food
 		(one list that holds both the barcode and the scan amount one index over)?
@@ -13,5 +12,21 @@ retroactivly add unknown barcode item amount scanned after it is
 
 create new item screen can use barcode scanner directly to add a new 
 	barcode if barcode does not already exist 
+
+
+ADMIN email could have a listbox of known "food partners" email, so the admin will just select one and it
+	populate the 'enter email address' entry box, so they dont need to type it in, but they 
+	still can if they want
+
+
+\\\\\\\\\\\\\ What should probably be handled by chris ///////////
+
+ADMIN 'view users' should show info about login/ logoff times next to name
+	also they can then click on user to see detailed changes made
+	by that user
+
+we still need the user logs in general
+
+///////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
