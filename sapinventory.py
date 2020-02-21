@@ -457,6 +457,7 @@ class StartGui(tk.Tk):
         self.substitute_foods_screen_label_1 = tk.Label(self, text="Too low for full bag", font=(self._font, self._font_big))
         self.substitute_foods_screen_label_2 = tk.Label(self, text="Select what will replace them\nThe number amount above the food picture is the\namount you need to add in additionally to the normal amount", font=(self._font, self._font_big))
         self.substitute_foods_screen_label_3 = tk.Label(self, font=(self._font, self._font_medium))
+        self.substitute_foods_screen_label_4 = tk.Label(self, font=(self._font, self._font_medium))
 
         # ======================================================================================
         #                                         SA army logo - INIT
@@ -905,8 +906,8 @@ one special character: !@#$%*?\n''', delay=.25)
         # Needs labels and a submit button
         self.substitute_foods_screen_label_1.place(relx=.025, rely=.26)
         self.substitute_foods_screen_label_2.place(relx=.25, rely=.225)
-        self.substitute_foods_screen_label_3.configure(text="When ready hit submit", fg='black')
-        self.substitute_foods_screen_label_3.place(relx=.81, rely=.55)
+        self.substitute_foods_screen_label_4.configure(text="When ready hit submit", fg='black')
+        self.substitute_foods_screen_label_4.place(relx=.81, rely=.55)
         self.substitute_foods_screen_submit_button.place(relx=.85, rely=.6)
 
         self.d_outofstock = {}
@@ -1255,7 +1256,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.substitute_foods_screen_label_1.place_forget()
         self.substitute_foods_screen_label_2.place_forget()
         self.substitute_foods_screen_submit_button.place_forget()
-
+        self.substitute_foods_screen_label_4.place_forget()
 
     # ===================================================================
     #               New items screen and functions
