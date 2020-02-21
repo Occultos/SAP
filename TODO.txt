@@ -4,7 +4,7 @@ Use this to jot down TODOs and ideas [whether or not we will add them]
 
 #######################################################################
 
-retroactivly add unknown barcode item amount scanned after it is 
+retroactively add unknown barcode item amount scanned after it is
 	assigned to a food
 		(one list that holds both the barcode and the scan amount one index over)?
 		(set both then remove both on use)
@@ -19,14 +19,6 @@ ADMIN email could have a listbox of known "food partners" email, so the admin wi
 	still can if they want
 
 
-\\\\\\\\\\\\\ What should probably be handled by chris ///////////
+log folder sharable throughout the local network (as read only)
 
-ADMIN 'view users' should show info about login/ logoff times next to name
-	also they can then click on user to see detailed changes made
-	by that user
-
-we still need the user logs in general
-
-///////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-
+auto send email daily/ and or on low?
