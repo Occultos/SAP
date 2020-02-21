@@ -1025,6 +1025,10 @@ one special character: !@#$%*?\n''', delay=.25)
             self.substitute_foods_screen_label_3.configure(text="Made bag with substitutes", fg='blue')
             self.substitute_foods_screen_label_3.place(relx=.66, rely=.75)
 
+        self.d_outofstock = {}
+        self.d_instock = {}
+        # just in case something is removed/ force empty
+
     # ========================================================
     #                 barcode screen functions
     # =======================================================
