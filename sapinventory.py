@@ -1,3 +1,4 @@
+from tkinter import *
 import tkinter as tk
 import re
 from passlib.hash import pbkdf2_sha256
@@ -60,7 +61,9 @@ class StartGui(tk.Tk):
         self.isPassingBarcode = "default"
         self.login_time = tk.StringVar()
         self.logout_time = tk.StringVar()
-        self.logged_in = tk.BooleanVar()                               
+        self.logged_in = tk.BooleanVar()
+        self.list_l = []
+        self.list_k = []
 
         # ============================================================================================
         #                                              buttons - INIT
@@ -652,6 +655,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.food_file_error_label.place_forget()
             self.bag_of_food_removed_from_inventory.place_forget()
             self.invalid_entry_error_label.place_forget()
+            self.clear_substitutions_page()
         elif words == "login_screen":
             self.clear_login_info_screen()
             self.clear_login_info_error()
@@ -848,6 +852,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.food_bag_photo_label.place(relx=0.15, rely=0.25)
         # entry box for many bags
         self.make_many_bags_button.place(relx=.75, rely=.4, anchor="center")
+        self.many_bags.set('1')
         self.many_bags_entry.place(relx=.75, rely=.47, anchor="center")
         if int(self.lowestRatio) > 0:
             self.checkbutton_label.configure(
@@ -884,13 +889,94 @@ one special character: !@#$%*?\n''', delay=.25)
     def substitute_foods_screen(self):
         self.clear_makebag_screen()
         self.previous_view = "make_bag_screen"
-        # show box of food that is empty and lower than their itemsperbag var
-        # to select from (could start using radial buttons now with pictures)
-        # show another box of items in stock that will be substituting
-        # and a entry box to type new number, aka we set emtpy food's itemsperbag to 0
-        # then add the entry box number to current itmesperbag to the substituting item
-        # only temporarily, because if they restock then the 'empty' item's itemsperbag
-        # needs to be reset to what it was before
+        # Needs labels and a submit button
+
+        self.d_outofstock = {}
+        self.d_instock = {}
+
+        self.d_photos = {}
+        for key, value in self.d.items():
+            try:
+                self.d_photos[self.d[key]['item']] = tk.PhotoImage(file=f"images/{self.d[key]['item']}.png").subsample(
+                    4, 4)
+
+            except Exception as e:
+                # all make a bag items without a picture will have a ? picture so it can still work
+                self.d_photos[self.d[key]['item']] = tk.PhotoImage(file=f"images/unknown.png").subsample(4, 4)
+
+        outofstock = []
+        instock = []
+
+        for key, value in self.d.items():
+            if self.d[key]['amount'] < self.d[key]['itemsperbag']:
+                outofstock.append(self.d[key]['item'])
+            elif self.d[key]['itemsperbag'] == 0:
+                pass
+            else:
+                instock.append(self.d[key]['item'])
+
+        index = 0
+        for i in outofstock:
+            # checkbox value stored at foodname
+            self.d_outofstock[i] = IntVar()
+
+            l = Checkbutton(text="    " + str(i).upper() + ":   \n" + str(self.d[i]['amount']),
+                            variable=self.d_outofstock[i], image=self.d_photos[f'{i}'], compound='bottom')
+            self.list_l.append(l)
+
+            self.d_outofstock[i].set(1)
+
+            l.place(relx=0.05, rely=0.15 * index + 0.35)
+            # Max is 4, they should never have more than 4 (out of stock/ less than itemsperbag) anyway
+            index += 1
+
+        index = 0
+        offset_y = [0, 0, 0, 0]
+        x = 0.105
+        for j in instock:
+            # checkbox value stored at foodname
+            self.d_instock[j] = IntVar()
+
+            k = Checkbutton(text="    " + str(j).upper() + ":   " + str(self.d[j]['itemsperbag']),
+                            variable=self.d_instock[j], image=self.d_photos[f'{j}'], compound='bottom')
+            self.list_k.append(k)
+
+            if index > 3:
+                offset_x = x
+                offset_y[0] += 1
+                if index > 7:
+                    offset_y[0] = 0
+                    offset_y[1] += 1
+                    offset_x = x * 2
+                    if index > 11:
+                        offset_y[1] = 0
+                        offset_y[2] += 1
+                        offset_x = x * 3
+                        if index > 15:
+                            # At this point it should never happen, but just in case
+                            offset_y[2] = 0
+                            offset_y[3] += 1
+                            offset_x = x * 4
+
+                k.place(relx=0.25 + offset_x,
+                        rely=0.15 * (offset_y[0] + offset_y[1] + offset_y[2] + offset_y[3]) + 0.20)
+            else:
+                k.place(relx=0.25, rely=0.15 * index + 0.35)
+            index += 1
+
+    def substitute_foods_submit(self):
+        self.previous_view = "make_bag_screen"
+        # Need to make it modify txt, probably fake admin
+        # but this is the logic
+        '''
+        for key, value in self.d_outofstock.items():
+            if self.d_outofstock[key].get() == 1:
+                self.d[key]['amount'] = 0
+
+        for key, value in self.d_instock.items():
+            if self.d_instock[key].get() == 1:
+                self.d[key]['amount'] -= self.d[key]['itemsperbag'] * 2
+        '''
 
     # ========================================================
     #                 barcode screen functions
@@ -1112,6 +1198,14 @@ one special character: !@#$%*?\n''', delay=.25)
         self.list_box_3.place_forget()
         self.list_box_3_label.place_forget()
         self.added_barcode_button.place_forget()
+
+
+    def clear_substitutions_page(self):
+        for i in self.list_l:
+            i.place_forget()
+        for j in self.list_k:
+            j.place_forget()
+
 
     # ===================================================================
     #               New items screen and functions
@@ -1472,6 +1566,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.display_inventory_left_side_button.place_forget()
         self.clear_append_barcode()
         self.clear_add_barcode_to_existing()
+        self.clear_substitutions_page()
 
     # clear list boxes
     def clear_list_box(self):
@@ -2365,10 +2460,10 @@ one special character: !@#$%*?\n''', delay=.25)
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
         self.user_screen()
-        # self.admin_screen()
+        #self.admin_screen()
 
-        '''
-        # TODO: commnted out if/else to skip login steps while building program,
+
+        '''# TODO: commnted out if/else to skip login steps while building program,
         #  put back in for finished product
         if self.ready_to_login:
             self.clear_verify()
@@ -2391,8 +2486,8 @@ one special character: !@#$%*?\n''', delay=.25)
         else:
             self.login_failure("username & password invalid", .65, .4)
             self.clear_verify()
-            self.login_info_screen()
-        '''
+            self.login_info_screen()'''
+
 
 
 # ======================================================
