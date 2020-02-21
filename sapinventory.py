@@ -369,6 +369,12 @@ class StartGui(tk.Tk):
                                                         command=lambda: self.substitute_foods_screen())
         self.substitute_foods_screen_button.configure(activebackground=self._activebgcolor, padx=10)
 
+        self.substitute_foods_screen_submit_button = tk.Button(self, text="Submit",
+                                                        background=self._fgcolor, font=(self._font, self._font_medium),
+                                                        command=lambda: self.substitute_foods_submit())
+        self.substitute_foods_screen_submit_button.configure(activebackground=self._activebgcolor, padx=10)
+
+
         # ========================================================================================
         #                                            labels - INIT
         # =======================================================================================
@@ -447,6 +453,10 @@ class StartGui(tk.Tk):
         # invalid entry label
         self.invalid_entry_error_label = tk.Label(self, font=(self._font, self._font_big), fg='red')
         self.delete_label = tk.Label(self, font=(self._font, self._font_big), fg='red')
+
+        self.substitute_foods_screen_label_1 = tk.Label(self, text="Too low for full bag", font=(self._font, self._font_big))
+        self.substitute_foods_screen_label_2 = tk.Label(self, text="Select what will replace them\nThe number amount above the food picture is the\namount you need to add in additionally to the normal amount", font=(self._font, self._font_big))
+        self.substitute_foods_screen_label_3 = tk.Label(self, font=(self._font, self._font_medium))
 
         # ======================================================================================
         #                                         SA army logo - INIT
@@ -887,9 +897,17 @@ one special character: !@#$%*?\n''', delay=.25)
                                 self.nameofLowest = words[0]
 
     def substitute_foods_screen(self):
+        self.d = {}
+        self.make_dict(self.d)
+        # force reset/ update of dict. Really only need it if directly editing the txt
         self.clear_makebag_screen()
         self.previous_view = "make_bag_screen"
         # Needs labels and a submit button
+        self.substitute_foods_screen_label_1.place(relx=.025, rely=.26)
+        self.substitute_foods_screen_label_2.place(relx=.25, rely=.225)
+        self.substitute_foods_screen_label_3.configure(text="When ready hit submit", fg='black')
+        self.substitute_foods_screen_label_3.place(relx=.81, rely=.55)
+        self.substitute_foods_screen_submit_button.place(relx=.85, rely=.6)
 
         self.d_outofstock = {}
         self.d_instock = {}
@@ -912,8 +930,9 @@ one special character: !@#$%*?\n''', delay=.25)
                 outofstock.append(self.d[key]['item'])
             elif self.d[key]['itemsperbag'] == 0:
                 pass
-            else:
+            elif self.d[key]['amount'] >= self.d[key]['itemsperbag'] * 2:
                 instock.append(self.d[key]['item'])
+            # make sure it is eligible to be a sub/ don't want negatives after subtituiting
 
         index = 0
         for i in outofstock:
@@ -921,7 +940,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.d_outofstock[i] = IntVar()
 
             l = Checkbutton(text="    " + str(i).upper() + ":   \n" + str(self.d[i]['amount']),
-                            variable=self.d_outofstock[i], image=self.d_photos[f'{i}'], compound='bottom')
+                            variable=self.d_outofstock[i], image=self.d_photos[f'{i}'], compound='bottom', state=DISABLED)
             self.list_l.append(l)
 
             self.d_outofstock[i].set(1)
@@ -968,7 +987,9 @@ one special character: !@#$%*?\n''', delay=.25)
         self.previous_view = "make_bag_screen"
         # Need to make it modify txt, probably fake admin
         # but this is the logic
-        '''
+        notevenOne = True
+        totalLines = len(open("food.txt").readlines())
+        count = 0
         for key, value in self.d_outofstock.items():
             if self.d_outofstock[key].get() == 1:
                 self.d[key]['amount'] = 0
@@ -976,7 +997,33 @@ one special character: !@#$%*?\n''', delay=.25)
         for key, value in self.d_instock.items():
             if self.d_instock[key].get() == 1:
                 self.d[key]['amount'] -= self.d[key]['itemsperbag'] * 2
-        '''
+            if self.d_instock[key].get() == 1:
+                notevenOne = False
+
+        if notevenOne == True:
+            self.previous_view = "make_bag_screen"
+            self.back_button_func(self.previous_view)
+            self.substitute_foods_screen_label_3.configure(text="No substitutes were selected", fg='red')
+            self.substitute_foods_screen_label_3.place(relx=.655, rely=.75)
+            # Force back button press
+        else:
+            with open('food.txt', 'w') as f:
+                print("item, amount, lowlevel, itemsperbag, barcode", file=f)
+                for p_id, p_info in self.d.items():
+                    self.beautifulString(str(p_id))
+                    if count < totalLines - 2:
+                        self.beautiful_string = str(self.beautiful_string) + '\n'
+                    f.write(str(self.beautiful_string))
+                    count += 1
+
+            self.d = {}
+            self.make_dict(self.d)
+            # most easy way to do it
+
+            self.back_button_func(self.previous_view)
+            # Force back button press
+            self.substitute_foods_screen_label_3.configure(text="Made bag with substitutes", fg='blue')
+            self.substitute_foods_screen_label_3.place(relx=.66, rely=.75)
 
     # ========================================================
     #                 barcode screen functions
@@ -1205,6 +1252,9 @@ one special character: !@#$%*?\n''', delay=.25)
             i.place_forget()
         for j in self.list_k:
             j.place_forget()
+        self.substitute_foods_screen_label_1.place_forget()
+        self.substitute_foods_screen_label_2.place_forget()
+        self.substitute_foods_screen_submit_button.place_forget()
 
 
     # ===================================================================
@@ -1591,6 +1641,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
         self.food_bag_photo_label.place_forget()
         self.substitute_foods_screen_button.place_forget()
+        self.substitute_foods_screen_label_3.place_forget()
 
     # clears user screen
     def clear_user_screen(self):
