@@ -926,7 +926,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 self.list_box_1_label.place(relx=.5, rely=.25, anchor='center')
                 self.list_box_2_label.configure(text=f"If it is blank then you have enough\n in stock to make "
                          f"{int(self.theoretical_bags.get())} bags\n\n\n\n\nElse it will show the\nfood and number "
-                                                     f"needed to buy\nfor {int(self.theoretical_bags.get())} bags",fg="black")
+                                                     f"needed to buy\nfor {int(self.theoretical_bags.get())} bags\n\n\n\nAlso, theoretical.txt\n has a copy of this info",fg="black")
                 self.list_box_2_label.place(relx=.75, rely=.5, anchor='center')
 
                 box1count = 0
@@ -939,6 +939,12 @@ one special character: !@#$%*?\n''', delay=.25)
         else:
             self.make_theoretical_bags_label.configure(text="Enter number\nbetween 0 and 9999", fg='red')
             self.theoretical_bags.set('')
+
+        with open('theoretical.txt', 'w') as f:
+            print("item: amount", file=f)
+            for p_id, p_info in d_needed.items():
+                print(f"{str(p_id)}: {d_needed[p_id]}",file=f)
+
 
     def calculate_max_bags(self):
         self.make_dict(self.d)
@@ -1069,7 +1075,6 @@ one special character: !@#$%*?\n''', delay=.25)
             self.d[key]['amount'] -= self.d[key]['itemsperbag']
             # the in between stock
 
-        print(self.stock)
         if notevenOne == True:
             self.previous_view = "make_bag_screen"
             self.back_button_func(self.previous_view)
