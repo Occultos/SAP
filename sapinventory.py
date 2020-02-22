@@ -932,6 +932,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
         outofstock = []
         instock = []
+        self.stock = []
 
         for key, value in self.d.items():
             if self.d[key]['amount'] < self.d[key]['itemsperbag']:
@@ -941,6 +942,9 @@ one special character: !@#$%*?\n''', delay=.25)
             elif self.d[key]['amount'] >= self.d[key]['itemsperbag'] * 2:
                 instock.append(self.d[key]['item'])
             # make sure it is eligible to be a sub/ don't want negatives after subtituiting
+            else:
+                self.stock.append(self.d[key]['item'])
+
 
         index = 0
         for i in outofstock:
@@ -1007,6 +1011,11 @@ one special character: !@#$%*?\n''', delay=.25)
                 self.d[key]['amount'] -= self.d[key]['itemsperbag'] * 2
             if self.d_instock[key].get() == 1:
                 notevenOne = False
+
+        for key in self.stock:
+            self.d[key]['amount'] -= self.d[key]['itemsperbag']
+            # the in between stock
+
 
         if notevenOne == True:
             self.previous_view = "make_bag_screen"
@@ -2532,8 +2541,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        #self.user_screen()
-        self.admin_screen()
+        self.user_screen()
+        #self.admin_screen()
 
 
         '''# TODO: commnted out if/else to skip login steps while building program,
