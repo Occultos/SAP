@@ -852,7 +852,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     # made a bag
     def made_a_bag_screen(self, d):
-        if str(self.many_bags.get()).isnumeric() == True and int(self.many_bags.get()) <= int(self.lowestRatio):
+        if str(self.many_bags.get()).isnumeric() == True and int(self.many_bags.get()) <= int(self.lowestRatio) and int(self.many_bags.get()) > 0:
             self.numberofBags = int(self.many_bags.get())
             self.many_bags.set("")
 
