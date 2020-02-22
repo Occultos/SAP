@@ -995,7 +995,7 @@ one special character: !@#$%*?\n''', delay=.25)
             elif self.d[key]['amount'] >= self.d[key]['itemsperbag'] * 2:
                 instock.append(self.d[key]['item'])
             # make sure it is eligible to be a sub/ don't want negatives after subtituiting
-            else:
+            if self.d[key]['amount'] >= self.d[key]['itemsperbag']:
                 self.stock.append(self.d[key]['item'])
 
 
@@ -1062,14 +1062,14 @@ one special character: !@#$%*?\n''', delay=.25)
         for key, value in self.d_instock.items():
             if self.d_instock[key].get() == 1:
                 self.d[key]['amount'] -= self.d[key]['itemsperbag'] * 2
-            if self.d_instock[key].get() == 1:
                 notevenOne = False
+                self.stock.remove(key)
 
         for key in self.stock:
             self.d[key]['amount'] -= self.d[key]['itemsperbag']
             # the in between stock
 
-
+        print(self.stock)
         if notevenOne == True:
             self.previous_view = "make_bag_screen"
             self.back_button_func(self.previous_view)
