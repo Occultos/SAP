@@ -336,6 +336,11 @@ class StartGui(tk.Tk):
                                                  command=lambda: self.admin_email_inventory(self.d))
         self.admin_email_send_button.configure(activebackground=self._activebgcolor)
 
+        # make csv for excel
+        self.make_csv_button = tk.Button(self, background=self._fgcolor, font=(self._font, self._font_medium),
+                                                 command=lambda: self.make_csv())
+        self.make_csv_button.configure(activebackground=self._activebgcolor)
+
         # =============================================================================
         #                 END Admin screen buttons
         # =============================================================================
@@ -765,8 +770,10 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.admin_email_inventory_button, .845, .835)
         place_object(self.display_inventory_high_low_outofstock_button, .845, .77)
         place_object(self.display_users_button, .845, .705)
-        # TODO edit inventory option
         place_object(self.edit_inventory_button, .845, .64)
+        # add export to csv button
+        self.make_csv_button.configure(text="Make Excel .csv", padx=3)
+        place_object(self.make_csv_button, .845, .575)
 
     def user_screen(self):
         self.isModifying = "as_user"
@@ -1025,6 +1032,18 @@ one special character: !@#$%*?\n''', delay=.25)
             # Force back button press
             self.substitute_foods_screen_label_3.configure(text="Made bag with substitutes", fg='blue')
             self.substitute_foods_screen_label_3.place(relx=.66, rely=.75)
+
+    def make_csv(self):
+        import csv
+        fieldnames = ['item', 'amount', 'lowlevel', 'itemsperbag', 'barcodes']
+        with open("food.csv", "w") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            print("'Name of food', 'Current Amount', 'Low Level Threshold', 'Items per food bag', 'List of Barcodes'\n", file=f)
+            for fruit, fruit_info in self.d.items():
+                row = fruit_info
+                row.update({"item": fruit})
+                writer.writerow(row)
+        self.make_csv_button.configure(text="Made food.csv", padx=13)
 
     # ========================================================
     #                 barcode screen functions
@@ -1618,6 +1637,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.clear_append_barcode()
         self.clear_add_barcode_to_existing()
         self.clear_substitutions_page()
+        self.clear_admin_screen()
 
     # clear list boxes
     def clear_list_box(self):
@@ -1664,6 +1684,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.enter_email_add_label.place_forget()
         self.enter_email_add_entry.place_forget()
         self.admin_email_send_button.place_forget()
+        self.make_csv_button.place_forget()
 
     # clear remove items screen
     def clear_todo_label(self):
@@ -2511,8 +2532,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        self.user_screen()
-        #self.admin_screen()
+        #self.user_screen()
+        self.admin_screen()
 
 
         '''# TODO: commnted out if/else to skip login steps while building program,
