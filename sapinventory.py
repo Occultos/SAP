@@ -921,7 +921,7 @@ one special character: !@#$%*?\n''', delay=.25)
                         d_needed[key] = -1 * d_calc[key]['amount']
 
                 self.clear_list_box()
-                self.list_box_1.place(relx=.4, rely=.3, relwidth=.2, relheight=.6)
+                self.list_box_1.place(x=.4*1920, y=.3*1080, relwidth=.2, relheight=.6)
                 self.list_box_1_label.configure(text=f"What will be needed for {int(self.theoretical_bags.get())} bags\n including current stock", fg="black")
                 self.list_box_1_label.place(relx=.5, rely=.25, anchor='center')
                 self.list_box_2_label.configure(text=f"If it is blank then you have enough\n in stock to make "
@@ -2397,6 +2397,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.list_box_3_label.place(relx=.65, rely=.25)
         self.list_box_3_label.configure(font=(self._font, self._font_medium), fg='black', text="INVENTORY")
         self.list_box_2_label.config(font=(self._font, self._font_medium), text="LOW INVENTORY")
+        self.list_box_1_label.configure(text="OUT OF STOCK")
         box1count = 0
         box2count = 0
         box3count = 0
