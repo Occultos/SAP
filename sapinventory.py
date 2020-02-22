@@ -856,10 +856,12 @@ one special character: !@#$%*?\n''', delay=.25)
             self.numberofBags = int(self.many_bags.get())
             self.many_bags.set("")
 
-            n = self.numberofBags
+            '''n = self.numberofBags
             while n > 0:
                 n -= 1
-                self.lower_inventory(d)
+                self.lower_inventory(d)'''
+
+            self.lower_inventory_new()
 
             self.clear_makebag_screen()
             self.previous_view = "make_bag_screen"
@@ -870,6 +872,23 @@ one special character: !@#$%*?\n''', delay=.25)
             self.delete_label.configure(text="Enter number > 0\nand needs to be less than bags left")
             self.delete_label.place(relx=.75, rely=.3, anchor="center")
             self.many_bags.set("")
+
+    def lower_inventory_new(self):
+        count = 0
+        totalLines = len(open("food.txt").readlines())
+        with open('food.txt', 'w') as f:
+            print("item, amount, lowlevel, itemsperbag, barcode", file=f)
+            for p_id, p_info in self.d.items():
+                self.d[p_id]['amount'] -= self.d[p_id]['itemsperbag'] * self.numberofBags
+                self.beautifulString(str(p_id))
+                if count < totalLines - 2:
+                    self.beautiful_string = str(self.beautiful_string) + '\n'
+                f.write(str(self.beautiful_string))
+                count += 1
+        self.bag_of_food_removed_from_inventory.configure(text=f"{int(self.numberofBags)} bag(s) of food removed")
+        self.bag_of_food_removed_from_inventory.place(relx=.4, rely=.9325)
+        self.d = {}
+        self.make_dict(self.d)
 
     # make bag screen
     def make_bag_screen(self):
@@ -933,18 +952,17 @@ one special character: !@#$%*?\n''', delay=.25)
                 for item_id, item_info in d_needed.items():
                     box1count += 1
                     self.list_box_1.insert(box1count, item_id + ' : ' + str(item_info))
+
+                with open('theoretical.txt', 'w') as f:
+                    print(f"Amount and items needed for {int(self.theoretical_bags.get())} bags\nThis is after current stocks goes to zero\nitem: amount", file=f)
+                    for p_id, p_info in d_needed.items():
+                        print(f"{str(p_id)}: {d_needed[p_id]}", file=f)
             else:
                 self.make_theoretical_bags_label.configure(text="Enter number\nbetween 0 and 9999", fg='red')
                 self.theoretical_bags.set('')
         else:
             self.make_theoretical_bags_label.configure(text="Enter number\nbetween 0 and 9999", fg='red')
             self.theoretical_bags.set('')
-
-        with open('theoretical.txt', 'w') as f:
-            print("item: amount", file=f)
-            for p_id, p_info in d_needed.items():
-                print(f"{str(p_id)}: {d_needed[p_id]}",file=f)
-
 
     def calculate_max_bags(self):
         self.make_dict(self.d)
