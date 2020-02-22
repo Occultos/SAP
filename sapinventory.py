@@ -362,6 +362,17 @@ class StartGui(tk.Tk):
         self.many_bags_entry = tk.Entry(self, font=(self._font, self._font_big),
                                         textvariable=self.many_bags, width=20)
 
+        # make theoretical bags
+        self.make_theoretical_bags_button = tk.Button(self, text="Calculate",
+                                               background=self._fgcolor, font=(self._font, self._font_medium),
+                                               command=lambda: self.make_theoretical_bags())
+        self.make_theoretical_bags_button.configure(activebackground=self._activebgcolor)
+
+        # make_theoretical_bags entry box
+        self.theoretical_bags = tk.StringVar()
+        self.theoretical_bags_entry = tk.Entry(self, font=(self._font, self._font_big),
+                                        textvariable=self.theoretical_bags, width=10)
+
         # make ANOTHER bag
         self.make_another_bag_button = tk.Button(self, text="Make more bags",
                                                  background=self._fgcolor, font=(self._font, self._font_medium),
@@ -463,6 +474,8 @@ class StartGui(tk.Tk):
         self.substitute_foods_screen_label_2 = tk.Label(self, text="Select what will replace them\nThe number amount above the food picture is the\namount you need to add in additionally to the normal amount", font=(self._font, self._font_big))
         self.substitute_foods_screen_label_3 = tk.Label(self, font=(self._font, self._font_medium))
         self.substitute_foods_screen_label_4 = tk.Label(self, font=(self._font, self._font_medium))
+
+        self.make_theoretical_bags_label = tk.Label(self,text="To calculate\ninventory needed \nto make x number \nof theoretical bags", font=(self._font, self._font_small))
 
         # ======================================================================================
         #                                         SA army logo - INIT
@@ -872,6 +885,11 @@ one special character: !@#$%*?\n''', delay=.25)
         self.make_many_bags_button.place(relx=.75, rely=.4, anchor="center")
         self.many_bags.set('1')
         self.many_bags_entry.place(relx=.75, rely=.47, anchor="center")
+        self.make_theoretical_bags_button.place(relx=.075, rely=.4, anchor="center")
+        self.theoretical_bags_entry.place(relx=.075, rely=.47, anchor="center")
+        self.theoretical_bags.set('')
+        self.make_theoretical_bags_label.configure(text="To calculate\ninventory needed \nto make x number \nof theoretical bags", fg="black")
+        self.make_theoretical_bags_label.place(relx=.075, rely=.30, anchor="center")
         if int(self.lowestRatio) > 0:
             self.checkbutton_label.configure(
                 text=f"Enter number of Bags to make\n\n\n{int(self.lowestRatio)} Full bag(s) left\n\n\n{str(self.nameofLowest).upper()}: is the bottleneck")
@@ -886,6 +904,41 @@ one special character: !@#$%*?\n''', delay=.25)
 
         self.backup_place()
         self.previous_view = "user_screen"
+
+    def make_theoretical_bags(self):
+        if self.theoretical_bags.get().isnumeric():
+            if int(self.theoretical_bags.get()) > 0 and int(self.theoretical_bags.get()) <= 9999:
+                self.previous_view = "make_bag_screen"
+                self.clear_makebag_screen()
+
+                d_calc = {}
+                d_calc = self.d
+                d_needed = {}
+
+                for key, value in d_calc.items():
+                    d_calc[key]['amount'] -= d_calc[key]['itemsperbag'] * int(self.theoretical_bags.get())
+                    if d_calc[key]['amount'] < 0:
+                        d_needed[key] = -1 * d_calc[key]['amount']
+
+                self.clear_list_box()
+                self.list_box_1.place(relx=.4, rely=.3, relwidth=.2, relheight=.6)
+                self.list_box_1_label.configure(text=f"What will be needed for {int(self.theoretical_bags.get())} bags\n including current stock", fg="black")
+                self.list_box_1_label.place(relx=.5, rely=.25, anchor='center')
+                self.list_box_2_label.configure(text=f"If it is blank then you have enough\n in stock to make "
+                         f"{int(self.theoretical_bags.get())} bags\n\n\n\n\nElse it will show the\nfood and number "
+                                                     f"needed to buy\nfor {int(self.theoretical_bags.get())} bags",fg="black")
+                self.list_box_2_label.place(relx=.75, rely=.5, anchor='center')
+
+                box1count = 0
+                for item_id, item_info in d_needed.items():
+                    box1count += 1
+                    self.list_box_1.insert(box1count, item_id + ' : ' + str(item_info))
+            else:
+                self.make_theoretical_bags_label.configure(text="Enter number\nbetween 0 and 9999", fg='red')
+                self.theoretical_bags.set('')
+        else:
+            self.make_theoretical_bags_label.configure(text="Enter number\nbetween 0 and 9999", fg='red')
+            self.theoretical_bags.set('')
 
     def calculate_max_bags(self):
         self.make_dict(self.d)
@@ -1672,6 +1725,9 @@ one special character: !@#$%*?\n''', delay=.25)
         self.food_bag_photo_label.place_forget()
         self.substitute_foods_screen_button.place_forget()
         self.substitute_foods_screen_label_3.place_forget()
+        self.make_theoretical_bags_button.place_forget()
+        self.theoretical_bags_entry.place_forget()
+        self.make_theoretical_bags_label.place_forget()
 
     # clears user screen
     def clear_user_screen(self):
