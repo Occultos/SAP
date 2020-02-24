@@ -410,6 +410,8 @@ class StartGui(tk.Tk):
                                               text="food.txt file missing")
         self.bag_of_food_removed_from_inventory = tk.Label(self, font=(self._font, self._font_small),
                                                            text="1 bag of food removed from inventory")
+        self.to_many_missing_items = tk.Label(self, font=(self._font, self._font_small),
+                                                           text="To many missing items")
         # ==================================================================
         #                    new item labels
         # ==================================================================
@@ -928,7 +930,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def make_theoretical_bags(self):
         if self.theoretical_bags.get().isnumeric():
-            if int(self.theoretical_bags.get()) > 0 and int(self.theoretical_bags.get()) <= 9999:
+            if int(self.theoretical_bags.get()) > 0 and int(self.theoretical_bags.get()) <= 999999999999:
                 self.previous_view = "make_bag_screen"
                 self.clear_makebag_screen()
 
@@ -1023,7 +1025,14 @@ one special character: !@#$%*?\n''', delay=.25)
             # make sure it is eligible to be a sub/ don't want negatives after subtituiting
             if self.d[key]['amount'] >= self.d[key]['itemsperbag']:
                 self.stock.append(self.d[key]['item'])
-
+        if outofstock.__len__() > 3:
+            #print("To many missing items")
+            self.clear_substitutions_page()
+            self.make_bag_screen()
+            #self.to_many_missing_items.place()
+            self.substitute_foods_screen_label_3.configure(text="To many missing items", fg='red')
+            self.substitute_foods_screen_label_3.place(relx=.655, rely=.75)
+            return
 
         index = 0
         for i in outofstock:
@@ -1122,14 +1131,18 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def make_csv(self):
         import csv
+        count = 0
+        totalLines = len(open("food.txt").readlines())
         fieldnames = ['item', 'amount', 'lowlevel', 'itemsperbag', 'barcodes']
         with open("food.csv", "w") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             print("'Name of food', 'Current Amount', 'Low Level Threshold', 'Items per food bag', 'List of Barcodes'\n", file=f)
-            for fruit, fruit_info in self.d.items():
-                row = fruit_info
-                row.update({"item": fruit})
-                writer.writerow(row)
+            for p_id, p_info in self.d.items():
+                self.beautifulString(str(p_id))
+                if count < totalLines - 2:
+                    self.beautiful_string = str(self.beautiful_string) + '\n'
+                f.write(str(self.beautiful_string))
+                count += 1
         self.make_csv_button.configure(text="Made food.csv", padx=13)
 
     # ========================================================
@@ -1907,7 +1920,7 @@ one special character: !@#$%*?\n''', delay=.25)
                         amount = int(words[1])
                         lowlevel = int(words[2])
                         itemsperbag = int(words[3])
-                        barcodes = [''] * 10
+                        barcodes = [''] * 100
                         self.barcodesLenght = barcodes.__len__()
                         # could use None but '' looks better
                         d[item] = {}
@@ -2641,8 +2654,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        #self.user_screen()
-        self.admin_screen()
+        self.user_screen()
+        #self.admin_screen()
 
 
         '''# TODO: commnted out if/else to skip login steps while building program,
