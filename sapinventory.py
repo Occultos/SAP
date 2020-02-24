@@ -1207,6 +1207,8 @@ one special character: !@#$%*?\n''', delay=.25)
                                 for ndex in range(len(tokens))[4:]:
                                     if str(tokens[ndex].strip()) == str(item_to_find):
                                         if direction == 'Barcodes':
+                                            if str(self.list_of_items_words).count('\n') > 20:
+                                                self.list_of_items_words = ''
                                             tokens[1] = str(int(tokens[1]) + int(self.barcode_scanner_amount.get()))
                                             self.list_of_items_words = self.list_of_items_words + \
                                                                        'added ' + \
@@ -1217,6 +1219,8 @@ one special character: !@#$%*?\n''', delay=.25)
                                             self.list_of_items_label.config(text=self.list_of_items_words)
 
                                         if direction == 'Barcodes ':
+                                            if str(self.list_of_items_words).count('\n') > 20:
+                                                self.list_of_items_words = ''
                                             tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
                                             self.list_of_items_words = self.list_of_items_words + \
                                                                        'removed ' + \
