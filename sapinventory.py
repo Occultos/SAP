@@ -435,6 +435,8 @@ class StartGui(tk.Tk):
                                                text="Exceeds maximum number of barcodes holdable\nfor this item")
         self.exist_already_label = tk.Label(self, font=(self._font, self._font_small),
                                             text="Already Exist")
+        self.barcode_exist_error = tk.Label(self, font=(self._font, self._font_small),
+                                            text="Barcode Already Exist")
 
         self.create_new_added = tk.Label(self, font=(self._font, self._font_small),
                                          text="Added item")
@@ -1248,6 +1250,12 @@ one special character: !@#$%*?\n''', delay=.25)
         self.clear_list_box()
         self.view_inventory_one_list_box(self.d, 'left')
 
+    def barcode_exist(self, code):
+        for key, value in self.d.items():
+            if code in self.d[key]['barcodes']:
+                return True
+        return False
+
     def add_barcode_to_existing(self):
         # pulls up list of notfound
         # lets user select from box for which item to add barcode to
@@ -1484,6 +1492,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_added.place_forget()
             self.exceeds_barcode_length.place_forget()
             self.exist_already_label.place_forget()
+            self.barcode_exist_error.place_forget()
             return 0
         elif ((str(self.create_new_item_input.get()) in self.d) == True and self.isModifying == "as_user") or \
                 (self.isModifying == "is_admin_modifying_with_check" and (
@@ -1493,6 +1502,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_submit_error.place_forget()
             self.create_new_added.place_forget()
             self.exceeds_barcode_length.place_forget()
+            self.barcode_exist_error.place_forget()
             return 0
         elif re.search("[^a-zA-Z\s]", self.create_new_item_input.get()) != None or \
                 str(self.create_new_item_input.get()).count("  ") > 0 or str(self.create_new_item_input.get()).endswith(
@@ -1506,6 +1516,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_added.place_forget()
             self.exceeds_barcode_length.place_forget()
             self.exist_already_label.place_forget()
+            self.barcode_exist_error.place_forget()
             return 0
         elif (str(self.create_new_item_input_amount.get()).isnumeric() == False or
               str(self.create_new_item_input_low_level.get().isnumeric()) == False or
@@ -1525,12 +1536,19 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_added.place_forget()
             self.exceeds_barcode_length.place_forget()
             self.exist_already_label.place_forget()
+            self.barcode_exist_error.place_forget()
             return 0
         else:
             if int(self.newItem.count(",")) > int(self.barcodesLenght - 2):
                 place_object(self.exceeds_barcode_length, .655, .6)
                 return 0
             # check to see if barcode limit is reached via comma count
+
+            #or (self.isModifying == "is_admin_modifying_with_check" and (str(self.create_new_item_input.get()) in self.d) == True)
+
+            if self.barcode_exist(int(self.create_new_item_input_barcode.get())) == True and self.isModifying == "is_admin_modifying_with_check":
+                place_object(self.barcode_exist_error, .7, .6)
+                return 0
 
             for index in range(str(self.newItem).find(","), len(self.newItem) - 1):
                 if self.newItem[index] == ',' and self.newItem[index + 1] != " ":
@@ -1547,6 +1565,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.create_new_added.place_forget()
             self.exceeds_barcode_length.place_forget()
             self.exist_already_label.place_forget()
+            self.barcode_exist_error.place_forget()
             place_object(self.create_new_added, .73, .6)
             return 1
 
@@ -1670,6 +1689,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.backup_button_with_d_button.place_forget()
 
         self.notFound_label.place_forget()
+        self.barcode_exist_error.place_forget()
 
     # clear everything back to login screen
     def clear_to_login(self):
@@ -2621,8 +2641,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        self.user_screen()
-        #self.admin_screen()
+        #self.user_screen()
+        self.admin_screen()
 
 
         '''# TODO: commnted out if/else to skip login steps while building program,
