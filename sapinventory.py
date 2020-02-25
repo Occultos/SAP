@@ -2019,16 +2019,18 @@ one special character: !@#$%*?\n''', delay=.25)
         print(self.username_for_event_log.cget("text") + " logging out " + str(self.logout_time))
 
     def compare_files(self, file_one, file_two):
-        with open(file_one, 'r') as file1, open(file_two, 'r') as file2:
-            line_form = '{:3d} {}'.format
-            file1_lines = [line_form(i, line) for i, line in enumerate(file1, 1)]
-            file2_lines = [line_form(i, line) for i, line in enumerate(file2, 1)]
-            results = difflib.Differ().compare(file1_lines, file2_lines)
-            for line in results:
-                if line[0] == '+' or line[0] == '-' or line[0] == '?':
-                    sys.stdout.writelines(line)
-        print("comparing files here")
-        print(str(file_one) + " " + str(file_two))
+        try:
+            with open(file_one, 'r') as file1, open(file_two, 'r') as file2:
+                line_form = '{:3d} {}'.format
+                file1_lines = [line_form(i, line) for i, line in enumerate(file1, 1)]
+                file2_lines = [line_form(i, line) for i, line in enumerate(file2, 1)]
+                results = difflib.Differ().compare(file1_lines, file2_lines)
+                for line in results:
+                    if line[0] == '+' or line[0] == '-':
+                        print(line)
+                print("\ncomparing files : " + str(file_one) + " " + str(file_two))
+        except Exception as e:
+            print("error in compare_files : " + str(e))
 
 
     def exit_program(self):
