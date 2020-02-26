@@ -1209,13 +1209,16 @@ one special character: !@#$%*?\n''', delay=.25)
             intcheck = int(qty)
             intcheck = int(item_to_find)
             try:
+                totalLines = len(open("food.txt").readlines())
                 shutil.move("food.txt", "food.txt" + "~")
                 with open("food.txt", "w+") as dest:
                     dest.seek(0, os.SEEK_SET)
                     with open("food.txt" + "~", "r+") as src:
                         src.seek(0, os.SEEK_SET)
                         newitem = True
+                        count = 0
                         for line in src:
+                            count += 1
                             if not re.match(r'^\s*$', line):  # skips blank lines
                                 found = False
                                 tokens = re.split(", ", line.strip())
@@ -1247,7 +1250,10 @@ one special character: !@#$%*?\n''', delay=.25)
                                             self.list_of_items_label.config(text=self.list_of_items_words)
                                         found = True
                                         newitem = False
-                                        dest.write(", ".join(tokens) + '\n')
+                                        if count <= totalLines:
+                                            dest.write(", ".join(tokens))
+                                        else:
+                                            dest.write(", ".join(tokens) + '\n')
                                 if found is False:
                                     dest.write(line)
                         if newitem:
@@ -2286,17 +2292,23 @@ one special character: !@#$%*?\n''', delay=.25)
     def confirm_inventory_manual_button_cmd(self):
         try:
             parsed_name_to_be_changed = re.split(":", self.item_to_be_changed.strip())[0]
+            totalLines = len(open("food.txt").readlines())
             shutil.move("food.txt", "food.txt" + "~")
             with open("food.txt", "w+") as dest:
                 dest.seek(0, os.SEEK_SET)
                 with open("food.txt" + "~", "r+") as src:
                     src.seek(0, os.SEEK_SET)
+                    count = 0
                     for line in src:
+                        count += 1
                         if not re.match(r'^\s*$', line):
                             tokens = re.split(",", line.strip())
                             if tokens[0] == parsed_name_to_be_changed.strip():
                                 tokens[1] = ' ' + str(self.new_inventory_amount)
-                                dest.write(",".join(tokens) + '\n')
+                                if count <= totalLines:
+                                    dest.write(",".join(tokens))
+                                else:
+                                    dest.write(",".join(tokens) + '\n')
                             else:
                                 dest.write(line)
             self.back_button_func(self.previous_view)
