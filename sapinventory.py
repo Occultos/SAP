@@ -894,8 +894,8 @@ one special character: !@#$%*?\n''', delay=.25)
             self.bag_of_food_removed_from_inventory.place(relx=.4, rely=.9325)
             self.d = {}
             self.make_dict(self.d)
-        except Exception:
-            print("error in opening food.txt : ")
+        except Exception as e:
+            print("error in opening food.txt : lower_inventory_new" + str(e))
 
     # make bag screen
     def make_bag_screen(self):
@@ -964,8 +964,8 @@ one special character: !@#$%*?\n''', delay=.25)
                         print(f"Amount and items needed for {int(self.theoretical_bags.get())} bags\nThis is after current stocks goes to zero\nitem: amount", file=f)
                         for p_id, p_info in d_needed.items():
                             print(f"{str(p_id)}: {d_needed[p_id]}", file=f)
-                except Exception:
-                    print("error in writing theoretical.txt: ")
+                except Exception as e:
+                    print("error in writing theoretical.txt: make_theoretical_bags : " + str(e))
             else:
                 self.make_theoretical_bags_label.configure(text="Enter number\nbetween 0 and 9999", fg='red')
                 self.theoretical_bags.set('')
@@ -990,8 +990,8 @@ one special character: !@#$%*?\n''', delay=.25)
                                 if (int(words[1]) / int(words[3])) < self.lowestRatio:
                                     self.lowestRatio = int(words[1]) / int(words[3])
                                     self.nameofLowest = words[0]
-        except Exception:
-            print("error in reading food.txt: ")
+        except Exception as e:
+            print("error in reading food.txt: calculate_max_bags : " + str(e))
 
     def substitute_foods_screen(self):
         self.d = {}
@@ -1097,8 +1097,8 @@ one special character: !@#$%*?\n''', delay=.25)
         notevenOne = True
         try:
             totalLines = len(open("food.txt").readlines())
-        except Exception:
-            print("error in reading food.txt: ")
+        except Exception as e:
+            print("error in reading food.txt: substitute_foods_submit : total lines : " + str(e))
         count = 0
         for key, value in self.d_outofstock.items():
             if self.d_outofstock[key].get() == 1:
@@ -1130,8 +1130,8 @@ one special character: !@#$%*?\n''', delay=.25)
                             self.beautiful_string = str(self.beautiful_string) + '\n'
                         f.write(str(self.beautiful_string))
                         count += 1
-            except Exception:
-                print("error writing food.txt")
+            except Exception as e:
+                print("error writing food.txt : substitute_foods_submit : beautiful string : " + str(e))
 
             self.d = {}
             self.make_dict(self.d)
@@ -1159,7 +1159,7 @@ one special character: !@#$%*?\n''', delay=.25)
                     count += 1
             self.make_csv_button.configure(text="Made food.csv", padx=13)
         except Exception:
-            print("error in reading food.txt")
+            print("error in reading food.txt make_csv : " + str(e))
     # ========================================================
     #                 barcode screen functions
     # =======================================================
@@ -1370,7 +1370,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 f.write(s)
                 f.close()
             except Exception:
-                print("error in opening food.txt")
+                print("error in opening food.txt added_barcode : " + str(e))
 
             # clear only the item from self.notfound selected
             self.notFound.remove(self.barcode_to_be_added)
@@ -1985,8 +1985,8 @@ one special character: !@#$%*?\n''', delay=.25)
                 f = open("food.txt", 'w')
                 f.write(s)
                 f.close()
-            except Exception:
-                print("error in opening food.txt")
+            except Exception as e:
+                print("error in opening food.txt : append food : replace" + str(e))
             # forces a back button press on success
             self.previous_view = "admin_edit_main"
             self.backup_button_with_d(d, self.previous_view)
@@ -2002,7 +2002,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 with open("food.txt", "a") as f:
                     f.write("\n" + newItem)
             except Exception:
-                print("error in appending food.txt")
+                print("error in appending food.txt with open : " + str(e))
 
     # =============================================================================
     #                Display inventory - user mode
@@ -2179,7 +2179,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 f.write(s)
                 f.close()
             except Exception:
-                print("error in opening food.txt")
+                print("error in opening food.txt delete item : "+str(e))
 
             self.delete_label.configure(text=f"{str(string_key).upper()}\nWas Deleted")
             del self.d[string_key]
