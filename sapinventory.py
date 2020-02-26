@@ -879,20 +879,23 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def lower_inventory_new(self):
         count = 0
-        totalLines = len(open("food.txt").readlines())
-        with open('food.txt', 'w') as f:
-            print("item, amount, lowlevel, itemsperbag, barcode", file=f)
-            for p_id, p_info in self.d.items():
-                self.d[p_id]['amount'] -= self.d[p_id]['itemsperbag'] * self.numberofBags
-                self.beautifulString(str(p_id))
-                if count < totalLines - 2:
-                    self.beautiful_string = str(self.beautiful_string) + '\n'
-                f.write(str(self.beautiful_string))
-                count += 1
-        self.bag_of_food_removed_from_inventory.configure(text=f"{int(self.numberofBags)} bag(s) of food removed")
-        self.bag_of_food_removed_from_inventory.place(relx=.4, rely=.9325)
-        self.d = {}
-        self.make_dict(self.d)
+        try:
+            totalLines = len(open("food.txt").readlines())
+            with open('food.txt', 'w') as f:
+                print("item, amount, lowlevel, itemsperbag, barcode", file=f)
+                for p_id, p_info in self.d.items():
+                    self.d[p_id]['amount'] -= self.d[p_id]['itemsperbag'] * self.numberofBags
+                    self.beautifulString(str(p_id))
+                    if count < totalLines - 2:
+                        self.beautiful_string = str(self.beautiful_string) + '\n'
+                    f.write(str(self.beautiful_string))
+                    count += 1
+            self.bag_of_food_removed_from_inventory.configure(text=f"{int(self.numberofBags)} bag(s) of food removed")
+            self.bag_of_food_removed_from_inventory.place(relx=.4, rely=.9325)
+            self.d = {}
+            self.make_dict(self.d)
+        except Exception:
+            print("error in opening food.txt : ")
 
     # make bag screen
     def make_bag_screen(self):
@@ -956,11 +959,13 @@ one special character: !@#$%*?\n''', delay=.25)
                 for item_id, item_info in d_needed.items():
                     box1count += 1
                     self.list_box_1.insert(box1count, item_id + ' : ' + str(item_info))
-
-                with open('theoretical.txt', 'w') as f:
-                    print(f"Amount and items needed for {int(self.theoretical_bags.get())} bags\nThis is after current stocks goes to zero\nitem: amount", file=f)
-                    for p_id, p_info in d_needed.items():
-                        print(f"{str(p_id)}: {d_needed[p_id]}", file=f)
+                try:
+                    with open('theoretical.txt', 'w') as f:
+                        print(f"Amount and items needed for {int(self.theoretical_bags.get())} bags\nThis is after current stocks goes to zero\nitem: amount", file=f)
+                        for p_id, p_info in d_needed.items():
+                            print(f"{str(p_id)}: {d_needed[p_id]}", file=f)
+                except Exception:
+                    print("error in writing theoretical.txt: ")
             else:
                 self.make_theoretical_bags_label.configure(text="Enter number\nbetween 0 and 9999", fg='red')
                 self.theoretical_bags.set('')
@@ -972,18 +977,21 @@ one special character: !@#$%*?\n''', delay=.25)
         self.make_dict(self.d)
         self.lowestRatio = 9999.9
         self.nameofLowest = ""
-        with open("food.txt", "r+") as src:
-            n = 0
-            for line in src:
-                if not re.match(r'^\s*$', line):
-                    if n == 0:
-                        n += 1
-                    else:
-                        words = line.split(", ")
-                        if int(words[3]) != 0:
-                            if (int(words[1]) / int(words[3])) < self.lowestRatio:
-                                self.lowestRatio = int(words[1]) / int(words[3])
-                                self.nameofLowest = words[0]
+        try:
+            with open("food.txt", "r+") as src:
+                n = 0
+                for line in src:
+                    if not re.match(r'^\s*$', line):
+                        if n == 0:
+                            n += 1
+                        else:
+                            words = line.split(", ")
+                            if int(words[3]) != 0:
+                                if (int(words[1]) / int(words[3])) < self.lowestRatio:
+                                    self.lowestRatio = int(words[1]) / int(words[3])
+                                    self.nameofLowest = words[0]
+        except Exception:
+            print("error in reading food.txt: ")
 
     def substitute_foods_screen(self):
         self.d = {}
@@ -1006,8 +1014,7 @@ one special character: !@#$%*?\n''', delay=.25)
             try:
                 self.d_photos[self.d[key]['item']] = tk.PhotoImage(file=f"images/{self.d[key]['item']}.png").subsample(
                     4, 4)
-
-            except Exception as e:
+            except Exception:
                 # all make a bag items without a picture will have a ? picture so it can still work
                 self.d_photos[self.d[key]['item']] = tk.PhotoImage(file=f"images/unknown.png").subsample(4, 4)
 
@@ -1088,7 +1095,10 @@ one special character: !@#$%*?\n''', delay=.25)
         # Need to make it modify txt, probably fake admin
         # but this is the logic
         notevenOne = True
-        totalLines = len(open("food.txt").readlines())
+        try:
+            totalLines = len(open("food.txt").readlines())
+        except Exception:
+            print("error in reading food.txt: ")
         count = 0
         for key, value in self.d_outofstock.items():
             if self.d_outofstock[key].get() == 1:
@@ -1111,14 +1121,17 @@ one special character: !@#$%*?\n''', delay=.25)
             self.substitute_foods_screen_label_3.place(relx=.655, rely=.75)
             # Force back button press
         else:
-            with open('food.txt', 'w') as f:
-                print("item, amount, lowlevel, itemsperbag, barcode", file=f)
-                for p_id, p_info in self.d.items():
-                    self.beautifulString(str(p_id))
-                    if count < totalLines - 2:
-                        self.beautiful_string = str(self.beautiful_string) + '\n'
-                    f.write(str(self.beautiful_string))
-                    count += 1
+            try:
+                with open('food.txt', 'w') as f:
+                    print("item, amount, lowlevel, itemsperbag, barcode", file=f)
+                    for p_id, p_info in self.d.items():
+                        self.beautifulString(str(p_id))
+                        if count < totalLines - 2:
+                            self.beautiful_string = str(self.beautiful_string) + '\n'
+                        f.write(str(self.beautiful_string))
+                        count += 1
+            except Exception:
+                print("error writing food.txt")
 
             self.d = {}
             self.make_dict(self.d)
@@ -1132,19 +1145,21 @@ one special character: !@#$%*?\n''', delay=.25)
     def make_csv(self):
         import csv
         count = 0
-        totalLines = len(open("food.txt").readlines())
-        fieldnames = ['item', 'amount', 'lowlevel', 'itemsperbag', 'barcodes']
-        with open("food.csv", "w") as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            print("'Name of food', 'Current Amount', 'Low Level Threshold', 'Items per food bag', 'List of Barcodes'\n", file=f)
-            for p_id, p_info in self.d.items():
-                self.beautifulString(str(p_id))
-                if count < totalLines - 2:
-                    self.beautiful_string = str(self.beautiful_string) + '\n'
-                f.write(str(self.beautiful_string))
-                count += 1
-        self.make_csv_button.configure(text="Made food.csv", padx=13)
-
+        try:
+            totalLines = len(open("food.txt").readlines())
+            fieldnames = ['item', 'amount', 'lowlevel', 'itemsperbag', 'barcodes']
+            with open("food.csv", "w") as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                print("'Name of food', 'Current Amount', 'Low Level Threshold', 'Items per food bag', 'List of Barcodes'\n", file=f)
+                for p_id, p_info in self.d.items():
+                    self.beautifulString(str(p_id))
+                    if count < totalLines - 2:
+                        self.beautiful_string = str(self.beautiful_string) + '\n'
+                    f.write(str(self.beautiful_string))
+                    count += 1
+            self.make_csv_button.configure(text="Made food.csv", padx=13)
+        except Exception:
+            print("error in reading food.txt")
     # ========================================================
     #                 barcode screen functions
     # =======================================================
@@ -1348,12 +1363,14 @@ one special character: !@#$%*?\n''', delay=.25)
 
             # do the appending
             self.beautifulString(self.item_to_be_changed)
-
-            s = open("food.txt").read()
-            s = s.replace(self.beautiful_string, self.beautiful_string + ", " + self.barcode_to_be_added)
-            f = open("food.txt", 'w')
-            f.write(s)
-            f.close()
+            try:
+                s = open("food.txt").read()
+                s = s.replace(self.beautiful_string, self.beautiful_string + ", " + self.barcode_to_be_added)
+                f = open("food.txt", 'w')
+                f.write(s)
+                f.close()
+            except Exception:
+                print("error in opening food.txt")
 
             # clear only the item from self.notfound selected
             self.notFound.remove(self.barcode_to_be_added)
@@ -1561,11 +1578,12 @@ one special character: !@#$%*?\n''', delay=.25)
                 return 0
             # check to see if barcode limit is reached via comma count
 
-            #or (self.isModifying == "is_admin_modifying_with_check" and (str(self.create_new_item_input.get()) in self.d) == True)
-
-            if self.barcode_exist(int(self.create_new_item_input_barcode.get())) == True and self.isModifying == "is_admin_modifying_with_check":
-                place_object(self.barcode_exist_error, .7, .6)
-                return 0
+            # need loop to check every barcode split by comma
+            barcodes_to_check = str(self.create_new_item_input_barcode.get()).split(", ")
+            for i in barcodes_to_check:
+                if self.barcode_exist(int(i)) == True and self.isModifying == "is_admin_modifying_with_check":
+                    place_object(self.barcode_exist_error, .7, .6)
+                    return 0
 
             for index in range(str(self.newItem).find(","), len(self.newItem) - 1):
                 if self.newItem[index] == ',' and self.newItem[index + 1] != " ":
@@ -1961,12 +1979,14 @@ one special character: !@#$%*?\n''', delay=.25)
 
         if self.isModifying == "is_admin_modifying":
             # 'fix' this later
-            s = open("food.txt").read()
-            s = s.replace(self.beautiful_string, newItem)
-            f = open("food.txt", 'w')
-            f.write(s)
-            f.close()
-
+            try:
+                s = open("food.txt").read()
+                s = s.replace(self.beautiful_string, newItem)
+                f = open("food.txt", 'w')
+                f.write(s)
+                f.close()
+            except Exception:
+                print("error in opening food.txt")
             # forces a back button press on success
             self.previous_view = "admin_edit_main"
             self.backup_button_with_d(d, self.previous_view)
@@ -1978,8 +1998,11 @@ one special character: !@#$%*?\n''', delay=.25)
             place_object(self.create_new_added, .74, .58)
 
         else:
-            with open("food.txt", "a") as f:
-                f.write("\n" + newItem)
+            try:
+                with open("food.txt", "a") as f:
+                    f.write("\n" + newItem)
+            except Exception:
+                print("error in appending food.txt")
 
     # =============================================================================
     #                Display inventory - user mode
@@ -2148,12 +2171,15 @@ one special character: !@#$%*?\n''', delay=.25)
         self.delete_confirm.set("")
         if testWord == "YES":
             self.beautifulString(string_key)
-            s = open("food.txt").read()
-            s = s.replace(self.beautiful_string, '')
-            s = s.replace("\n\n", '\n')
-            f = open("food.txt", 'w')
-            f.write(s)
-            f.close()
+            try:
+                s = open("food.txt").read()
+                s = s.replace(self.beautiful_string, '')
+                s = s.replace("\n\n", '\n')
+                f = open("food.txt", 'w')
+                f.write(s)
+                f.close()
+            except Exception:
+                print("error in opening food.txt")
 
             self.delete_label.configure(text=f"{str(string_key).upper()}\nWas Deleted")
             del self.d[string_key]
@@ -2660,13 +2686,13 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        self.user_screen()
-        #self.admin_screen()
+        #self.user_screen()
+        self.admin_screen()
 
 
-        '''# TODO: commnted out if/else to skip login steps while building program,
+        # TODO: commnted out if/else to skip login steps while building program,
         #  put back in for finished product
-        if self.ready_to_login:
+        '''if self.ready_to_login:
             self.clear_verify()
             self.clear_login_screen()
             self.username_for_event_log.configure(text=str(tokens[0]))
