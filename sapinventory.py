@@ -1366,7 +1366,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.beautifulString(self.item_to_be_changed)
             try:
                 s = open("food.txt").read()
-                s = s.replace(self.beautiful_string, self.beautiful_string + ", " + self.barcode_to_be_added)
+                s = s.replace(self.beautiful_string, self.beautiful_string + ", " + str(self.barcode_to_be_added))
                 f = open("food.txt", 'w')
                 f.write(s)
                 f.close()
@@ -1374,7 +1374,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 print("error in opening food.txt added_barcode : " + str(e))
 
             # clear only the item from self.notfound selected
-            self.notFound.remove(self.barcode_to_be_added)
+            self.notFound.remove(str(self.barcode_to_be_added))
 
             # Force a back press
             self.back_button_func(self.previous_view)
@@ -1445,7 +1445,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
         if self.isPassingBarcode == "is_passing_true":
             if self.notFound.__len__() > 0:
-                self.create_new_item_input_barcode.set(int(self.notFound[0]))
+                self.create_new_item_input_barcode.set(str(self.notFound[0]))
         # prefilling defaults for new item, user can set different values if they want
 
         place_object(self.create_new_item_submit_button, .7, .5)
