@@ -1273,10 +1273,10 @@ one special character: !@#$%*?\n''', delay=.25)
                                             self.list_of_items_label.config(text=self.list_of_items_words)
                                         found = True
                                         newitem = False
-                                        if count <= totalLines:
-                                            dest.write(", ".join(tokens))
-                                        else:
+                                        if count < totalLines:
                                             dest.write(", ".join(tokens) + '\n')
+                                        else:
+                                            dest.write(", ".join(tokens))
                                 if found is False:
                                     dest.write(line)
                         if newitem:
@@ -2327,10 +2327,10 @@ one special character: !@#$%*?\n''', delay=.25)
                             tokens = re.split(",", line.strip())
                             if tokens[0] == parsed_name_to_be_changed.strip():
                                 tokens[1] = ' ' + str(self.new_inventory_amount)
-                                if count <= totalLines:
-                                    dest.write(",".join(tokens))
-                                else:
+                                if count < totalLines:
                                     dest.write(",".join(tokens) + '\n')
+                                else:
+                                    dest.write(",".join(tokens))
                             else:
                                 dest.write(line)
             self.back_button_func(self.previous_view)
