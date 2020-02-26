@@ -1270,6 +1270,9 @@ one special character: !@#$%*?\n''', delay=.25)
                             # if not then they can make a new item'''
 
                 self.barcode_scanner_add_remove_button_cmd(direction)
+                self.view_inventory_one_list_box(self.d, 'left')
+                self.clear_list_box()
+                self.view_inventory_one_list_box(self.d, 'left')
             except Exception as e:
                 print("error writing to food file : " + str(e))
         except Exception as e:
@@ -1278,9 +1281,7 @@ one special character: !@#$%*?\n''', delay=.25)
             place_object(self.invalid_entry_error_label, .8, .25)
             self.barcode_scanner_input.set("")
             self.barcode_scanner_amount.set(1)
-        self.view_inventory_one_list_box(self.d, 'left')
-        self.clear_list_box()
-        self.view_inventory_one_list_box(self.d, 'left')
+
 
     def barcode_exist(self, code):
         for key, value in self.d.items():
@@ -2686,8 +2687,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        #self.user_screen()
-        self.admin_screen()
+        self.user_screen()
+        #self.admin_screen()
 
 
         # TODO: commnted out if/else to skip login steps while building program,
