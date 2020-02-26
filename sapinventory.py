@@ -1581,7 +1581,7 @@ one special character: !@#$%*?\n''', delay=.25)
             # need loop to check every barcode split by comma
             barcodes_to_check = str(self.create_new_item_input_barcode.get()).split(", ")
             for i in barcodes_to_check:
-                if self.barcode_exist(int(i)) == True and self.isModifying == "is_admin_modifying_with_check":
+                if self.barcode_exist(int(i)) == True and self.isModifying == "is_admin_modifying_with_check" or self.barcode_exist(int(i)) == True and self.isModifying == "as_user":
                     place_object(self.barcode_exist_error, .7, .6)
                     return 0
 
