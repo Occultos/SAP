@@ -4,11 +4,12 @@ import re
 from passlib.hash import pbkdf2_sha256
 from time import *
 import shutil
-from shutil import copyfile                        
+from shutil import copyfile
 import yagmail
 import os
 import difflib
 import sys
+
 
 # git notes:
 #     only do once
@@ -338,7 +339,7 @@ class StartGui(tk.Tk):
 
         # make csv for excel
         self.make_csv_button = tk.Button(self, background=self._fgcolor, font=(self._font, self._font_medium),
-                                                 command=lambda: self.make_csv())
+                                         command=lambda: self.make_csv())
         self.make_csv_button.configure(activebackground=self._activebgcolor)
 
         # =============================================================================
@@ -364,14 +365,14 @@ class StartGui(tk.Tk):
 
         # make theoretical bags
         self.make_theoretical_bags_button = tk.Button(self, text="Calculate",
-                                               background=self._fgcolor, font=(self._font, self._font_medium),
-                                               command=lambda: self.make_theoretical_bags())
+                                                      background=self._fgcolor, font=(self._font, self._font_medium),
+                                                      command=lambda: self.make_theoretical_bags())
         self.make_theoretical_bags_button.configure(activebackground=self._activebgcolor)
 
         # make_theoretical_bags entry box
         self.theoretical_bags = tk.StringVar()
         self.theoretical_bags_entry = tk.Entry(self, font=(self._font, self._font_big),
-                                        textvariable=self.theoretical_bags, width=10)
+                                               textvariable=self.theoretical_bags, width=10)
 
         # make ANOTHER bag
         self.make_another_bag_button = tk.Button(self, text="Make more bags",
@@ -386,10 +387,10 @@ class StartGui(tk.Tk):
         self.substitute_foods_screen_button.configure(activebackground=self._activebgcolor, padx=10)
 
         self.substitute_foods_screen_submit_button = tk.Button(self, text="Submit",
-                                                        background=self._fgcolor, font=(self._font, self._font_medium),
-                                                        command=lambda: self.substitute_foods_submit())
+                                                               background=self._fgcolor,
+                                                               font=(self._font, self._font_medium),
+                                                               command=lambda: self.substitute_foods_submit())
         self.substitute_foods_screen_submit_button.configure(activebackground=self._activebgcolor, padx=10)
-
 
         # ========================================================================================
         #                                            labels - INIT
@@ -411,7 +412,7 @@ class StartGui(tk.Tk):
         self.bag_of_food_removed_from_inventory = tk.Label(self, font=(self._font, self._font_small),
                                                            text="1 bag of food removed from inventory")
         self.to_many_missing_items = tk.Label(self, font=(self._font, self._font_small),
-                                                           text="To many missing items")
+                                              text="To many missing items")
         # ==================================================================
         #                    new item labels
         # ==================================================================
@@ -474,12 +475,17 @@ class StartGui(tk.Tk):
         self.invalid_entry_error_label = tk.Label(self, font=(self._font, self._font_big), fg='red')
         self.delete_label = tk.Label(self, font=(self._font, self._font_big), fg='red')
 
-        self.substitute_foods_screen_label_1 = tk.Label(self, text="Too low for full bag", font=(self._font, self._font_big))
-        self.substitute_foods_screen_label_2 = tk.Label(self, text="Select what will replace them\nThe number amount above the food picture is the\namount you need to add in additionally to the normal amount", font=(self._font, self._font_big))
+        self.substitute_foods_screen_label_1 = tk.Label(self, text="Too low for full bag",
+                                                        font=(self._font, self._font_big))
+        self.substitute_foods_screen_label_2 = tk.Label(self,
+                                                        text="Select what will replace them\nThe number amount above the food picture is the\namount you need to add in additionally to the normal amount",
+                                                        font=(self._font, self._font_big))
         self.substitute_foods_screen_label_3 = tk.Label(self, font=(self._font, self._font_medium))
         self.substitute_foods_screen_label_4 = tk.Label(self, font=(self._font, self._font_medium))
 
-        self.make_theoretical_bags_label = tk.Label(self,text="To calculate\ninventory needed \nto make x number \nof theoretical bags", font=(self._font, self._font_small))
+        self.make_theoretical_bags_label = tk.Label(self,
+                                                    text="To calculate\ninventory needed \nto make x number \nof theoretical bags",
+                                                    font=(self._font, self._font_small))
 
         # ======================================================================================
         #                                         SA army logo - INIT
@@ -592,7 +598,7 @@ one special character: !@#$%*?\n''', delay=.25)
                                           font=(self._font, self._font_medium))
 
         # starting program at the login screen
-        self.logged_in = False    
+        self.logged_in = False
         self.login_screen()
 
     # =====================================================================================
@@ -762,8 +768,8 @@ one special character: !@#$%*?\n''', delay=.25)
     # main login screen
     def login_screen(self):
         if self.logged_in:
-            self.snapshot_comparison_on_logout("food.txt")                                         
-        #    SA army logo
+            self.snapshot_comparison_on_logout("food.txt")
+            #    SA army logo
         self.army_image_place()
         # login screen label
         self.loginlabel.place(relx=.420, rely=.30)
@@ -856,7 +862,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
     # made a bag
     def made_a_bag_screen(self, d):
-        if str(self.many_bags.get()).isnumeric() == True and int(self.many_bags.get()) <= int(self.lowestRatio) and int(self.many_bags.get()) > 0:
+        if str(self.many_bags.get()).isnumeric() == True and int(self.many_bags.get()) <= int(self.lowestRatio) and int(
+                self.many_bags.get()) > 0:
             self.numberofBags = int(self.many_bags.get())
             self.many_bags.set("")
 
@@ -914,7 +921,8 @@ one special character: !@#$%*?\n''', delay=.25)
         self.make_theoretical_bags_button.place(relx=.075, rely=.4, anchor="center")
         self.theoretical_bags_entry.place(relx=.075, rely=.47, anchor="center")
         self.theoretical_bags.set('')
-        self.make_theoretical_bags_label.configure(text="To calculate\ninventory needed \nto make x number \nof theoretical bags", fg="black")
+        self.make_theoretical_bags_label.configure(
+            text="To calculate\ninventory needed \nto make x number \nof theoretical bags", fg="black")
         self.make_theoretical_bags_label.place(relx=.075, rely=.30, anchor="center")
         if int(self.lowestRatio) > 0:
             self.checkbutton_label.configure(
@@ -947,12 +955,15 @@ one special character: !@#$%*?\n''', delay=.25)
                         d_needed[key] = -1 * d_calc[key]['amount']
 
                 self.clear_list_box()
-                self.list_box_1.place(x=.4*1920, y=.3*1080, relwidth=.2, relheight=.6)
-                self.list_box_1_label.configure(text=f"What will be needed for {int(self.theoretical_bags.get())} bags\n including current stock", fg="black")
+                self.list_box_1.place(x=.4 * 1920, y=.3 * 1080, relwidth=.2, relheight=.6)
+                self.list_box_1_label.configure(
+                    text=f"What will be needed for {int(self.theoretical_bags.get())} bags\n including current stock",
+                    fg="black")
                 self.list_box_1_label.place(relx=.5, rely=.25, anchor='center')
                 self.list_box_2_label.configure(text=f"If it is blank then you have enough\n in stock to make "
-                         f"{int(self.theoretical_bags.get())} bags\n\n\n\n\nElse it will show the\nfood and number "
-                                                     f"needed to buy\nfor {int(self.theoretical_bags.get())} bags\n\n\n\nAlso, theoretical.txt\n has a copy of this info",fg="black")
+                                                     f"{int(self.theoretical_bags.get())} bags\n\n\n\n\nElse it will show the\nfood and number "
+                                                     f"needed to buy\nfor {int(self.theoretical_bags.get())} bags\n\n\n\nAlso, theoretical.txt\n has a copy of this info",
+                                                fg="black")
                 self.list_box_2_label.place(relx=.75, rely=.5, anchor='center')
 
                 box1count = 0
@@ -961,7 +972,9 @@ one special character: !@#$%*?\n''', delay=.25)
                     self.list_box_1.insert(box1count, item_id + ' : ' + str(item_info))
                 try:
                     with open('theoretical.txt', 'w') as f:
-                        print(f"Amount and items needed for {int(self.theoretical_bags.get())} bags\nThis is after current stocks goes to zero\nitem: amount", file=f)
+                        print(
+                            f"Amount and items needed for {int(self.theoretical_bags.get())} bags\nThis is after current stocks goes to zero\nitem: amount",
+                            file=f)
                         for p_id, p_info in d_needed.items():
                             print(f"{str(p_id)}: {d_needed[p_id]}", file=f)
                 except Exception as e:
@@ -1033,10 +1046,10 @@ one special character: !@#$%*?\n''', delay=.25)
             if self.d[key]['amount'] >= self.d[key]['itemsperbag']:
                 self.stock.append(self.d[key]['item'])
         if outofstock.__len__() > 3:
-            #print("To many missing items")
+            # print("To many missing items")
             self.clear_substitutions_page()
             self.make_bag_screen()
-            #self.to_many_missing_items.place()
+            # self.to_many_missing_items.place()
             self.substitute_foods_screen_label_3.configure(text="To many missing items", fg='red')
             self.substitute_foods_screen_label_3.place(relx=.655, rely=.75)
             return
@@ -1047,7 +1060,8 @@ one special character: !@#$%*?\n''', delay=.25)
             self.d_outofstock[i] = IntVar()
 
             l = Checkbutton(text="    " + str(i).upper() + ":   \n" + str(self.d[i]['amount']),
-                            variable=self.d_outofstock[i], image=self.d_photos[f'{i}'], compound='bottom', state=DISABLED)
+                            variable=self.d_outofstock[i], image=self.d_photos[f'{i}'], compound='bottom',
+                            state=DISABLED)
             self.list_l.append(l)
 
             self.d_outofstock[i].set(1)
@@ -1150,7 +1164,9 @@ one special character: !@#$%*?\n''', delay=.25)
             fieldnames = ['item', 'amount', 'lowlevel', 'itemsperbag', 'barcodes']
             with open("food.csv", "w") as f:
                 writer = csv.DictWriter(f, fieldnames=fieldnames)
-                print("'Name of food', 'Current Amount', 'Low Level Threshold', 'Items per food bag', 'List of Barcodes'\n", file=f)
+                print(
+                    "'Name of food', 'Current Amount', 'Low Level Threshold', 'Items per food bag', 'List of Barcodes'\n",
+                    file=f)
                 for p_id, p_info in self.d.items():
                     self.beautifulString(str(p_id))
                     if count < totalLines - 2:
@@ -1160,6 +1176,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.make_csv_button.configure(text="Made food.csv", padx=13)
         except Exception:
             print("error in reading food.txt make_csv : " + str(e))
+
     # ========================================================
     #                 barcode screen functions
     # =======================================================
@@ -1191,14 +1208,20 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.list_of_items_label, .7, .3)
         self.barcode_scanner_input.set("")
         self.barcode_scanner_amount.set(1)
+        self.bind('<Tab>', lambda x: self.bind_tab_to_scanner_input_entry())
         self.bind('<Return>', lambda x: self.search_for_item_in_food_file(
             direction, self.barcode_scanner_input.get(),
             self.barcode_scanner_amount.get()))
         if self.notFound.__len__() > 0:
             self.add_barcode_to_existing_button.place(relx=.35, rely=.5)
 
+    def bind_tab_to_scanner_input_entry(self):
+        self.barcode_scanner_input_entry.place_forget()
+        place_object(self.barcode_scanner_input_entry, .3, .3, True)
+
     def unbind_return_func(self):
         self.unbind('<Return>')
+        self.unbind('<Tab>')
 
     def search_for_item_in_food_file(self, direction, item_to_find, qty):
         # TODO: add barcode & qty columns
@@ -1287,7 +1310,6 @@ one special character: !@#$%*?\n''', delay=.25)
             place_object(self.invalid_entry_error_label, .8, .25)
             self.barcode_scanner_input.set("")
             self.barcode_scanner_amount.set(1)
-
 
     def barcode_exist(self, code):
         for key, value in self.d.items():
@@ -1399,7 +1421,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.list_box_3.place_forget()
         self.list_box_3_label.place_forget()
         self.added_barcode_button.place_forget()
-
 
     def clear_substitutions_page(self):
         for i in self.list_l:
@@ -1588,7 +1609,9 @@ one special character: !@#$%*?\n''', delay=.25)
             # need loop to check every barcode split by comma
             barcodes_to_check = str(self.create_new_item_input_barcode.get()).split(", ")
             for i in barcodes_to_check:
-                if self.barcode_exist(int(i)) == True and self.isModifying == "is_admin_modifying_with_check" or self.barcode_exist(int(i)) == True and self.isModifying == "as_user":
+                if self.barcode_exist(
+                        int(i)) == True and self.isModifying == "is_admin_modifying_with_check" or self.barcode_exist(
+                        int(i)) == True and self.isModifying == "as_user":
                     place_object(self.barcode_exist_error, .7, .6)
                     return 0
 
@@ -2037,7 +2060,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.logged_in = True
         print(self.username_for_event_log.cget("text") + " logging in " + str(self.login_time))
 
-
     def snapshot_comparison_on_logout(self, file):
         copyfile(file, file + "_logout")
         self.compare_files(file + "_login", file + "_logout")
@@ -2062,11 +2084,11 @@ one special character: !@#$%*?\n''', delay=.25)
         except Exception as e:
             print("error in compare_files : " + str(e))
 
-
     def exit_program(self):
         if self.logged_in:
             self.snapshot_comparison_on_logout("food.txt")
         self.destroy()
+
     # ===================================================================================
     #                   View and/or change Inventory & users
     #                  TODO: split these into 2-3 sections for easier viewing
@@ -2186,7 +2208,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 f.write(s)
                 f.close()
             except Exception:
-                print("error in opening food.txt delete item : "+str(e))
+                print("error in opening food.txt delete item : " + str(e))
 
             self.delete_label.configure(text=f"{str(string_key).upper()}\nWas Deleted")
             del self.d[string_key]
@@ -2700,8 +2722,7 @@ one special character: !@#$%*?\n''', delay=.25)
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
         self.user_screen()
-        #self.admin_screen()
-
+        # self.admin_screen()
 
         # TODO: commnted out if/else to skip login steps while building program,
         #  put back in for finished product
@@ -2727,7 +2748,6 @@ one special character: !@#$%*?\n''', delay=.25)
             self.login_failure("username & password invalid", .65, .4)
             self.clear_verify()
             self.login_info_screen()'''
-
 
 
 # ======================================================
