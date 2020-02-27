@@ -1323,6 +1323,7 @@ one special character: !@#$%*?\n''', delay=.25)
         return False
 
     def add_barcode_to_existing(self):
+        self.unbind_return_func()
         # pulls up list of notfound
         # lets user select from box for which item to add barcode to
         # if new item needs to be made then createnewitem screen passing notfound?
