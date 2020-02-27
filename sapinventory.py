@@ -9,6 +9,7 @@ import yagmail
 import os
 import difflib
 import sys
+from winsound import *
 
 
 # git notes:
@@ -1305,6 +1306,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 self.view_inventory_one_list_box(self.d, 'left')
                 if self.notFound.__len__()>0:
                     self.add_barcode_to_existing()
+                    PlaySound("Wilhelm_Scream.wav", SND_FILENAME)
             except Exception as e:
                 print("error writing to food file : " + str(e))
         except Exception as e:
