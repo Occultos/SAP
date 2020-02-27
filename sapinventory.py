@@ -663,7 +663,6 @@ one special character: !@#$%*?\n''', delay=.25)
             self.food_bag_photo_label.place_forget()
             self.append_barcode_button.place_forget()
             self.clear_add_barcode_to_existing()
-            self.clear_append_barcode()
             self.user_screen()
 
         # goes back to make a bag screen
@@ -708,9 +707,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.cancel_inventory_manual_button.place_forget()
             self.invalid_entry_error_label.place_forget()
         elif words == "add_barcode_to_existing":
-            # self.clear_add_barcode_to_existing()
             self.add_barcode_to_existing()
-            self.clear_append_barcode()
 
     # ====================================================================================
     #                                   EMAIL Functions
@@ -849,11 +846,6 @@ one special character: !@#$%*?\n''', delay=.25)
             self.numberofBags = int(self.many_bags.get())
             self.many_bags.set("")
 
-            '''n = self.numberofBags
-            while n > 0:
-                n -= 1
-                self.lower_inventory(d)'''
-
             self.lower_inventory_new()
 
             self.clear_makebag_screen()
@@ -912,7 +904,6 @@ one special character: !@#$%*?\n''', delay=.25)
         else:
             self.checkbutton_label.configure(
                 text=f"Full bags can't be made\n\n\n{str(self.nameofLowest).upper()}: is the bottleneck")
-            # TODO: decide what to do with partial bags
             # place substitution button page here
             self.substitute_foods_screen_button.place(relx=.75, rely=.7, anchor="center")
 
@@ -1088,8 +1079,6 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def substitute_foods_submit(self):
         self.previous_view = "make_bag_screen"
-        # Need to make it modify txt, probably fake admin
-        # but this is the logic
         notevenOne = True
         try:
             totalLines = len(open("food.txt").readlines())
@@ -1156,7 +1145,7 @@ one special character: !@#$%*?\n''', delay=.25)
                     f.write(str(self.beautiful_string))
                     count += 1
             self.make_csv_button.configure(text="Made food.csv", padx=13)
-        except Exception:
+        except Exception as e:
             print("error in reading food.txt make_csv : " + str(e))
 
     # ========================================================
@@ -1208,8 +1197,6 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def search_for_item_in_food_file(self, direction, item_to_find, qty):
         # TODO: add barcode & qty columns
-        # TODO: limit size of list_of_items_words so its doesn't go over inventory button
-        # TODO: I suggest to always show inventory box and update every scan instead of needing to toggle to update the box
         try:
             self.invalid_entry_error_label.place_forget()
             intcheck = int(qty)
@@ -1268,20 +1255,9 @@ one special character: !@#$%*?\n''', delay=.25)
                             self.list_of_items_label.config(text=self.list_of_items_words)
                             if (str(item_to_find) in self.notFound) == False:
                                 self.notFound.append(str(item_to_find))
-                            # place add_barcode_to_existing button
-                            # self.add_barcode_to_existing()
-                            #self.add_barcode_to_existing_button.place(relx=.02, rely=.5)
-
-                            '''# TODO : probably call new item screen here
-                            print("new item need to add it to the inventory")
-                            print("new plan?  save items not found to a new list")
-                            print("place a new item screen button")
-                            print("display new item list on the new item screen until back button pushed")
-                            # addition to plan, make a "append barcode to existing fooditem" page instead of assuming it is
-                            # a brand new fooditem every time, ask if it would fall under any foods already in the dict
-                            # if not then they can make a new item'''
 
                 self.barcode_scanner_add_remove_button_cmd(direction)
+                # to update inventory box every scan
                 self.view_inventory_one_list_box(self.d, 'left')
                 self.clear_list_box()
                 self.view_inventory_one_list_box(self.d, 'left')
@@ -1290,7 +1266,7 @@ one special character: !@#$%*?\n''', delay=.25)
                     PlaySound("Wilhelm_Scream.wav", SND_FILENAME)
             except Exception as e:
                 print("error writing to food file : " + str(e))
-        except Exception as e:
+        except Exception:
             # input a non int value, show error label to user
             self.invalid_entry_error_label.config(text='Enter numbers only')
             place_object(self.invalid_entry_error_label, .8, .25)
@@ -1298,6 +1274,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.barcode_scanner_amount.set(1)
 
     def barcode_exist(self, code):
+        # quick easy check to see if barcode exist
         for key, value in self.d.items():
             if code in self.d[key]['barcodes']:
                 return True
@@ -1305,9 +1282,6 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def add_barcode_to_existing(self):
         self.unbind_return_func()
-        # pulls up list of notfound
-        # lets user select from box for which item to add barcode to
-        # if new item needs to be made then createnewitem screen passing notfound?
         self.previous_view = "user_screen"
         self.clear_barcode_screen()
         self.display_inventory_left_side_button.place_forget()
@@ -1336,7 +1310,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.selected_item_to_be_changed = self.list_box_2.curselection()
         if self.selected_item_to_be_changed != ():
             self.previous_view = "user_screen"
-            #self.clear_add_barcode_to_existing()
 
             self.change_inventory_by_this_much.set(0)
             self.item_to_be_changed = self.list_box_2.get(self.selected_item_to_be_changed)
@@ -1347,8 +1320,6 @@ one special character: !@#$%*?\n''', delay=.25)
             pre_beautiful_string = pre_beautiful_string.replace("[", '')
             pre_beautiful_string = pre_beautiful_string.replace("]", '')
             self.barcode_to_be_added = pre_beautiful_string
-
-            print(self.barcode_to_be_added)
 
             # do the appending
             self.beautifulString(self.item_to_be_changed)
@@ -1367,58 +1338,8 @@ one special character: !@#$%*?\n''', delay=.25)
             self.invalid_entry_error_label.config(text=f"Added {self.barcode_to_be_added} to {self.item_to_be_changed}",
                                                   fg='blue')
             self.invalid_entry_error_label.place(x=1000, y=320, anchor="center")
-
-            '''# self.item_to_be_changed for the name of item
-            self.list_box_3.delete(0, tk.END)
-            box3count = 0
-            for bar in self.notFound:
-                box3count += 1
-                self.list_box_3.insert(box3count, str(bar))
-
-            self.list_box_3.place(relx=.02, rely=.3, relwidth=.125, relheight=.55)
-            self.list_box_3_label.configure(font=(self._font, self._font_big),
-                                            text=f"Now select which barcode to add to {str(self.item_to_be_changed).upper()}")
-            self.list_box_3_label.place(x=960, y=400, anchor="center")
-
-            # place added_barcode button
-            self.added_barcode_button.place(x=450, y=600, anchor="center")'''
         else:
             self.invalid_entry_error_label.place_forget()
-            self.invalid_entry_error_label.config(text="Choose an Item")
-            place_object(self.invalid_entry_error_label, .17, .45)
-
-    def added_barcode(self):
-        self.selected_item_to_be_changed = self.list_box_3.curselection()
-        if self.selected_item_to_be_changed != ():
-            # self.previous_view = "added_barcode" need to add this
-
-            self.change_inventory_by_this_much.set(0)
-            self.barcode_to_be_added = self.list_box_3.get(self.selected_item_to_be_changed)
-            self.invalid_entry_error_label.place_forget()
-
-            # everything else
-            self.invalid_entry_error_label.config(text=f"Added {self.barcode_to_be_added} to {self.item_to_be_changed}",
-                                                  fg='blue')
-            self.invalid_entry_error_label.place(x=1050, y=320, anchor="center")
-
-            # do the appending
-            self.beautifulString(self.item_to_be_changed)
-            try:
-                s = open("food.txt").read()
-                s = s.replace(self.beautiful_string, self.beautiful_string + ", " + str(self.barcode_to_be_added))
-                f = open("food.txt", 'w')
-                f.write(s)
-                f.close()
-            except Exception as e:
-                print("error in opening food.txt added_barcode : " + str(e))
-
-            # clear only the item from self.notfound selected
-            self.notFound.remove(str(self.barcode_to_be_added))
-
-            # Force a back press
-            self.back_button_func(self.previous_view)
-
-        else:
             self.invalid_entry_error_label.config(text="Choose an Item")
             place_object(self.invalid_entry_error_label, .17, .45)
 
@@ -1427,11 +1348,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.list_box_2_label.place_forget()
         self.create_new_item_button.place_forget()
         self.append_barcode_button.place_forget()
-
-    def clear_append_barcode(self):
-        self.list_box_3.place_forget()
-        self.list_box_3_label.place_forget()
-        self.added_barcode_button.place_forget()
 
     def clear_substitutions_page(self):
         for i in self.list_l:
@@ -1518,7 +1434,6 @@ one special character: !@#$%*?\n''', delay=.25)
                         self.create_new_item_input_barcode.set(int(self.notFound[0]))
 
                 self.create_new_item_screen(d)
-                #self.create_new_item_title.place_forget()
 
                 if self.isModifying == "is_admin_modifying":
                     self.auto_fill_edit_item()
@@ -1770,7 +1685,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.unbind_return_func()
         self.list_of_items_label.place_forget()
         self.display_inventory_left_side_button.place_forget()
-        self.clear_append_barcode()
         self.clear_add_barcode_to_existing()
         self.clear_substitutions_page()
         self.clear_admin_screen()
@@ -2520,38 +2434,6 @@ one special character: !@#$%*?\n''', delay=.25)
         if box3count == 0:
             self.list_box_3.place_forget()
             self.list_box_3_label.place_forget()
-
-    # TODO: [Done] new decreases by 'itemsperbag' var from dict
-    def lower_inventory(self, d):
-        try:
-            self.make_dict(d)
-            totalLines = len(open("food.txt").readlines())
-            shutil.move("food.txt", "food.txt" + "~")
-            with open("food.txt", "w+") as dest:
-                with open("food.txt" + "~", "r+") as src:
-                    n = 0
-                    count = 0
-                    for line in src:
-                        count += 1
-                        if not re.match(r'^\s*$', line):
-                            if n == 0:
-                                dest.write(line)
-                                n += 1
-                            else:  # decrease amount by 'itemsperbag'
-                                line = line.strip()
-                                words = line.split(", ")
-                                words[1] = str(int(words[1]) - int(words[3]))
-                                line = ", ".join(words)
-                                line.strip()
-                                if count <= totalLines - 1:
-                                    line = line + '\n'
-                                dest.write(line)
-            self.bag_of_food_removed_from_inventory.configure(text=f"{int(self.numberofBags)} bag(s) of food removed")
-            self.bag_of_food_removed_from_inventory.place(relx=.4, rely=.9325)
-            # [fixed] the \n at the end of txt file, would leave gaps when bag was made then createnewitem appended
-        except Exception as e:
-            self.food_file_error_label.place(relx=.75, rely=.60)
-            print("error in lower inventory " + str(e))
 
     # =====================================================================================
     #                                                     REGISTRATION
