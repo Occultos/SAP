@@ -1213,7 +1213,8 @@ one special character: !@#$%*?\n''', delay=.25)
             direction, self.barcode_scanner_input.get(),
             self.barcode_scanner_amount.get()))
         if self.notFound.__len__() > 0:
-            self.add_barcode_to_existing_button.place(relx=.35, rely=.5)
+            #self.add_barcode_to_existing_button.place(relx=.35, rely=.5)
+            self.add_barcode_to_existing()
 
     def bind_tab_to_scanner_input_entry(self):
         self.barcode_scanner_input_entry.place_forget()
@@ -1287,7 +1288,7 @@ one special character: !@#$%*?\n''', delay=.25)
                                 self.notFound.append(str(item_to_find))
                             # place add_barcode_to_existing button
                             # self.add_barcode_to_existing()
-                            self.add_barcode_to_existing_button.place(relx=.02, rely=.5)
+                            #self.add_barcode_to_existing_button.place(relx=.02, rely=.5)
 
                             '''# TODO : probably call new item screen here
                             print("new item need to add it to the inventory")
@@ -1302,6 +1303,8 @@ one special character: !@#$%*?\n''', delay=.25)
                 self.view_inventory_one_list_box(self.d, 'left')
                 self.clear_list_box()
                 self.view_inventory_one_list_box(self.d, 'left')
+                if self.notFound.__len__()>0:
+                    self.add_barcode_to_existing()
             except Exception as e:
                 print("error writing to food file : " + str(e))
         except Exception as e:
