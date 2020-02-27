@@ -1353,7 +1353,7 @@ one special character: !@#$%*?\n''', delay=.25)
     def append_barcode(self):
         self.selected_item_to_be_changed = self.list_box_2.curselection()
         if self.selected_item_to_be_changed != ():
-            self.previous_view = "add_barcode_to_existing"
+            self.previous_view = "user_screen"
             #self.clear_add_barcode_to_existing()
 
             self.change_inventory_by_this_much.set(0)
@@ -1380,10 +1380,11 @@ one special character: !@#$%*?\n''', delay=.25)
                 print("error in opening food.txt added_barcode : " + str(e))
 
             self.notFound = []
-
+            self.back_button_func(self.previous_view)
+            self.barcode_scanner_screen()
             self.invalid_entry_error_label.config(text=f"Added {self.barcode_to_be_added} to {self.item_to_be_changed}",
                                                   fg='blue')
-            self.invalid_entry_error_label.place(x=1050, y=320, anchor="center")
+            self.invalid_entry_error_label.place(x=1000, y=320, anchor="center")
 
             '''# self.item_to_be_changed for the name of item
             self.list_box_3.delete(0, tk.END)
