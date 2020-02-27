@@ -1354,14 +1354,38 @@ one special character: !@#$%*?\n''', delay=.25)
         self.selected_item_to_be_changed = self.list_box_2.curselection()
         if self.selected_item_to_be_changed != ():
             self.previous_view = "add_barcode_to_existing"
-            self.clear_add_barcode_to_existing()
+            #self.clear_add_barcode_to_existing()
 
             self.change_inventory_by_this_much.set(0)
             self.item_to_be_changed = self.list_box_2.get(self.selected_item_to_be_changed)
             self.invalid_entry_error_label.place_forget()
 
-            # self.item_to_be_changed for the name of item
+            pre_beautiful_string = str(self.notFound)
+            pre_beautiful_string = pre_beautiful_string.replace("'", '')
+            pre_beautiful_string = pre_beautiful_string.replace("[", '')
+            pre_beautiful_string = pre_beautiful_string.replace("]", '')
+            self.barcode_to_be_added = pre_beautiful_string
 
+            print(self.barcode_to_be_added)
+
+            # do the appending
+            self.beautifulString(self.item_to_be_changed)
+            try:
+                s = open("food.txt").read()
+                s = s.replace(self.beautiful_string, self.beautiful_string + ", " + str(self.barcode_to_be_added))
+                f = open("food.txt", 'w')
+                f.write(s)
+                f.close()
+            except Exception as e:
+                print("error in opening food.txt added_barcode : " + str(e))
+
+            self.notFound = []
+
+            self.invalid_entry_error_label.config(text=f"Added {self.barcode_to_be_added} to {self.item_to_be_changed}",
+                                                  fg='blue')
+            self.invalid_entry_error_label.place(x=1050, y=320, anchor="center")
+
+            '''# self.item_to_be_changed for the name of item
             self.list_box_3.delete(0, tk.END)
             box3count = 0
             for bar in self.notFound:
@@ -1374,8 +1398,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.list_box_3_label.place(x=960, y=400, anchor="center")
 
             # place added_barcode button
-            self.added_barcode_button.place(x=450, y=600, anchor="center")
-
+            self.added_barcode_button.place(x=450, y=600, anchor="center")'''
         else:
             self.invalid_entry_error_label.place_forget()
             self.invalid_entry_error_label.config(text="Choose an Item")
@@ -1403,7 +1426,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 f = open("food.txt", 'w')
                 f.write(s)
                 f.close()
-            except Exception:
+            except Exception as e:
                 print("error in opening food.txt added_barcode : " + str(e))
 
             # clear only the item from self.notfound selected
