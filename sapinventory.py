@@ -417,34 +417,14 @@ class StartGui(tk.Tk):
         # ==================================================================
         #                    new item labels
         # ==================================================================
-        self.create_new_item = tk.Label(self, font=(self._font, self._font_big),
+
+        self.create_new_item_boxes_label = tk.Label(self, font=(self._font, self._font_small),
+                                             text="Item Name: \n\n\n\nCurrent amount: \n\n\n\nLow amount warning at: \n\n\n\nItems per bag: \n\n\n\nBarcode(s): ")
+
+        self.create_new_added_universal_label = tk.Label(self, font=(self._font, self._font_small), text="")
+
+        self.create_new_item_title = tk.Label(self, font=(self._font, self._font_big),
                                         text="Create new item screen")
-        self.create_new_item_name = tk.Label(self, font=(self._font, self._font_small),
-                                             text="Item Name: ")
-        self.create_new_item_amount = tk.Label(self, font=(self._font, self._font_small),
-                                               text="Current amount: ")
-        self.create_new_item_low_level = tk.Label(self, font=(self._font, self._font_small),
-                                                  text="Low amount warning at: ")
-        self.create_new_item_itemsperbag = tk.Label(self, font=(self._font, self._font_small),
-                                                    text="Items per bag: ")
-        self.create_new_item_barcode = tk.Label(self, font=(self._font, self._font_small),
-                                                text="Barcode: ")
-        self.create_new_submit_error = tk.Label(self, font=(self._font, self._font_small),
-                                                text="All boxes need to be filled")
-        self.create_new_submit_error_alpha = tk.Label(self, font=(self._font, self._font_small),
-                                                      text="Name needs to be letters and spaces only")
-        self.create_new_submit_error_num = tk.Label(self, font=(self._font, self._font_small),
-                                                    text="Amount, Low level, Itemsperbag, and Barcode\nall need to be numbers only")
-        self.exceeds_barcode_length = tk.Label(self, font=(self._font, self._font_small),
-                                               text="Exceeds maximum number of barcodes holdable\nfor this item")
-        self.exist_already_label = tk.Label(self, font=(self._font, self._font_small),
-                                            text="Already Exist")
-        self.barcode_exist_error = tk.Label(self, font=(self._font, self._font_small),
-                                            text="Barcode Already Exist")
-
-        self.create_new_added = tk.Label(self, font=(self._font, self._font_small),
-                                         text="Added item")
-
         # notFound barcode list
         self.notFound_label = tk.Label(self, font=(self._font, self._font_small), fg='blue')
 
@@ -640,7 +620,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.deleteItem_button.place_forget()
         elif words == "admin_screen":
             self.invalid_entry_error_label.place_forget()
-            self.create_new_added.place_forget()
+            self.create_new_added_universal_label.place_forget()
             self.admin_screen()
             self.clear_list_box()
             self.list_box_2.place_forget()
@@ -815,6 +795,7 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.manual_entry_button, .47, .7)
         place_object(self.create_new_item_button, .47, .8)
         self.isBarcode = False
+        self.create_new_added_universal_label.configure(text='')
         # self.backup_place()
         # self.previous_view = "user_screen"
 
@@ -1487,13 +1468,9 @@ one special character: !@#$%*?\n''', delay=.25)
         self.previous_view = "user_screen"
         self.backup_place_with_d()
 
-        self.create_new_item.place(relx=.4, rely=.23)
+        self.create_new_item_title.place(relx=.4, rely=.23)
 
-        self.create_new_item_name.place(relx=.2, rely=.3)
-        self.create_new_item_amount.place(relx=.2, rely=.4)
-        self.create_new_item_low_level.place(relx=.2, rely=.5)
-        self.create_new_item_itemsperbag.place(relx=.2, rely=.6)
-        self.create_new_item_barcode.place(relx=.2, rely=.7)
+        self.create_new_item_boxes_label.place(relx=.2, rely=.3)
 
         self.create_new_item_input_amount.set(1)
         self.create_new_item_input_low_level.set(20)
@@ -1511,6 +1488,8 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.create_new_item_input_low_level_entry, .4, .5)
         place_object(self.create_new_item_input_itemsperbag_entry, .4, .6)
         place_object(self.create_new_item_input_barcode_entry, .4, .7)
+
+        self.create_new_added_universal_label.place(relx=.765, rely=.6, anchor="center")
 
     def create_new_item_submit_button_cmd(self, d):
         self.newItem = self.create_new_item_input.get() + ", " + \
@@ -1539,7 +1518,7 @@ one special character: !@#$%*?\n''', delay=.25)
                         self.create_new_item_input_barcode.set(int(self.notFound[0]))
 
                 self.create_new_item_screen(d)
-                self.create_new_item.place_forget()
+                #self.create_new_item_title.place_forget()
 
                 if self.isModifying == "is_admin_modifying":
                     self.auto_fill_edit_item()
@@ -1577,38 +1556,20 @@ one special character: !@#$%*?\n''', delay=.25)
                 str(self.create_new_item_input_low_level.get()) == "" or
                 str(self.create_new_item_input_itemsperbag.get()) == "" or
                 str(self.create_new_item_input_barcode.get()) == ""):
-            place_object(self.create_new_submit_error, .692, .6)
 
-            self.create_new_submit_error_alpha.place_forget()
-            self.create_new_submit_error_num.place_forget()
-            self.create_new_added.place_forget()
-            self.exceeds_barcode_length.place_forget()
-            self.exist_already_label.place_forget()
-            self.barcode_exist_error.place_forget()
+            self.create_new_added_universal_label.configure(text="All boxes need to be filled")
             return 0
         elif ((str(self.create_new_item_input.get()) in self.d) == True and self.isModifying == "as_user") or \
                 (self.isModifying == "is_admin_modifying_with_check" and (
                         str(self.create_new_item_input.get()) in self.d) == True):
-            place_object(self.exist_already_label, .725, .6)
-            self.create_new_submit_error_alpha.place_forget()
-            self.create_new_submit_error.place_forget()
-            self.create_new_added.place_forget()
-            self.exceeds_barcode_length.place_forget()
-            self.barcode_exist_error.place_forget()
+
+            self.create_new_added_universal_label.configure(text="Already Exist")
             return 0
         elif re.search("[^a-zA-Z\s]", self.create_new_item_input.get()) != None or \
                 str(self.create_new_item_input.get()).count("  ") > 0 or str(self.create_new_item_input.get()).endswith(
             " "):
-            # names of items can now have spaces *fixed I didnt use None
             # checks for invalid spaces
-            place_object(self.create_new_submit_error_alpha, .68, .6)
-
-            self.create_new_submit_error.place_forget()
-            self.create_new_submit_error_num.place_forget()
-            self.create_new_added.place_forget()
-            self.exceeds_barcode_length.place_forget()
-            self.exist_already_label.place_forget()
-            self.barcode_exist_error.place_forget()
+            self.create_new_added_universal_label.configure(text="Name needs to be letters and spaces only")
             return 0
         elif (str(self.create_new_item_input_amount.get()).isnumeric() == False or
               str(self.create_new_item_input_low_level.get().isnumeric()) == False or
@@ -1621,14 +1582,7 @@ one special character: !@#$%*?\n''', delay=.25)
               str(self.create_new_item_input_barcode.get()).count("  ") > 0):
             # can have numbers, commas, and spaces for barcodes only, others are nums only
             # ,, check to see if it is invalid use of commas/ spaces
-            place_object(self.create_new_submit_error_num, .655, .6)
-
-            self.create_new_submit_error_alpha.place_forget()
-            self.create_new_submit_error.place_forget()
-            self.create_new_added.place_forget()
-            self.exceeds_barcode_length.place_forget()
-            self.exist_already_label.place_forget()
-            self.barcode_exist_error.place_forget()
+            self.create_new_added_universal_label.configure(text="Amount, Low level, Itemsperbag, and Barcode\nall need to be numbers only")
             return 0
         else:
             if int(self.newItem.count(",")) > int(self.barcodesLenght - 2):
@@ -1636,13 +1590,12 @@ one special character: !@#$%*?\n''', delay=.25)
                 return 0
             # check to see if barcode limit is reached via comma count
 
-            # need loop to check every barcode split by comma
             barcodes_to_check = str(self.create_new_item_input_barcode.get()).split(", ")
             for i in barcodes_to_check:
                 if self.barcode_exist(
                         int(i)) == True and self.isModifying == "is_admin_modifying_with_check" or self.barcode_exist(
                         int(i)) == True and self.isModifying == "as_user":
-                    place_object(self.barcode_exist_error, .7, .6)
+                    self.create_new_added_universal_label.configure(text="Barcode Already Exist")
                     return 0
 
             for index in range(str(self.newItem).find(","), len(self.newItem) - 1):
@@ -1654,14 +1607,7 @@ one special character: !@#$%*?\n''', delay=.25)
             # fixes non comma'd spaces in barcode
 
             # remove all other error labels
-            self.create_new_submit_error.place_forget()
-            self.create_new_submit_error_alpha.place_forget()
-            self.create_new_submit_error_num.place_forget()
-            self.create_new_added.place_forget()
-            self.exceeds_barcode_length.place_forget()
-            self.exist_already_label.place_forget()
-            self.barcode_exist_error.place_forget()
-            place_object(self.create_new_added, .73, .6)
+            self.create_new_added_universal_label.configure(text="Added item")
             return 1
 
     def is_modifying_3_clears(self):
@@ -1671,9 +1617,10 @@ one special character: !@#$%*?\n''', delay=.25)
         self.list_box_2_label.place_forget()
         self.list_box_2.place_forget()
         self.delete_label.place_forget()
-        self.create_new_added.place_forget()
-        self.create_new_added.configure(text="Item added")
-        self.create_new_item.place(relx=.4, rely=.23)
+
+        self.create_new_added_universal_label.configure(text="Item added")
+        #relx=.4, rely=.23 ?
+
         self.create_new_item_input.set('')
         self.create_new_item_input_amount.set('')
         self.create_new_item_input_low_level.set('')
@@ -1759,12 +1706,9 @@ one special character: !@#$%*?\n''', delay=.25)
         self.password_verify_label.place_forget()
 
     def clear_create_new_item(self, d):
-        self.create_new_item.place_forget()
-        self.create_new_item_name.place_forget()
-        self.create_new_item_amount.place_forget()
-        self.create_new_item_low_level.place_forget()
-        self.create_new_item_itemsperbag.place_forget()
-        self.create_new_item_barcode.place_forget()
+        self.create_new_item_boxes_label.place_forget()
+        self.create_new_added_universal_label.place_forget()
+        self.create_new_item_title.place_forget()
 
         self.create_new_item_submit_button.place_forget()
         self.create_new_item_input_entry.place_forget()
@@ -1773,18 +1717,10 @@ one special character: !@#$%*?\n''', delay=.25)
         self.create_new_item_input_itemsperbag_entry.place_forget()
         self.create_new_item_input_barcode_entry.place_forget()
 
-        self.create_new_submit_error.place_forget()
-        self.create_new_submit_error_alpha.place_forget()
-        self.create_new_submit_error_num.place_forget()
-        self.exist_already_label.place_forget()
-        self.exceeds_barcode_length.place_forget()
-        self.create_new_added.place_forget()
-
         self.back_button_func("user_screen")
         self.backup_button_with_d_button.place_forget()
 
         self.notFound_label.place_forget()
-        self.barcode_exist_error.place_forget()
 
     # clear everything back to login screen
     def clear_to_login(self):
@@ -2053,9 +1989,8 @@ one special character: !@#$%*?\n''', delay=.25)
             del self.d[self.toDelete]
 
             self.edit_inventory_button_cmd(d)
-            self.create_new_added.configure(text="Item Modified")
-            self.create_new_added.place_forget()
-            place_object(self.create_new_added, .74, .58)
+            self.create_new_added_universal_label.configure(text="Item Modified")
+            place_object(self.create_new_added_universal_label, .74, .58)
 
         else:
             try:
@@ -2171,11 +2106,9 @@ one special character: !@#$%*?\n''', delay=.25)
 
             self.admin_modify_inventory_screen(d)
             self.item_to_be_changed_label_2.configure(text="Currently:\n" + self.beautiful_string)
-            self.create_new_added.place_forget()
 
         else:
             self.invalid_entry_error_label.config(text="Choose an Item")
-            self.create_new_added.place_forget()
             place_object(self.invalid_entry_error_label, .715, .4)
 
     def beautifulString(self, string_key):
@@ -2219,10 +2152,8 @@ one special character: !@#$%*?\n''', delay=.25)
             self.choose_an_item_to_edit_button.place_forget()
             self.choose_an_item_to_delete_button.place_forget()
             self.list_box_2.place_forget()
-            self.create_new_added.place_forget()
         else:
             self.invalid_entry_error_label.config(text="Choose an Item")
-            self.create_new_added.place_forget()
             place_object(self.invalid_entry_error_label, .175, .4)
 
     def deleteItem(self, testWord):
@@ -2251,8 +2182,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def admin_modify_inventory_screen(self, d):
         self.isModifying = "is_admin"
-        self.create_new_submit_error_num.configure(
-            text="Amount, Low level, Itemsperbag\nall need to be numbers only\n\n Barcode can have\nspaces, commas, and numbers only")
+        self.create_new_added_universal_label.configure(text="")
         # clears last screen
         self.choose_an_item_to_edit_button.place_forget()
         self.choose_an_item_to_delete_button.place_forget()
@@ -2261,10 +2191,8 @@ one special character: !@#$%*?\n''', delay=.25)
         # reusing inputs and checks screen passing beautiful/ iteminfo
         self.create_new_item_submit_button_cmd(d)
         self.create_new_item_submit_button.configure(text="Submit Edit")
-        self.create_new_item.place_forget()
 
         # forgets unneeded reused labels/buttons
-        self.create_new_submit_error.place_forget()
         self.delete_label.place_forget()
 
     def confirm_item_change(self, direction):
@@ -2465,7 +2393,6 @@ one special character: !@#$%*?\n''', delay=.25)
     def modify_inventory(self, d):
         # reuse select item code from manual entry
         self.view_inventory_one_list_box(d, 'middle')
-        self.create_new_added.place_forget()
         self.list_box_2.place_forget()
         self.list_box_2_label.place_forget()
         self.delete_confirm_entry.place_forget()
@@ -2752,7 +2679,7 @@ one special character: !@#$%*?\n''', delay=.25)
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
         self.user_screen()
-        # self.admin_screen()
+        #self.admin_screen()
 
         # TODO: commnted out if/else to skip login steps while building program,
         #  put back in for finished product
