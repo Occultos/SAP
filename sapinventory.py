@@ -68,8 +68,61 @@ class StartGui(tk.Tk):
         self.list_k = []
 
         # ============================================================================================
-        #                                              buttons - INIT
+        #                                    Universal Buttons
         # ============================================================================================
+
+        self.Button_1 = tk.Button(self, background=self._bgcolor, font=(self._font, self._font_big),
+                                  activebackground=self._activebgcolor)
+
+        self.Button_2 = tk.Button(self, background=self._bgcolor, font=(self._font, self._font_big),
+                                  activebackground=self._activebgcolor)
+
+        self.Button_3 = tk.Button(self, background=self._bgcolor, font=(self._font, self._font_big),
+                                  activebackground=self._activebgcolor)
+
+        self.Button_4 = tk.Button(self, background=self._bgcolor, font=(self._font, self._font_big),
+                                  activebackground=self._activebgcolor)
+
+        self.Button_5 = tk.Button(self, background=self._bgcolor, font=(self._font, self._font_big),
+                                  activebackground=self._activebgcolor)
+
+        # ============================================================================================
+        #                                    Universal Labels
+        # ============================================================================================
+
+        self.Label_1 = tk.Label(self, font=(self._font, self._font_medium), fg='black')
+
+        self.Label_2 = tk.Label(self, font=(self._font, self._font_medium), fg='black')
+
+        self.Label_3 = tk.Label(self, font=(self._font, self._font_medium), fg='black')
+
+        self.Label_4 = tk.Label(self, font=(self._font, self._font_medium), fg='black')
+
+        self.Label_5 = tk.Label(self, font=(self._font, self._font_medium), fg='black')
+
+        # ============================================================================================
+        #                                    Universal Entries
+        # ============================================================================================
+
+        self.Entry_var_1 = tk.StringVar()
+        self.Entry_1 = tk.Entry(self, font=(self._font, self._font_big), textvariable=self.Entry_var_1, width=20)
+
+        self.Entry_var_2 = tk.StringVar()
+        self.Entry_2 = tk.Entry(self, font=(self._font, self._font_big), textvariable=self.Entry_var_2, width=20)
+
+        self.Entry_var_3 = tk.StringVar()
+        self.Entry_3 = tk.Entry(self, font=(self._font, self._font_big), textvariable=self.Entry_var_3, width=20)
+
+        self.Entry_var_4 = tk.StringVar()
+        self.Entry_4 = tk.Entry(self, font=(self._font, self._font_big), textvariable=self.Entry_var_4, width=20)
+
+        self.Entry_var_5 = tk.StringVar()
+        self.Entry_5 = tk.Entry(self, font=(self._font, self._font_big), textvariable=self.Entry_var_5, width=20)
+
+        self.admin_create_new_clear()
+
+        # ============================================================================================
+
         # exit program button
         self.exitButton = tk.Button(self, text="Exit",
                                     background=self._bgcolor, font=(self._font, self._font_big),
@@ -103,24 +156,11 @@ class StartGui(tk.Tk):
                                        command=lambda: self.back_button_func(self.previous_view))
         self.backup_button.configure(activebackground=self._activebgcolor, padx=25)
 
-        # TODO: new : back button with dictionary
-        self.backup_button_with_d_button = tk.Button(self, text="Back",
-                                                     background=self._bgcolor, font=(self._font, self._font_big),
-                                                     command=lambda: self.backup_button_with_d(self.d,
-                                                                                               self.previous_view))
-        self.backup_button_with_d_button.configure(activebackground=self._activebgcolor, padx=25)
-
         # logoutButton
         self.logoutButton = tk.Button(self, text="Logout",
                                       background=self._bgcolor, font=(self._font, self._font_big),
                                       command=lambda: self.login_screen())
         self.logoutButton.configure(activebackground=self._activebgcolor, padx=25)
-
-        # TODO: new : logoutButton with dictionary
-        self.logoutButton_with_d = tk.Button(self, text="Logout",
-                                             background=self._bgcolor, font=(self._font, self._font_big),
-                                             command=lambda: self.logout_with_d(self.d, "user_screen"))
-        self.logoutButton_with_d.configure(activebackground=self._activebgcolor, padx=25)
 
         # register account button
         self.registerbutton = tk.Button(self, text="Register",
@@ -135,12 +175,8 @@ class StartGui(tk.Tk):
 
         self.eyeball_button = tk.Button(self, image=self.eyeball_closed_photo, text='closed',
                                         command=lambda: self.swap_eyeball())
-
         # bag photo
         self.food_bag_photo = tk.PhotoImage(file="foodbag.png").subsample(2, 2)
-
-        self.food_bag_photo_label = tk.Label(self, text="Ffooouwudd", font=(self._font, self._font_big),
-                                             image=self.food_bag_photo)
 
         # =================================================================================
         # buttons in user add items screen
@@ -148,13 +184,13 @@ class StartGui(tk.Tk):
         # choose an item
         self.choose_an_item_button = tk.Button(self, text="Choose An Item",
                                                background=self._fgcolor, font=(self._font, self._font_medium),
-                                               command=lambda: self.choose_an_item_to_change_cmd(self.d))
+                                               command=lambda: self.choose_an_item_to_change_cmd())
         self.choose_an_item_button.configure(activebackground=self._activebgcolor, padx=47)
 
         # choose a different item
         self.choose_new_item = tk.Button(self, text="Choose a New Item",
                                          background=self._fgcolor, font=(self._font, self._font_medium),
-                                         command=lambda: self.adjust_item_quantity_button_cmd(self.d))
+                                         command=lambda: self.adjust_item_quantity_button_cmd())
         self.choose_new_item.configure(activebackground=self._activebgcolor, padx=24)
 
         # manual entry button
@@ -166,13 +202,13 @@ class StartGui(tk.Tk):
         # button inside manual entry screen
         self.adjust_item_quantity_button = tk.Button(self, text="Adjust Item Quantity",
                                                      font=(self._font, self._font_medium), background=self._fgcolor,
-                                                     command=lambda: self.adjust_item_quantity_button_cmd(self.d))
+                                                     command=lambda: self.adjust_item_quantity_button_cmd())
         self.adjust_item_quantity_button.configure(activebackground=self._activebgcolor, padx=20)
 
         # change value of items, currently in manual entry screen
         self.change_value_button = tk.Button(self, text="Change Value",
                                              font=(self._font, self._font_medium), background=self._fgcolor,
-                                             command=lambda: self.change_value_of_item_chosen(self.d))
+                                             command=lambda: self.change_value_of_item_chosen())
         self.change_value_button.configure(activebackground=self._activebgcolor, padx=20)
 
         # submit button
@@ -230,38 +266,6 @@ class StartGui(tk.Tk):
                                                            'Barcodes '))
         self.barcode_scanner_remove_button.configure(activebackground=self._activebgcolor)
 
-        # add_barcode_to_existing function
-        self.add_barcode_to_existing_button = tk.Button(self, text="Add Barcode(s) to inventory",
-                                                        background=self._fgcolor, font=(self._font, self._font_medium),
-                                                        command=lambda: self.add_barcode_to_existing())
-        self.add_barcode_to_existing_button.configure(activebackground=self._activebgcolor)
-
-        # append barcode function
-        self.append_barcode_button = tk.Button(self, text="Add barcode to item",
-                                               background=self._fgcolor, font=(self._font, self._font_medium),
-                                               command=lambda: self.append_barcode())
-        self.append_barcode_button.configure(activebackground=self._activebgcolor)
-
-        # added barcode function
-        self.added_barcode_button = tk.Button(self, text="Submit",
-                                              background=self._fgcolor, font=(self._font, self._font_medium),
-                                              command=lambda: self.added_barcode())
-        self.added_barcode_button.configure(activebackground=self._activebgcolor)
-
-        # ==========================================================================
-        #                     Create new inventory item
-        # ==========================================================================
-        self.create_new_item_button = tk.Button(self, text="Create New Item",
-                                                font=(self._font, self._font_medium), background=self._fgcolor,
-                                                command=lambda: self.create_new_item_screen(self.d))
-        self.create_new_item_button.configure(activebackground=self._activebgcolor)
-
-        # TODO: new: submit changes made with add item
-        self.create_new_item_submit_button = tk.Button(self, text="Submit New Item",
-                                                       background=self._fgcolor, font=(self._font, self._font_medium),
-                                                       command=lambda: self.create_new_item_submit_button_cmd(self.d))
-        self.create_new_item_submit_button.configure(activebackground=self._activebgcolor)
-
         # ===========================================================================
         #             View inventory in user view
         # ==========================================================================
@@ -298,27 +302,8 @@ class StartGui(tk.Tk):
         # Edit inventory
         self.edit_inventory_button = tk.Button(self, text="Edit Inventory",
                                                font=(self._font, self._font_medium), background=self._fgcolor,
-                                               command=lambda: self.edit_inventory_button_cmd(self.d))
+                                               command=lambda: self.edit_inventory_button_cmd())
         self.edit_inventory_button.configure(activebackground=self._activebgcolor, padx=20)
-
-        # choose an item to edit admin
-        self.choose_an_item_to_edit_button = tk.Button(self, text="Choose An Item",
-                                                       background=self._fgcolor, font=(self._font, self._font_medium),
-                                                       command=lambda: self.choose_an_item_to_edit_button_cmd(self.d))
-        self.choose_an_item_to_edit_button.configure(activebackground=self._activebgcolor, padx=47)
-
-        # choose item to delete 'admin'
-        self.choose_an_item_to_delete_button = tk.Button(self, text="Delete This Item!",
-                                                         background=self._fgcolor, font=(self._font, self._font_medium),
-                                                         command=lambda: self.choose_an_item_to_delete_button_cmd(
-                                                             self.d))
-        self.choose_an_item_to_delete_button.configure(activebackground=self._activebgcolor, padx=47)
-
-        # confirm delete calls deleteItem
-        self.deleteItem_button = tk.Button(self, text="Confirm Deletion",
-                                           background=self._fgcolor, font=(self._font, self._font_medium),
-                                           command=lambda: self.deleteItem(self.delete_confirm.get()))
-        self.deleteItem_button.configure(activebackground=self._activebgcolor)
 
         # delete users : in admin screen
         self.delete_user_button = tk.Button(self, text="Delete User", font=(self._font, self._font_medium),
@@ -347,53 +332,7 @@ class StartGui(tk.Tk):
         #                 END Admin screen buttons
         # =============================================================================
 
-        # remove bag button after logging in
-        self.make_bag_screen_button = tk.Button(self, text="Make A New Bag",
-                                                background=self._fgcolor, font=(self._font, self._font_medium),
-                                                command=lambda: self.make_bag_screen())
-        self.make_bag_screen_button.configure(activebackground=self._activebgcolor)
-
-        # make many bags button
-        self.make_many_bags_button = tk.Button(self, text="Make Food bag(s)",
-                                               background=self._fgcolor, font=(self._font, self._font_medium),
-                                               command=lambda: self.made_a_bag_screen(self.d))
-        self.make_many_bags_button.configure(activebackground=self._activebgcolor)
-
-        # many bags entry box
-        self.many_bags = tk.StringVar()
-        self.many_bags_entry = tk.Entry(self, font=(self._font, self._font_big),
-                                        textvariable=self.many_bags, width=20)
-
-        # make theoretical bags
-        self.make_theoretical_bags_button = tk.Button(self, text="Calculate",
-                                                      background=self._fgcolor, font=(self._font, self._font_medium),
-                                                      command=lambda: self.make_theoretical_bags())
-        self.make_theoretical_bags_button.configure(activebackground=self._activebgcolor)
-
-        # make_theoretical_bags entry box
-        self.theoretical_bags = tk.StringVar()
-        self.theoretical_bags_entry = tk.Entry(self, font=(self._font, self._font_big),
-                                               textvariable=self.theoretical_bags, width=10)
-
-        # make ANOTHER bag
-        self.make_another_bag_button = tk.Button(self, text="Make more bags",
-                                                 background=self._fgcolor, font=(self._font, self._font_medium),
-                                                 command=lambda: self.back_button_func(self.previous_view))
-        self.make_another_bag_button.configure(activebackground=self._activebgcolor, padx=10)
-
-        # assign substitution of items
-        self.substitute_foods_screen_button = tk.Button(self, text="Start substitution of food",
-                                                        background=self._fgcolor, font=(self._font, self._font_medium),
-                                                        command=lambda: self.substitute_foods_screen())
-        self.substitute_foods_screen_button.configure(activebackground=self._activebgcolor, padx=10)
-
-        self.substitute_foods_screen_submit_button = tk.Button(self, text="Submit",
-                                                               background=self._fgcolor,
-                                                               font=(self._font, self._font_medium),
-                                                               command=lambda: self.substitute_foods_submit())
-        self.substitute_foods_screen_submit_button.configure(activebackground=self._activebgcolor, padx=10)
-
-        # ========================================================================================
+        # =======================================================================================
         #                                            labels - INIT
         # =======================================================================================
 
@@ -410,43 +349,6 @@ class StartGui(tk.Tk):
         self.login_info_error = tk.Label(self, font=(self._font, self._font_medium))
         self.food_file_error_label = tk.Label(self, font=(self._font, self._font_small),
                                               text="food.txt file missing")
-        self.bag_of_food_removed_from_inventory = tk.Label(self, font=(self._font, self._font_small),
-                                                           text="1 bag of food removed from inventory")
-        self.to_many_missing_items = tk.Label(self, font=(self._font, self._font_small),
-                                              text="To many missing items")
-        # ==================================================================
-        #                    new item labels
-        # ==================================================================
-        self.create_new_item = tk.Label(self, font=(self._font, self._font_big),
-                                        text="Create new item screen")
-        self.create_new_item_name = tk.Label(self, font=(self._font, self._font_small),
-                                             text="Item Name: ")
-        self.create_new_item_amount = tk.Label(self, font=(self._font, self._font_small),
-                                               text="Current amount: ")
-        self.create_new_item_low_level = tk.Label(self, font=(self._font, self._font_small),
-                                                  text="Low amount warning at: ")
-        self.create_new_item_itemsperbag = tk.Label(self, font=(self._font, self._font_small),
-                                                    text="Items per bag: ")
-        self.create_new_item_barcode = tk.Label(self, font=(self._font, self._font_small),
-                                                text="Barcode: ")
-        self.create_new_submit_error = tk.Label(self, font=(self._font, self._font_small),
-                                                text="All boxes need to be filled")
-        self.create_new_submit_error_alpha = tk.Label(self, font=(self._font, self._font_small),
-                                                      text="Name needs to be letters and spaces only")
-        self.create_new_submit_error_num = tk.Label(self, font=(self._font, self._font_small),
-                                                    text="Amount, Low level, Itemsperbag, and Barcode\nall need to be numbers only")
-        self.exceeds_barcode_length = tk.Label(self, font=(self._font, self._font_small),
-                                               text="Exceeds maximum number of barcodes holdable\nfor this item")
-        self.exist_already_label = tk.Label(self, font=(self._font, self._font_small),
-                                            text="Already Exist")
-        self.barcode_exist_error = tk.Label(self, font=(self._font, self._font_small),
-                                            text="Barcode Already Exist")
-
-        self.create_new_added = tk.Label(self, font=(self._font, self._font_small),
-                                         text="Added item")
-
-        # notFound barcode list
-        self.notFound_label = tk.Label(self, font=(self._font, self._font_small), fg='blue')
 
         # ==================================================================
         #                    end new item labels
@@ -474,19 +376,6 @@ class StartGui(tk.Tk):
         self.list_of_items_label.configure(justify=tk.LEFT)
         # invalid entry label
         self.invalid_entry_error_label = tk.Label(self, font=(self._font, self._font_big), fg='red')
-        self.delete_label = tk.Label(self, font=(self._font, self._font_big), fg='red')
-
-        self.substitute_foods_screen_label_1 = tk.Label(self, text="Too low for full bag",
-                                                        font=(self._font, self._font_big))
-        self.substitute_foods_screen_label_2 = tk.Label(self,
-                                                        text="Select what will replace them\nThe number amount above the food picture is the\namount you need to add in additionally to the normal amount",
-                                                        font=(self._font, self._font_big))
-        self.substitute_foods_screen_label_3 = tk.Label(self, font=(self._font, self._font_medium))
-        self.substitute_foods_screen_label_4 = tk.Label(self, font=(self._font, self._font_medium))
-
-        self.make_theoretical_bags_label = tk.Label(self,
-                                                    text="To calculate\ninventory needed \nto make x number \nof theoretical bags",
-                                                    font=(self._font, self._font_small))
 
         # ======================================================================================
         #                                         SA army logo - INIT
@@ -545,37 +434,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.barcode_scanner_amount_entry = tk.Entry(self, font=(self._font, self._font_big),
                                                      textvariable=self.barcode_scanner_amount, width=4)
 
-        # ===============================================================
-        #                      new items entry
-        # ==============================================================
-        # create new item entry box (temps)
-        self.create_new_item_input = tk.StringVar()
-        self.create_new_item_input_entry = tk.Entry(self, font=(self._font, self._font_big),
-                                                    textvariable=self.create_new_item_input, width=20)
-
-        self.create_new_item_input_amount = tk.StringVar()
-        self.create_new_item_input_amount_entry = tk.Entry(self, font=(self._font, self._font_big),
-                                                           textvariable=self.create_new_item_input_amount, width=20)
-
-        self.create_new_item_input_low_level = tk.StringVar()
-        self.create_new_item_input_low_level_entry = tk.Entry(self, font=(self._font, self._font_big),
-                                                              textvariable=self.create_new_item_input_low_level,
-                                                              width=20)
-
-        self.create_new_item_input_itemsperbag = tk.StringVar()
-        self.create_new_item_input_itemsperbag_entry = tk.Entry(self, font=(self._font, self._font_big),
-                                                                textvariable=self.create_new_item_input_itemsperbag,
-                                                                width=20)
-
-        self.create_new_item_input_barcode = tk.StringVar()
-        self.create_new_item_input_barcode_entry = tk.Entry(self, font=(self._font, self._font_big),
-                                                            textvariable=self.create_new_item_input_barcode, width=20)
-
-        # Delete confirm box
-        self.delete_confirm = tk.StringVar()
-        self.delete_confirm_entry = tk.Entry(self, font=(self._font, self._font_big),
-                                             textvariable=self.delete_confirm, width=20)
-
         # =======================================================================================
         #                                    list boxes and labels - INIT
         # ======================================================================================
@@ -626,53 +484,16 @@ one special character: !@#$%*?\n''', delay=.25)
     # =====================================================================================
     #                                                BACKUP
     # =====================================================================================
-    # TODO: new:
-    def backup_button_with_d(self, d, words):
-        # This is for removing labels from create new item that pass d
-        if words == "user_screen":
-            self.clear_create_new_item(d)
-        elif words == "admin_edit_main":
-            self.clear_create_new_item(d)
-            self.clear_admin_screen()
-            self.clear_to_login()
-            self.invalid_entry_error_label.place_forget()
-            self.edit_inventory_button_cmd(d)
-            self.deleteItem_button.place_forget()
-        elif words == "admin_screen":
-            self.invalid_entry_error_label.place_forget()
-            self.create_new_added.place_forget()
-            self.admin_screen()
-            self.clear_list_box()
-            self.list_box_2.place_forget()
-            self.list_box_2_label.place_forget()
-            self.choose_an_item_to_edit_button.place_forget()
-            self.choose_an_item_to_delete_button.place_forget()
-            self.backup_button_with_d_button.place_forget()
-            self.delete_label.place_forget()
-            self.create_new_item_button.place_forget()
-
-    def logout_with_d(self, d, words):
-        # This is for removing labels from create new item that pass d with logout button
-        if words == "user_screen":
-            self.backup_button_with_d(d, "user_screen")
-        elif words == "login_screen":
-            self.backup_button_with_d(d, "admin_screen")
-        self.logoutButton_with_d.place_forget()
-        self.delete_confirm_entry.place_forget()
-        self.deleteItem_button.place_forget()
-        self.delete_label.place_forget()
-        self.login_screen()
 
     def back_button_func(self, words):
         # goes back to user screen
         if words == "user_screen":
+            self.clear_create_new_item()
             self.clear_makebag_screen()
             self.clear_todo_label()
             self.clear_list_box()
-            self.bag_of_food_removed_from_inventory.place_forget()
             self.adjust_item_quantity_button.place_forget()
             self.choose_an_item_button.place_forget()
-            self.choose_an_item_to_edit_button.place_forget()
             self.clear_barcode_screen()
             self.unbind_return_func()
             self.list_of_items_words = ''
@@ -680,10 +501,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.list_box_2_label.place_forget()
             self.invalid_entry_error_label.place_forget()
             self.display_inventory_left_side_button.place_forget()
-            self.food_bag_photo_label.place_forget()
-            self.append_barcode_button.place_forget()
             self.clear_add_barcode_to_existing()
-            self.clear_append_barcode()
             self.user_screen()
 
         # goes back to make a bag screen
@@ -691,9 +509,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.make_bag_screen()
             self.clear_todo_label()
             self.clear_list_box()
-            self.make_another_bag_button.place_forget()
             self.food_file_error_label.place_forget()
-            self.bag_of_food_removed_from_inventory.place_forget()
             self.invalid_entry_error_label.place_forget()
             self.clear_substitutions_page()
         elif words == "login_screen":
@@ -718,7 +534,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.invalid_entry_error_label.place_forget()
         elif words == "choose_item_screen":
             self.item_to_be_changed_label_2.place_forget()
-            self.adjust_item_quantity_button_cmd(self.d)
+            self.adjust_item_quantity_button_cmd()
             self.choose_new_item.place_forget()
             self.adjust_inventory_entry.place_forget()
             self.add_button.place_forget()
@@ -728,9 +544,29 @@ one special character: !@#$%*?\n''', delay=.25)
             self.cancel_inventory_manual_button.place_forget()
             self.invalid_entry_error_label.place_forget()
         elif words == "add_barcode_to_existing":
-            # self.clear_add_barcode_to_existing()
             self.add_barcode_to_existing()
-            self.clear_append_barcode()
+        elif words == "admin_edit_main":
+            self.clear_create_new_item()
+            self.clear_admin_screen()
+            self.clear_to_login()
+            self.logout_button_place()
+            self.invalid_entry_error_label.place_forget()
+            self.edit_inventory_button_cmd()
+        elif words == "admin_screen":
+            self.admin_screen()
+            self.clear_list_box()
+            self.list_box_2.place_forget()
+            self.list_box_2_label.place_forget()
+            self.backup_button.place_forget()
+
+            self.Label_1.place_forget()
+            self.Label_2.place_forget()
+            self.Label_3.place_forget()
+            self.Label_4.place_forget()
+
+            self.Button_1.place_forget()
+            self.Button_2.place_forget()
+            self.Button_3.place_forget()
 
     # ====================================================================================
     #                                   EMAIL Functions
@@ -782,8 +618,8 @@ one special character: !@#$%*?\n''', delay=.25)
         self.registration_info_button.place(relx=.47, rely=.5)
         # remove other buttons
         self.clear_to_login()
-        # backup_button_with_d
-        self.backup_button_with_d_button.place_forget()
+        # backup_button_
+        self.backup_button.place_forget()
 
     def admin_screen(self):
         self.clear_login_screen()
@@ -800,6 +636,14 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.make_csv_button, .845, .575)
 
     def user_screen(self):
+        '''
+        Button_1 : calls make_bag_screen
+        Button_2 : calls display_inventory_user_button_cmd
+        Button_3 : calls barcode_scanner_screen
+        Button_4 : calls manual_entry_screen
+        Button_5 : calls create_new_item_screen
+        '''
+
         self.isModifying = "as_user"
         self.isPassingBarcode = "is_passing_false"
         self.clear_login_screen()
@@ -808,15 +652,29 @@ one special character: !@#$%*?\n''', delay=.25)
         self.backup_button.place_forget()
         self.eyeball_button.place_forget()
         self.army_image_place()
-        # place_object(self.adjust_inventory_button, .47, .4)
-        place_object(self.make_bag_screen_button, .47, .4)
-        place_object(self.display_inventory_user_button, .47, .5)
-        place_object(self.barcode_scanner_button, .47, .6)
-        place_object(self.manual_entry_button, .47, .7)
-        place_object(self.create_new_item_button, .47, .8)
+
+        self.Button_1.configure(text="Make A New Bag", background=self._fgcolor, font=(self._font, self._font_medium),
+                                        command=lambda: self.make_bag_screen(), activebackground=self._activebgcolor, padx=0)
+        place_object(self.Button_1, .47, .4)
+
+        self.Button_2.configure(text="View Inventory", font=(self._font, self._font_medium), background=self._fgcolor,
+                                        command=lambda: self.display_inventory_user_button_cmd('middle'), activebackground=self._activebgcolor, padx=16)
+        place_object(self.Button_2, .47, .5)
+
+        self.Button_3.configure(text="Barcode Scan", background=self._fgcolor, font=(self._font, self._font_medium),
+                                        command=lambda: self.barcode_scanner_screen(), activebackground=self._activebgcolor, padx=18)
+        place_object(self.Button_3, .47, .6)
+
+        self.Button_4.configure(text="Manual Entry", background=self._fgcolor, font=(self._font, self._font_medium),
+                                        command=lambda: self.manual_entry_screen(), activebackground=self._activebgcolor, padx=25)
+        place_object(self.Button_4, .47, .7)
+
+        self.Button_5.configure(text="Create New Item", font=(self._font, self._font_medium), background=self._fgcolor,
+                                        command=lambda: self.create_new_item_screen(), activebackground=self._activebgcolor, padx=0)
+        place_object(self.Button_5, .47, .8)
+
         self.isBarcode = False
-        # self.backup_place()
-        # self.previous_view = "user_screen"
+        self.Label_3.configure(text='')
 
     # load login screen
     def login_info_screen(self):
@@ -862,30 +720,44 @@ one special character: !@#$%*?\n''', delay=.25)
         # todo: confirm pw label
 
     # made a bag
-    def made_a_bag_screen(self, d):
-        if str(self.many_bags.get()).isnumeric() == True and int(self.many_bags.get()) <= int(self.lowestRatio) and int(
-                self.many_bags.get()) > 0:
-            self.numberofBags = int(self.many_bags.get())
-            self.many_bags.set("")
+    def made_a_bag_screen(self):
+        '''
+        //// This page is what you see after successful bag making ////
 
-            '''n = self.numberofBags
-            while n > 0:
-                n -= 1
-                self.lower_inventory(d)'''
+        Entry_var_1 : number of bags to be made
 
+        Button_1 : Make more bags/ goes back
+
+        Label_4 : Error label
+        '''
+        # Checks if int is entered, then checks if it is in bounds calculated in calculate_max_bags
+        if str(self.Entry_var_1.get()).isnumeric() == True and int(self.Entry_var_1.get()) <= int(self.lowestRatio) and int(
+                self.Entry_var_1.get()) > 0:
+            self.numberofBags = int(self.Entry_var_1.get())
+            self.Entry_var_1.set("")
+            # lowers inventory by Entry_var_1/self.numberofBags full food bags
             self.lower_inventory_new()
 
             self.clear_makebag_screen()
             self.previous_view = "make_bag_screen"
-            self.make_another_bag_button.place(relx=.8, rely=.3)
-            self.view_inventory_3_list_boxes(d)
+
+            self.Button_1.configure(text="Make more bags", background=self._fgcolor, font=(self._font, self._font_medium),
+                                        command=lambda: self.back_button_func(self.previous_view), activebackground=self._activebgcolor, padx=10)
+            self.Button_1.place(relx=.8, rely=.3)
+            self.view_inventory_3_list_boxes(self.d)
         else:
             self.make_bag_screen()
-            self.delete_label.configure(text="Enter number > 0\nand needs to be less than bags left")
-            self.delete_label.place(relx=.75, rely=.3, anchor="center")
-            self.many_bags.set("")
+            self.Label_4.configure(font=(self._font, self._font_big), fg='red', text="Enter number > 0\nand needs to be less than bags left")
+            self.Label_4.place(relx=.75, rely=.3, anchor="center")
+            self.Entry_var_1.set("")
 
     def lower_inventory_new(self):
+        '''
+        lowers inventory by subtracting 'itemsperbag' * self.numberofBags from 'amount' for each item in self.d
+        Turned 0(n^2) into O(1), since the bag will almost always be around 20 unique items
+
+        Label_5 : info label
+        '''
         count = 0
         try:
             totalLines = len(open("food.txt").readlines())
@@ -898,8 +770,9 @@ one special character: !@#$%*?\n''', delay=.25)
                         self.beautiful_string = str(self.beautiful_string) + '\n'
                     f.write(str(self.beautiful_string))
                     count += 1
-            self.bag_of_food_removed_from_inventory.configure(text=f"{int(self.numberofBags)} bag(s) of food removed")
-            self.bag_of_food_removed_from_inventory.place(relx=.4, rely=.9325)
+
+            self.Label_5.configure(font=(self._font, self._font_small), text=f"{int(self.numberofBags)} bag(s) of food removed", fg='black')
+            self.Label_5.place(relx=.4, rely=.9325)
             self.d = {}
             self.make_dict(self.d)
         except Exception as e:
@@ -907,122 +780,173 @@ one special character: !@#$%*?\n''', delay=.25)
 
     # make bag screen
     def make_bag_screen(self):
-        self.clear_user_screen()
+        '''
+        //// Main screen for making food bags/ calculating Theoretical bags ////
 
+        Label_1 : Food bag photo
+        Label_2 : Theoretical bags info
+        Label_3 : Make bags info
+
+        Button_1 : Make food bags
+        Button_2 : Make Theoretical bags/ calculate
+        Button_3 : Substitution page when no more full food bags can be made
+
+        Entry_1 : Number of bags to make, with Entry_var_1 default value of 1
+        Entry_2 : Number of Theoretical bags to calculate, with Entry_var_2 default value of ''
+        '''
+        self.clear_user_screen()
         # calculate max number of bag that can be made now
         # get the lowest ratio (amount / itmesperbag)
         self.calculate_max_bags()
         self.numberofBags = 1
 
-        self.food_bag_photo_label.place(relx=0.15, rely=0.25)
+        self.Label_1.configure(image=self.food_bag_photo)
+        self.Label_1.place(relx=0.15, rely=0.25)
         # entry box for many bags
-        self.make_many_bags_button.place(relx=.75, rely=.4, anchor="center")
-        self.many_bags.set('1')
-        self.many_bags_entry.place(relx=.75, rely=.47, anchor="center")
-        self.make_theoretical_bags_button.place(relx=.075, rely=.4, anchor="center")
-        self.theoretical_bags_entry.place(relx=.075, rely=.47, anchor="center")
-        self.theoretical_bags.set('')
-        self.make_theoretical_bags_label.configure(
-            text="To calculate\ninventory needed \nto make x number \nof theoretical bags", fg="black")
-        self.make_theoretical_bags_label.place(relx=.075, rely=.30, anchor="center")
-        if int(self.lowestRatio) > 0:
-            self.checkbutton_label.configure(
-                text=f"Enter number of Bags to make\n\n\n{int(self.lowestRatio)} Full bag(s) left\n\n\n{str(self.nameofLowest).upper()}: is the bottleneck")
-        else:
-            self.checkbutton_label.configure(
-                text=f"Full bags can't be made\n\n\n{str(self.nameofLowest).upper()}: is the bottleneck")
-            # TODO: decide what to do with partial bags
-            # place substitution button page here
-            self.substitute_foods_screen_button.place(relx=.75, rely=.7, anchor="center")
+        self.Button_1.configure(text="Make Food bag(s)", background=self._fgcolor, font=(self._font, self._font_medium),
+                                        command=lambda: self.made_a_bag_screen(), activebackground=self._activebgcolor)
+        self.Button_1.place(relx=.75, rely=.4, anchor="center")
 
-        self.checkbutton_label.place(relx=.75, rely=.6, anchor="center")
+        self.Entry_var_1.set(1)
+        self.Entry_1.configure(font=(self._font, self._font_big), textvariable=self.Entry_var_1, width=20)
+        self.Entry_1.place(relx=.75, rely=.47, anchor="center")
+
+        self.Button_2.configure(text="Calculate", background=self._fgcolor, font=(self._font, self._font_medium),
+                                        command=lambda: self.make_theoretical_bags(), activebackground=self._activebgcolor)
+        self.Button_2.place(relx=.075, rely=.4, anchor="center")
+
+        self.Entry_2.configure(font=(self._font, self._font_big), textvariable=self.Entry_var_2, width=10)
+        self.Entry_2.place(relx=.075, rely=.47, anchor="center")
+        self.Entry_var_2.set('')
+
+        self.Label_2.configure(
+            text="To calculate\ninventory needed \nto make x number \nof theoretical bags", fg="black",font=(self._font, self._font_small))
+        self.Label_2.place(relx=.075, rely=.30, anchor="center")
+
+        if int(self.lowestRatio) > 0:
+            self.Label_3.configure(
+                text=f"Enter number of Bags to make\n\n\n{int(self.lowestRatio)} Full bag(s) left\n\n\n{str(self.nameofLowest).upper()}: is the bottleneck",
+                                          font=(self._font, self._font_medium), fg='black')
+        else:
+            self.Label_3.configure(
+                text=f"Full bags can't be made\n\n\n{str(self.nameofLowest).upper()}: is the bottleneck", fg='black')
+            # place substitution button page here
+            self.Button_3.configure(text="Start substitution of food", background=self._fgcolor, font=(self._font, self._font_medium),
+                                            command=lambda: self.substitute_foods_screen(), activebackground=self._activebgcolor, padx=10)
+            self.Button_3.place(relx=.75, rely=.7, anchor="center")
+        self.Label_3.place(relx=.75, rely=.6, anchor="center")
 
         self.backup_place()
         self.previous_view = "user_screen"
 
     def make_theoretical_bags(self):
-        if self.theoretical_bags.get().isnumeric():
-            if int(self.theoretical_bags.get()) > 0 and int(self.theoretical_bags.get()) <= 999999999999:
+        '''
+        //// Where the theoretical bags are calculated/ list box is shown/ theoretical.txt is writen ////
+
+        Entry_var_2 : number of Theoretical bags to make/ calculate
+        Label_2 : Theoretical bags info/ error label
+        '''
+        if self.Entry_var_2.get().isnumeric():
+            # checking if input is an int, then checking if value is in bounds
+            if int(self.Entry_var_2.get()) > 0 and int(self.Entry_var_2.get()) <= 99999:
                 self.previous_view = "make_bag_screen"
                 self.clear_makebag_screen()
 
-                d_calc = {}
                 d_calc = self.d
                 d_needed = {}
-
+                # If food's amount value goes negative after calculation, it is added to d_needed.
+                # That is, a negative number means the current inventory can't handle Entry_var_2 bags being made
                 for key, value in d_calc.items():
-                    d_calc[key]['amount'] -= d_calc[key]['itemsperbag'] * int(self.theoretical_bags.get())
+                    d_calc[key]['amount'] -= d_calc[key]['itemsperbag'] * int(self.Entry_var_2.get())
                     if d_calc[key]['amount'] < 0:
                         d_needed[key] = -1 * d_calc[key]['amount']
 
+                # labels with info about Theoretical bags made, read them for details
                 self.clear_list_box()
                 self.list_box_1.place(x=.4 * 1920, y=.3 * 1080, relwidth=.2, relheight=.6)
                 self.list_box_1_label.configure(
-                    text=f"What will be needed for {int(self.theoretical_bags.get())} bags\n including current stock",
+                    text=f"What will be needed for {int(self.Entry_var_2.get())} bags\n including current stock",
                     fg="black")
                 self.list_box_1_label.place(relx=.5, rely=.25, anchor='center')
                 self.list_box_2_label.configure(text=f"If it is blank then you have enough\n in stock to make "
-                                                     f"{int(self.theoretical_bags.get())} bags\n\n\n\n\nElse it will show the\nfood and number "
-                                                     f"needed to buy\nfor {int(self.theoretical_bags.get())} bags\n\n\n\nAlso, theoretical.txt\n has a copy of this info",
+                                                     f"{int(self.Entry_var_2.get())} bags\n\n\n\n\nElse it will show the\nfood and number "
+                                                     f"needed to buy\nfor {int(self.Entry_var_2.get())} bags\n\n\n\nAlso, theoretical.txt\n has a copy of this info",
                                                 fg="black")
-                self.list_box_2_label.place(relx=.75, rely=.5, anchor='center')
+                self.list_box_2_label.place(relx=.75, rely=.6, anchor='center')
 
+                # Populating list_box_1 with d_needed items and amount needed for Entry_var_2 bags to be made
                 box1count = 0
                 for item_id, item_info in d_needed.items():
                     box1count += 1
                     self.list_box_1.insert(box1count, item_id + ' : ' + str(item_info))
                 try:
+                    # Printing to a text file for a 'hard' copy, rewrites to same file every submit
                     with open('theoretical.txt', 'w') as f:
                         print(
-                            f"Amount and items needed for {int(self.theoretical_bags.get())} bags\nThis is after current stocks goes to zero\nitem: amount",
+                            f"Amount and items needed for {int(self.Entry_var_2.get())} bags\nThis is after current stocks goes to zero\nitem: amount\n",
                             file=f)
                         for p_id, p_info in d_needed.items():
                             print(f"{str(p_id)}: {d_needed[p_id]}", file=f)
                 except Exception as e:
                     print("error in writing theoretical.txt: make_theoretical_bags : " + str(e))
             else:
-                self.make_theoretical_bags_label.configure(text="Enter number\nbetween 0 and 9999", fg='red')
-                self.theoretical_bags.set('')
+                self.Label_2.configure(text="Enter number\nbetween 0 and 99999", fg='red')
+                self.Entry_var_2.set('')
         else:
-            self.make_theoretical_bags_label.configure(text="Enter number\nbetween 0 and 9999", fg='red')
-            self.theoretical_bags.set('')
+            self.Label_2.configure(text="Enter number\nbetween 0 and 99999", fg='red')
+            self.Entry_var_2.set('')
 
     def calculate_max_bags(self):
+        '''
+        Uses worse ratio between 'amount' and 'itemsperbag' variables to find max full bags possible
+        Saves the ratio and the name of worst
+        '''
         self.make_dict(self.d)
         self.lowestRatio = 9999.9
         self.nameofLowest = ""
-        try:
-            with open("food.txt", "r+") as src:
-                n = 0
-                for line in src:
-                    if not re.match(r'^\s*$', line):
-                        if n == 0:
-                            n += 1
-                        else:
-                            words = line.split(", ")
-                            if int(words[3]) != 0:
-                                if (int(words[1]) / int(words[3])) < self.lowestRatio:
-                                    self.lowestRatio = int(words[1]) / int(words[3])
-                                    self.nameofLowest = words[0]
-        except Exception as e:
-            print("error in reading food.txt: calculate_max_bags : " + str(e))
+
+        for key, value in self.d.items():
+            if self.d[key]['itemsperbag'] != 0:
+                if float(self.d[key]['amount'] / self.d[key]['itemsperbag']) <= self.lowestRatio:
+                    self.lowestRatio = float(self.d[key]['amount'] / self.d[key]['itemsperbag'])
+                    self.nameofLowest = self.d[key]['item']
 
     def substitute_foods_screen(self):
+        '''
+        //// The fanciest page that will never be seen (⌣́_⌣̀) ////
+        //// dynamically creates checkboxes with text and images as needed ////
+
+        Label_1 : Too low for full bag
+        Label_2 : instructions
+        Label_3 : submit reminder
+        Label_4 : error label
+
+        Button_1 : submit, calls substitute_foods_submit
+        '''
         self.d = {}
         self.make_dict(self.d)
-        # force reset/ update of dict. Really only need it if directly editing the txt
+        # force reset/ update of dict. Really only needed if directly editing the txt
         self.clear_makebag_screen()
         self.previous_view = "make_bag_screen"
-        # Needs labels and a submit button
-        self.substitute_foods_screen_label_1.place(relx=.025, rely=.26)
-        self.substitute_foods_screen_label_2.place(relx=.25, rely=.225)
-        self.substitute_foods_screen_label_4.configure(text="When ready hit submit", fg='black')
-        self.substitute_foods_screen_label_4.place(relx=.81, rely=.55)
-        self.substitute_foods_screen_submit_button.place(relx=.85, rely=.6)
+        # labels and a submit button
+        self.Label_1.configure(text="Too low for full bag", font=(self._font, self._font_big), image='', fg='black')
+        self.Label_1.place(relx=.025, rely=.26)
+        self.Label_2.configure(text="Select what will replace them\nThe number amount above the food picture is the\namount you need to add in additionally to the normal amount",
+                                                        font=(self._font, self._font_big), fg='black')
+        self.Label_2.place(relx=.25, rely=.225)
 
+        self.Label_3.configure(font=(self._font, self._font_medium), text="When ready hit submit", fg='black')
+        self.Label_3.place(relx=.81, rely=.55)
+
+        self.Button_1.configure(text="Submit", background=self._fgcolor, font=(self._font, self._font_medium),
+                                        command=lambda: self.substitute_foods_submit(), activebackground=self._activebgcolor, padx=10)
+        self.Button_1.place(relx=.85, rely=.6)
+
+        # creates d for outofstock and 'instock', however 'instock' really means items that have at least two times its own 'itemsperbag' var
         self.d_outofstock = {}
         self.d_instock = {}
 
+        # Creating a d of item:photos using the item's name for direction, if picture is not found for said item's name it defaults to unknown.png
         self.d_photos = {}
         for key, value in self.d.items():
             try:
@@ -1032,10 +956,13 @@ one special character: !@#$%*?\n''', delay=.25)
                 # all make a bag items without a picture will have a ? picture so it can still work
                 self.d_photos[self.d[key]['item']] = tk.PhotoImage(file=f"images/unknown.png").subsample(4, 4)
 
+        # list of item names under each category
         outofstock = []
         instock = []
+        # self.stock is items between outofstock/instock, again instock are items with at least two times their own 'itemsperbag' var
         self.stock = []
 
+        # Assigns items to appropriate lists
         for key, value in self.d.items():
             if self.d[key]['amount'] < self.d[key]['itemsperbag']:
                 outofstock.append(self.d[key]['item'])
@@ -1046,15 +973,17 @@ one special character: !@#$%*?\n''', delay=.25)
             # make sure it is eligible to be a sub/ don't want negatives after subtituiting
             if self.d[key]['amount'] >= self.d[key]['itemsperbag']:
                 self.stock.append(self.d[key]['item'])
+
+        # When too many items are below their own 'itemsperbag' var, doesn't allow any more substitute bags
         if outofstock.__len__() > 3:
-            # print("To many missing items")
             self.clear_substitutions_page()
             self.make_bag_screen()
-            # self.to_many_missing_items.place()
-            self.substitute_foods_screen_label_3.configure(text="To many missing items", fg='red')
-            self.substitute_foods_screen_label_3.place(relx=.655, rely=.75)
+            self.Label_4.configure(font=(self._font, self._font_medium), text="Too many missing items", fg='red')
+            self.Label_4.place(relx=.665, rely=.75)
+            PlaySound("Wilhelm_Scream.wav", SND_FILENAME)
             return
 
+        # Creates the needed amount of checkboxes with text, image, and checkbox variable for d_outofstock
         index = 0
         for i in outofstock:
             # checkbox value stored at foodname
@@ -1074,10 +1003,11 @@ one special character: !@#$%*?\n''', delay=.25)
         index = 0
         offset_y = [0, 0, 0, 0]
         x = 0.105
+        # Creates the needed amount of checkboxes with text, image, and checkbox variable for d_instock
+        # Also has coordinate offsets for checkboxes, could be better
         for j in instock:
             # checkbox value stored at foodname
             self.d_instock[j] = IntVar()
-
             k = Checkbutton(text="    " + str(j).upper() + ":   " + str(self.d[j]['itemsperbag']),
                             variable=self.d_instock[j], image=self.d_photos[f'{j}'], compound='bottom')
             self.list_k.append(k)
@@ -1106,15 +1036,22 @@ one special character: !@#$%*?\n''', delay=.25)
             index += 1
 
     def substitute_foods_submit(self):
+        '''
+        //// When substitutions submit is pressed, check and stuff ////
+        //// Looks at values of checkbox ////
+
+        Label_4 : error label
+        '''
         self.previous_view = "make_bag_screen"
-        # Need to make it modify txt, probably fake admin
-        # but this is the logic
         notevenOne = True
+        # notevenOne is for detecting if at least one checkbox was selected on submit
+
         try:
             totalLines = len(open("food.txt").readlines())
+            count = 0
         except Exception as e:
             print("error in reading food.txt: substitute_foods_submit : total lines : " + str(e))
-        count = 0
+
         for key, value in self.d_outofstock.items():
             if self.d_outofstock[key].get() == 1:
                 self.d[key]['amount'] = 0
@@ -1122,6 +1059,7 @@ one special character: !@#$%*?\n''', delay=.25)
         for key, value in self.d_instock.items():
             if self.d_instock[key].get() == 1:
                 self.d[key]['amount'] -= self.d[key]['itemsperbag'] * 2
+                # when at least one d_instock checkbox is selected set notevenOne to False
                 notevenOne = False
                 self.stock.remove(key)
 
@@ -1130,13 +1068,15 @@ one special character: !@#$%*?\n''', delay=.25)
             # the in between stock
 
         if notevenOne == True:
+            # Force back button press if no checkboxes were selected
             self.previous_view = "make_bag_screen"
             self.back_button_func(self.previous_view)
-            self.substitute_foods_screen_label_3.configure(text="No substitutes were selected", fg='red')
-            self.substitute_foods_screen_label_3.place(relx=.655, rely=.75)
-            # Force back button press
+            self.Label_4.configure(text="No substitutes were selected", fg='red')
+            self.Label_4.place(relx=.655, rely=.75)
+
         else:
             try:
+                # Updates food.txt after making the substitute bag
                 with open('food.txt', 'w') as f:
                     print("item, amount, lowlevel, itemsperbag, barcode", file=f)
                     for p_id, p_info in self.d.items():
@@ -1154,17 +1094,15 @@ one special character: !@#$%*?\n''', delay=.25)
 
             self.back_button_func(self.previous_view)
             # Force back button press
-            self.substitute_foods_screen_label_3.configure(text="Made bag with substitutes", fg='blue')
-            self.substitute_foods_screen_label_3.place(relx=.66, rely=.75)
+            self.Label_4.configure(text="Made bag with substitutes", fg='blue')
+            self.Label_4.place(relx=.66, rely=.75)
 
     def make_csv(self):
-        import csv
+        # makes excel csv for viewing, some barcodes can end up in si
         count = 0
         try:
             totalLines = len(open("food.txt").readlines())
-            fieldnames = ['item', 'amount', 'lowlevel', 'itemsperbag', 'barcodes']
             with open("food.csv", "w") as f:
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
                 print(
                     "'Name of food', 'Current Amount', 'Low Level Threshold', 'Items per food bag', 'List of Barcodes'\n",
                     file=f)
@@ -1175,8 +1113,27 @@ one special character: !@#$%*?\n''', delay=.25)
                     f.write(str(self.beautiful_string))
                     count += 1
             self.make_csv_button.configure(text="Made food.csv", padx=13)
-        except Exception:
+        except Exception as e:
             print("error in reading food.txt make_csv : " + str(e))
+
+    def make_food_txt(self):
+        count = 0
+        try:
+            totalLines = len(open("food.txt").readlines())
+            if self.Entry_var_1.get() == 'YES':
+                totalLines-=1
+            with open("food.txt", "w") as f:
+                print("item, amount, lowlevel, itemsperbag, barcode",file=f)
+                for p_id, p_info in self.d.items():
+                    self.beautifulString(str(p_id))
+                    if count < totalLines - 2:
+                        self.beautiful_string = str(self.beautiful_string) + '\n'
+                    f.write(str(self.beautiful_string))
+                    count += 1
+        except Exception as e:
+            print("error in reading food.txt make_food_txt : " + str(e))
+        self.d={}
+        self.make_dict(self.d)
 
     # ========================================================
     #                 barcode screen functions
@@ -1214,7 +1171,6 @@ one special character: !@#$%*?\n''', delay=.25)
             direction, self.barcode_scanner_input.get(),
             self.barcode_scanner_amount.get()))
         if self.notFound.__len__() > 0:
-            #self.add_barcode_to_existing_button.place(relx=.35, rely=.5)
             self.add_barcode_to_existing()
 
     def bind_tab_to_scanner_input_entry(self):
@@ -1227,8 +1183,6 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def search_for_item_in_food_file(self, direction, item_to_find, qty):
         # TODO: add barcode & qty columns
-        # TODO: limit size of list_of_items_words so its doesn't go over inventory button
-        # TODO: I suggest to always show inventory box and update every scan instead of needing to toggle to update the box
         try:
             self.invalid_entry_error_label.place_forget()
             intcheck = int(qty)
@@ -1287,20 +1241,9 @@ one special character: !@#$%*?\n''', delay=.25)
                             self.list_of_items_label.config(text=self.list_of_items_words)
                             if (str(item_to_find) in self.notFound) == False:
                                 self.notFound.append(str(item_to_find))
-                            # place add_barcode_to_existing button
-                            # self.add_barcode_to_existing()
-                            #self.add_barcode_to_existing_button.place(relx=.02, rely=.5)
-
-                            '''# TODO : probably call new item screen here
-                            print("new item need to add it to the inventory")
-                            print("new plan?  save items not found to a new list")
-                            print("place a new item screen button")
-                            print("display new item list on the new item screen until back button pushed")
-                            # addition to plan, make a "append barcode to existing fooditem" page instead of assuming it is
-                            # a brand new fooditem every time, ask if it would fall under any foods already in the dict
-                            # if not then they can make a new item'''
 
                 self.barcode_scanner_add_remove_button_cmd(direction)
+                # to update inventory box every scan
                 self.view_inventory_one_list_box(self.d, 'left')
                 self.clear_list_box()
                 self.view_inventory_one_list_box(self.d, 'left')
@@ -1309,7 +1252,7 @@ one special character: !@#$%*?\n''', delay=.25)
                     PlaySound("Wilhelm_Scream.wav", SND_FILENAME)
             except Exception as e:
                 print("error writing to food file : " + str(e))
-        except Exception as e:
+        except Exception:
             # input a non int value, show error label to user
             self.invalid_entry_error_label.config(text='Enter numbers only')
             place_object(self.invalid_entry_error_label, .8, .25)
@@ -1317,16 +1260,20 @@ one special character: !@#$%*?\n''', delay=.25)
             self.barcode_scanner_amount.set(1)
 
     def barcode_exist(self, code):
+        # quick easy check to see if barcode exist
         for key, value in self.d.items():
             if code in self.d[key]['barcodes']:
                 return True
         return False
 
     def add_barcode_to_existing(self):
+        '''
+        //// Main screen for assigning new barcode to food ////
+
+        Button_1 : create_new_item_screen
+        Button_2 : append_barcode
+        '''
         self.unbind_return_func()
-        # pulls up list of notfound
-        # lets user select from box for which item to add barcode to
-        # if new item needs to be made then createnewitem screen passing notfound?
         self.previous_view = "user_screen"
         self.clear_barcode_screen()
         self.display_inventory_left_side_button.place_forget()
@@ -1347,27 +1294,33 @@ one special character: !@#$%*?\n''', delay=.25)
 
         self.isBarcode = True
         # place create new item button
-        self.create_new_item_button.place(x=1700, y=600, anchor="center")
+        self.Button_1.configure(text="Create New Item", font=(self._font, self._font_medium), background=self._fgcolor,
+                                        command=lambda: self.create_new_item_screen(), activebackground=self._activebgcolor)
+        self.Button_1.place(x=1700, y=600, anchor="center")
         # place append_barcode button
-        self.append_barcode_button.place(x=450, y=600, anchor="center")
+        self.Button_2.configure(text="Add barcode to item", background=self._fgcolor, font=(self._font, self._font_medium),
+                                        command=lambda: self.append_barcode(), activebackground=self._activebgcolor)
+        self.Button_2.place(x=450, y=600, anchor="center")
 
     def append_barcode(self):
+        '''
+        /// for appending barcode to existing food item ////
+
+        Label_1 : confirmed/ error
+        '''
         self.selected_item_to_be_changed = self.list_box_2.curselection()
         if self.selected_item_to_be_changed != ():
             self.previous_view = "user_screen"
-            #self.clear_add_barcode_to_existing()
 
             self.change_inventory_by_this_much.set(0)
             self.item_to_be_changed = self.list_box_2.get(self.selected_item_to_be_changed)
-            self.invalid_entry_error_label.place_forget()
+            self.Label_1.place_forget()
 
             pre_beautiful_string = str(self.notFound)
             pre_beautiful_string = pre_beautiful_string.replace("'", '')
             pre_beautiful_string = pre_beautiful_string.replace("[", '')
             pre_beautiful_string = pre_beautiful_string.replace("]", '')
             self.barcode_to_be_added = pre_beautiful_string
-
-            print(self.barcode_to_be_added)
 
             # do the appending
             self.beautifulString(self.item_to_be_changed)
@@ -1383,96 +1336,57 @@ one special character: !@#$%*?\n''', delay=.25)
             self.notFound = []
             self.back_button_func(self.previous_view)
             self.barcode_scanner_screen()
-            self.invalid_entry_error_label.config(text=f"Added {self.barcode_to_be_added} to {self.item_to_be_changed}",
-                                                  fg='blue')
-            self.invalid_entry_error_label.place(x=1000, y=320, anchor="center")
 
-            '''# self.item_to_be_changed for the name of item
-            self.list_box_3.delete(0, tk.END)
-            box3count = 0
-            for bar in self.notFound:
-                box3count += 1
-                self.list_box_3.insert(box3count, str(bar))
-
-            self.list_box_3.place(relx=.02, rely=.3, relwidth=.125, relheight=.55)
-            self.list_box_3_label.configure(font=(self._font, self._font_big),
-                                            text=f"Now select which barcode to add to {str(self.item_to_be_changed).upper()}")
-            self.list_box_3_label.place(x=960, y=400, anchor="center")
-
-            # place added_barcode button
-            self.added_barcode_button.place(x=450, y=600, anchor="center")'''
+            self.Label_1.configure(font=(self._font, self._font_big), text=f"Added {self.barcode_to_be_added} to "
+                                        f"{self.item_to_be_changed}", fg='blue', image = '')
+            self.Label_1.place(x=1000, y=320, anchor="center")
         else:
-            self.invalid_entry_error_label.place_forget()
-            self.invalid_entry_error_label.config(text="Choose an Item")
-            place_object(self.invalid_entry_error_label, .17, .45)
-
-    def added_barcode(self):
-        self.selected_item_to_be_changed = self.list_box_3.curselection()
-        if self.selected_item_to_be_changed != ():
-            # self.previous_view = "added_barcode" need to add this
-
-            self.change_inventory_by_this_much.set(0)
-            self.barcode_to_be_added = self.list_box_3.get(self.selected_item_to_be_changed)
-            self.invalid_entry_error_label.place_forget()
-
-            # everything else
-            self.invalid_entry_error_label.config(text=f"Added {self.barcode_to_be_added} to {self.item_to_be_changed}",
-                                                  fg='blue')
-            self.invalid_entry_error_label.place(x=1050, y=320, anchor="center")
-
-            # do the appending
-            self.beautifulString(self.item_to_be_changed)
-            try:
-                s = open("food.txt").read()
-                s = s.replace(self.beautiful_string, self.beautiful_string + ", " + str(self.barcode_to_be_added))
-                f = open("food.txt", 'w')
-                f.write(s)
-                f.close()
-            except Exception as e:
-                print("error in opening food.txt added_barcode : " + str(e))
-
-            # clear only the item from self.notfound selected
-            self.notFound.remove(str(self.barcode_to_be_added))
-
-            # Force a back press
-            self.back_button_func(self.previous_view)
-
-        else:
-            self.invalid_entry_error_label.config(text="Choose an Item")
-            place_object(self.invalid_entry_error_label, .17, .45)
+            self.Label_1.place_forget()
+            self.Label_1.config(text="Choose an Item", fg='red', image = '')
+            place_object(self.Label_1, .17, .45)
 
     def clear_add_barcode_to_existing(self):
         self.list_box_2.place_forget()
         self.list_box_2_label.place_forget()
-        self.create_new_item_button.place_forget()
-        self.append_barcode_button.place_forget()
-
-    def clear_append_barcode(self):
-        self.list_box_3.place_forget()
-        self.list_box_3_label.place_forget()
-        self.added_barcode_button.place_forget()
 
     def clear_substitutions_page(self):
         for i in self.list_l:
             i.place_forget()
         for j in self.list_k:
             j.place_forget()
-        self.substitute_foods_screen_label_1.place_forget()
-        self.substitute_foods_screen_label_2.place_forget()
-        self.substitute_foods_screen_submit_button.place_forget()
-        self.substitute_foods_screen_label_4.place_forget()
 
     # ===================================================================
     #               New items screen and functions
     # ==================================================================
 
-    def create_new_item_screen(self, d):
-        # creates blank screen
+    def create_new_item_screen(self):
+        '''
+        /// The main create new item page ////
+        Label_1 : Title
+        Label_2 : Entry boxes descriptions
+        Label_3 : label from admin modify view
+
+        Entry_1 / Entry_var_1 : item name
+        Entry_2 / Entry_var_2 : amount
+        Entry_3 / Entry_var_3 : lowlevel
+        Entry_3 / Entry_var_4 : itemsperbag
+        Entry_5 / Entry_var_5 : barcodes
+
+        Button_1 : Submit
+        '''
         self.invalid_entry_error_label.place_forget()
         self.clear_add_barcode_to_existing()
         self.clear_user_screen()
-        self.logoutButton.place_forget()
-        self.logout_button_place_with_d(d, "user_screen")
+        # creates blank screen
+        self.backup_place()
+        if self.Label_3.cget("text") == "Item Modified":
+            self.Label_3.configure(text='')
+        self.Label_4.place_forget()
+
+        if self.isModifying == "as_user":
+            self.previous_view = "user_screen"
+        else:
+            self.previous_view = "admin_edit_main"
 
         if self.isModifying == "is_admin_modifying_with_check":
             self.is_modifying_3_clears()
@@ -1481,154 +1395,174 @@ one special character: !@#$%*?\n''', delay=.25)
             self.codeList = ''
             for codes in self.notFound:
                 self.codeList = self.codeList + "\n" + codes
-            self.notFound_label.configure(text="BARCODES\n" + self.codeList)
-            self.notFound_label.place(relx=.05, rely=.3)
+            self.Label_4.configure(font=(self._font, self._font_small), fg='blue', text="BARCODES\n" + self.codeList)
+            self.Label_4.place(relx=.05, rely=.3)
 
-        self.previous_view = "user_screen"
-        self.backup_place_with_d()
+        self.Label_1.configure(font=(self._font, self._font_big),
+                                        text="Create new item screen", image='', fg='black')
+        if self.isModifying != "is_admin_modifying":
+            self.Label_1.place(relx=.4, rely=.23)
 
-        self.create_new_item.place(relx=.4, rely=.23)
+        self.Label_2.place_forget()
+        self.Label_2.configure(font=(self._font, self._font_small), fg='black',
+                                             text="Item Name: \n\n\n\nCurrent amount: \n\n\n\nLow amount warning at: \n\n\n\nItems per bag: \n\n\n\nBarcode(s): ")
+        self.Label_2.place(relx=.2, rely=.3)
 
-        self.create_new_item_name.place(relx=.2, rely=.3)
-        self.create_new_item_amount.place(relx=.2, rely=.4)
-        self.create_new_item_low_level.place(relx=.2, rely=.5)
-        self.create_new_item_itemsperbag.place(relx=.2, rely=.6)
-        self.create_new_item_barcode.place(relx=.2, rely=.7)
-
-        self.create_new_item_input_amount.set(1)
-        self.create_new_item_input_low_level.set(20)
-        self.create_new_item_input_itemsperbag.set(0)
-        self.create_new_item_input_barcode.set('')
+        if self.isModifying == "as_user":
+            self.user_create_new_clear()
 
         if self.isPassingBarcode == "is_passing_true":
             if self.notFound.__len__() > 0:
-                self.create_new_item_input_barcode.set(str(self.notFound[0]))
+                self.Entry_var_5.set(str(self.notFound[0]))
         # prefilling defaults for new item, user can set different values if they want
 
-        place_object(self.create_new_item_submit_button, .7, .5)
-        place_object(self.create_new_item_input_entry, .4, .3, True)
-        place_object(self.create_new_item_input_amount_entry, .4, .4)
-        place_object(self.create_new_item_input_low_level_entry, .4, .5)
-        place_object(self.create_new_item_input_itemsperbag_entry, .4, .6)
-        place_object(self.create_new_item_input_barcode_entry, .4, .7)
+        self.Button_1.configure(text="Submit New Item", background=self._fgcolor, font=(self._font, self._font_medium),
+                                        command=lambda: self.create_new_item_submit_button_cmd(), activebackground=self._activebgcolor)
+        place_object(self.Button_1, .7, .5)
 
-    def create_new_item_submit_button_cmd(self, d):
-        self.newItem = self.create_new_item_input.get() + ", " + \
-                       str(self.create_new_item_input_amount.get()) + ", " + \
-                       str(self.create_new_item_input_low_level.get()) + ", " + \
-                       str(self.create_new_item_input_itemsperbag.get()) + ", " + \
-                       str(self.create_new_item_input_barcode.get())
+        self.Entry_2.configure(width=20)
+        place_object(self.Entry_1, .4, .3, True)
+        place_object(self.Entry_2, .4, .4)
+        place_object(self.Entry_3, .4, .5)
+        place_object(self.Entry_4, .4, .6)
+        place_object(self.Entry_5, .4, .7)
+        if len(str(self.Label_3.cget('text'))) > 30:
+            self.Label_3.place(relx=.765, rely=.67, anchor="center")
+        else:
+            self.Label_3.place(relx=.765, rely=.6, anchor="center")
+
+    def create_new_item_submit_button_cmd(self):
+        '''
+        //// When submit in create_new_item is hit ////
+
+        Entry_var_1 : item name
+        Entry_var_2 : amount
+        Entry_var_3 : lowlevel
+        Entry_var_4 : itemsperbag
+        Entry_var_5 : barcodes
+
+        '''
+        self.newItem = self.Entry_var_1.get() + ", " + \
+                       str(self.Entry_var_2.get()) + ", " + \
+                       str(self.Entry_var_3.get()) + ", " + \
+                       str(self.Entry_var_4.get()) + ", " + \
+                       str(self.Entry_var_5.get())
 
         if self.isModifying == "is_admin":
-            self.create_new_item_screen(d)
+            self.create_new_item_screen()
             self.auto_fill_edit_item()
 
             self.toDelete = str(self.words[0])
             self.isModifying = "is_admin_modifying"
         else:
-            allFilled = self.isAllFilled(self.newItem)
+            allFilled = self.isAllFilled()
             if allFilled == 0:
-                self.create_new_item_input.set("")
-                self.create_new_item_input_amount.set(1)
-                self.create_new_item_input_low_level.set(20)
-                self.create_new_item_input_itemsperbag.set(0)
-                self.create_new_item_input_barcode.set("")
+                self.user_create_new_clear()
 
                 if self.isPassingBarcode == "is_passing_true":
                     if self.notFound.__len__() > 0:
-                        self.create_new_item_input_barcode.set(int(self.notFound[0]))
+                        self.Entry_var_5.set(int(self.notFound[0]))
 
-                self.create_new_item_screen(d)
-                self.create_new_item.place_forget()
+                self.create_new_item_screen()
 
                 if self.isModifying == "is_admin_modifying":
                     self.auto_fill_edit_item()
             else:
-                self.append_food(d, self.newItem)
-                self.create_new_item_input.set("")
-                self.create_new_item_input_amount.set(1)
-                self.create_new_item_input_low_level.set(20)
-                self.create_new_item_input_itemsperbag.set(0)
-                self.create_new_item_input_barcode.set("")
+                self.append_food(self.newItem)
+                if self.isModifying == "as_user":
+                    self.user_create_new_clear()
+                else:
+                    self.admin_create_new_clear()
 
                 if self.isPassingBarcode == "is_passing_true":
                     if self.notFound.__len__() > 0:
-                        self.create_new_item_input_barcode.set(int(self.notFound[0]))
+                        self.Entry_var_5.set(int(self.notFound[0]))
+
+    def user_create_new_clear(self):
+        self.Entry_var_1.set('')
+        self.Entry_var_2.set(1)
+        self.Entry_var_3.set(20)
+        self.Entry_var_4.set(0)
+        self.Entry_var_5.set('')
+
+    def admin_create_new_clear(self):
+        self.Entry_var_1.set('')
+        self.Entry_var_2.set('')
+        self.Entry_var_3.set('')
+        self.Entry_var_4.set('')
+        self.Entry_var_5.set('')
 
     def auto_fill_edit_item(self):
+        '''
+        //// admin auto-fill on select and on fail when modifying ////
+
+        Entry_var_1 : item name
+        Entry_var_2 : amount
+        Entry_var_3 : lowlevel
+        Entry_var_4 : itemsperbag
+        Entry_var_5 : barcodes
+        '''
         self.words = self.beautiful_string.split(", ")
 
-        self.create_new_item_input.set(self.words[0])
-        self.create_new_item_input_amount.set(self.words[1])
-        self.create_new_item_input_low_level.set(self.words[2])
-        self.create_new_item_input_itemsperbag.set(self.words[3])
+        self.Entry_var_1.set(self.words[0])
+        self.Entry_var_2.set(self.words[1])
+        self.Entry_var_3.set(self.words[2])
+        self.Entry_var_4.set(self.words[3])
 
         n = 4
         self.barcodeList = ""
         while n < self.words.__len__():
             self.barcodeList += self.words[n] + ", "
             n += 1
-        self.create_new_item_input_barcode.set(self.barcodeList[:self.barcodeList.__len__() - 2])
+        self.Entry_var_5.set(self.barcodeList[:self.barcodeList.__len__() - 2])
 
-    def isAllFilled(self, d):
+    def isAllFilled(self):
+        '''
+        //// Checks all the Entry inputs starting with if they are all filled ////
+
+        Entry_var_1 : item name
+        Entry_var_2 : amount
+        Entry_var_3 : lowlevel
+        Entry_var_4 : itemsperbag
+        Entry_var_5 : barcodes
+
+        Label_3 : universal label for all errors/ notifications for create_new_item
+        '''
         self.make_dict(self.d)
-        if (self.create_new_item_input.get() == "" or
-                str(self.create_new_item_input_amount.get()) == "" or
-                str(self.create_new_item_input_low_level.get()) == "" or
-                str(self.create_new_item_input_itemsperbag.get()) == "" or
-                str(self.create_new_item_input_barcode.get()) == ""):
-            place_object(self.create_new_submit_error, .692, .6)
+        if (self.Entry_var_1.get() == "" or
+                str(self.Entry_var_2.get()) == "" or
+                str(self.Entry_var_3.get()) == "" or
+                str(self.Entry_var_4.get()) == "" or
+                str(self.Entry_var_5.get()) == ""):
 
-            self.create_new_submit_error_alpha.place_forget()
-            self.create_new_submit_error_num.place_forget()
-            self.create_new_added.place_forget()
-            self.exceeds_barcode_length.place_forget()
-            self.exist_already_label.place_forget()
-            self.barcode_exist_error.place_forget()
+            self.Label_3.configure(text="All boxes need to be filled", fg='black')
             return 0
-        elif ((str(self.create_new_item_input.get()) in self.d) == True and self.isModifying == "as_user") or \
+        elif ((str(self.Entry_var_1.get()) in self.d) == True and self.isModifying == "as_user") or \
                 (self.isModifying == "is_admin_modifying_with_check" and (
-                        str(self.create_new_item_input.get()) in self.d) == True):
-            place_object(self.exist_already_label, .725, .6)
-            self.create_new_submit_error_alpha.place_forget()
-            self.create_new_submit_error.place_forget()
-            self.create_new_added.place_forget()
-            self.exceeds_barcode_length.place_forget()
-            self.barcode_exist_error.place_forget()
-            return 0
-        elif re.search("[^a-zA-Z\s]", self.create_new_item_input.get()) != None or \
-                str(self.create_new_item_input.get()).count("  ") > 0 or str(self.create_new_item_input.get()).endswith(
-            " "):
-            # names of items can now have spaces *fixed I didnt use None
-            # checks for invalid spaces
-            place_object(self.create_new_submit_error_alpha, .68, .6)
+                        str(self.Entry_var_1.get()) in self.d) == True):
 
-            self.create_new_submit_error.place_forget()
-            self.create_new_submit_error_num.place_forget()
-            self.create_new_added.place_forget()
-            self.exceeds_barcode_length.place_forget()
-            self.exist_already_label.place_forget()
-            self.barcode_exist_error.place_forget()
+            self.Label_3.configure(text="Already Exist", fg='black')
             return 0
-        elif (str(self.create_new_item_input_amount.get()).isnumeric() == False or
-              str(self.create_new_item_input_low_level.get().isnumeric()) == False or
-              str(self.create_new_item_input_itemsperbag.get()).isnumeric() == False or
-              re.search("[^0-9\s,]", str(self.create_new_item_input_barcode.get())) != None or
-              str(self.create_new_item_input_barcode.get()).count(",,") > 0 or
-              str(self.create_new_item_input_barcode.get()).count(", ,") > 0 or
-              str(self.create_new_item_input_barcode.get()).endswith(",") or
-              str(self.create_new_item_input_barcode.get()).endswith(" ") or
-              str(self.create_new_item_input_barcode.get()).count("  ") > 0):
+        elif re.search("[^a-zA-Z\s]", self.Entry_var_1.get()) != None or \
+                str(self.Entry_var_1.get()).count("  ") > 0 or str(self.Entry_var_1.get()).endswith(
+            " "):
+            # checks for invalid spaces
+            self.Label_3.configure(text="Name needs to be letters and spaces only", fg='black')
+            return 0
+        elif (str(self.Entry_var_2.get()).isnumeric() == False or
+              str(self.Entry_var_3.get()).isnumeric() == False or
+              str(self.Entry_var_4.get()).isnumeric() == False or
+              re.search("[^0-9\s,]", str(self.Entry_var_5.get())) != None or
+              str(self.Entry_var_5.get()).count(",,") > 0 or
+              str(self.Entry_var_5.get()).count(", ,") > 0 or
+              str(self.Entry_var_5.get()).endswith(",") or
+              str(self.Entry_var_5.get()).endswith(" ") or
+              str(self.Entry_var_5.get()).count("  ") > 0):
             # can have numbers, commas, and spaces for barcodes only, others are nums only
             # ,, check to see if it is invalid use of commas/ spaces
-            place_object(self.create_new_submit_error_num, .655, .6)
-
-            self.create_new_submit_error_alpha.place_forget()
-            self.create_new_submit_error.place_forget()
-            self.create_new_added.place_forget()
-            self.exceeds_barcode_length.place_forget()
-            self.exist_already_label.place_forget()
-            self.barcode_exist_error.place_forget()
+            self.Label_3.configure(
+                text="Amount, Low level, and Itemsperbag\nall need to be numbers only\n\n\nBarcodes are \nnumbers/spaces/commas only",
+                fg='black')
             return 0
         else:
             if int(self.newItem.count(",")) > int(self.barcodesLenght - 2):
@@ -1636,13 +1570,12 @@ one special character: !@#$%*?\n''', delay=.25)
                 return 0
             # check to see if barcode limit is reached via comma count
 
-            # need loop to check every barcode split by comma
-            barcodes_to_check = str(self.create_new_item_input_barcode.get()).split(", ")
+            barcodes_to_check = str(self.Entry_var_5.get()).split(", ")
             for i in barcodes_to_check:
                 if self.barcode_exist(
                         int(i)) == True and self.isModifying == "is_admin_modifying_with_check" or self.barcode_exist(
                         int(i)) == True and self.isModifying == "as_user":
-                    place_object(self.barcode_exist_error, .7, .6)
+                    self.Label_3.configure(text="Barcode Already Exist", fg='black')
                     return 0
 
             for index in range(str(self.newItem).find(","), len(self.newItem) - 1):
@@ -1654,33 +1587,14 @@ one special character: !@#$%*?\n''', delay=.25)
             # fixes non comma'd spaces in barcode
 
             # remove all other error labels
-            self.create_new_submit_error.place_forget()
-            self.create_new_submit_error_alpha.place_forget()
-            self.create_new_submit_error_num.place_forget()
-            self.create_new_added.place_forget()
-            self.exceeds_barcode_length.place_forget()
-            self.exist_already_label.place_forget()
-            self.barcode_exist_error.place_forget()
-            place_object(self.create_new_added, .73, .6)
+            self.Label_3.configure(text="Added item", fg='black')
             return 1
 
     def is_modifying_3_clears(self):
-        self.previous_view = "admin_screen"
-        self.choose_an_item_to_edit_button.place_forget()
-        self.choose_an_item_to_delete_button.place_forget()
+        self.previous_view = "admin_edit_main"
         self.list_box_2_label.place_forget()
         self.list_box_2.place_forget()
-        self.delete_label.place_forget()
-        self.create_new_added.place_forget()
-        self.create_new_added.configure(text="Item added")
-        self.create_new_item.place(relx=.4, rely=.23)
-        self.create_new_item_input.set('')
-        self.create_new_item_input_amount.set('')
-        self.create_new_item_input_low_level.set('')
-        self.create_new_item_input_itemsperbag.set('')
-        self.create_new_item_input_barcode.set("")
-        self.backup_button_with_d_button.place_forget()
-        self.backup_place()
+        self.admin_create_new_clear()
 
     def manual_entry_screen(self):
         # self.clear_adjust_inventory_screen()
@@ -1690,7 +1604,7 @@ one special character: !@#$%*?\n''', delay=.25)
         # self.previous_view = "user_screen"
         # place_object(self.adjust_item_quantity_button, .8, .835)
 
-        self.adjust_item_quantity_button_cmd(self.d)
+        self.adjust_item_quantity_button_cmd()
         self.previous_view = "user_screen"
         self.backup_place()
 
@@ -1700,24 +1614,11 @@ one special character: !@#$%*?\n''', delay=.25)
     def backup_place(self):
         self.backup_button.place(relx=.02, rely=.9)
 
-    # TODO: new:
-    def backup_place_with_d(self):
-        if self.isModifying == "as_user":
-            self.backup_button_with_d_button.place(relx=.02, rely=.9)
-            self.previous_view = "user_screen"
-        else:  # self.isModifying != 0:
-            self.backup_button_with_d_button.configure(text="Back to Choose")
-            self.backup_button_with_d_button.place(relx=.02, rely=.9)
-            self.previous_view = "admin_edit_main"
-
     def todo_label_place(self):
         self.todo_label.place(relx=.300, rely=.450)
 
     def logout_button_place(self):
         self.logoutButton.place(relx=.8, rely=.9)
-
-    def logout_button_place_with_d(self, d, words):
-        self.logoutButton_with_d.place(relx=.8, rely=.9)
 
     def exit_button_place(self):
         self.exitButton.place(relx=.91, rely=.9325)
@@ -1758,36 +1659,21 @@ one special character: !@#$%*?\n''', delay=.25)
         self.passwordlabel.place_forget()
         self.password_verify_label.place_forget()
 
-    def clear_create_new_item(self, d):
-        self.create_new_item.place_forget()
-        self.create_new_item_name.place_forget()
-        self.create_new_item_amount.place_forget()
-        self.create_new_item_low_level.place_forget()
-        self.create_new_item_itemsperbag.place_forget()
-        self.create_new_item_barcode.place_forget()
+    def clear_create_new_item(self):
+        self.Label_1.place_forget()
+        self.Label_2.place_forget()
+        self.Label_3.place_forget()
+        self.Label_4.place_forget()
 
-        self.create_new_item_submit_button.place_forget()
-        self.create_new_item_input_entry.place_forget()
-        self.create_new_item_input_amount_entry.place_forget()
-        self.create_new_item_input_low_level_entry.place_forget()
-        self.create_new_item_input_itemsperbag_entry.place_forget()
-        self.create_new_item_input_barcode_entry.place_forget()
-
-        self.create_new_submit_error.place_forget()
-        self.create_new_submit_error_alpha.place_forget()
-        self.create_new_submit_error_num.place_forget()
-        self.exist_already_label.place_forget()
-        self.exceeds_barcode_length.place_forget()
-        self.create_new_added.place_forget()
-
-        self.back_button_func("user_screen")
-        self.backup_button_with_d_button.place_forget()
-
-        self.notFound_label.place_forget()
-        self.barcode_exist_error.place_forget()
+        self.Entry_1.place_forget()
+        self.Entry_2.place_forget()
+        self.Entry_3.place_forget()
+        self.Entry_4.place_forget()
+        self.Entry_5.place_forget()
 
     # clear everything back to login screen
     def clear_to_login(self):
+        self.clear_create_new_item()
         self.username_for_event_log.place_forget()
         self.logoutButton.place_forget()
         # self.remove_items_button.place_forget()
@@ -1796,7 +1682,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.admin_email_inventory_button.place_forget()
         self.admin_email_label.place_forget()
         self.food_file_error_label.place_forget()
-        self.make_bag_screen_button.place_forget()
         self.display_inventory_high_low_outofstock_button.place_forget()
         self.display_users_button.place_forget()
         self.edit_inventory_button.place_forget()
@@ -1811,8 +1696,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.enter_email_add_label.place_forget()
         self.enter_email_add_entry.place_forget()
         self.admin_email_send_button.place_forget()
-        self.make_another_bag_button.place_forget()
-        self.bag_of_food_removed_from_inventory.place_forget()
         # remove buttons from manual entry
         self.submit_changes_button.place_forget()
         self.invalid_entry_error_label.place_forget()
@@ -1825,8 +1708,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.adjust_item_quantity_button.place_forget()
         self.adjust_item_quantity_button.place_forget()
         self.choose_an_item_button.place_forget()
-        self.choose_an_item_to_edit_button.place_forget()
-        self.choose_an_item_to_delete_button.place_forget()
         self.choose_new_item.place_forget()
         self.adjust_inventory_entry.place_forget()
         self.confirm_inventory_manual_button.place_forget()
@@ -1834,7 +1715,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.unbind_return_func()
         self.list_of_items_label.place_forget()
         self.display_inventory_left_side_button.place_forget()
-        self.clear_append_barcode()
         self.clear_add_barcode_to_existing()
         self.clear_substitutions_page()
         self.clear_admin_screen()
@@ -1847,34 +1727,34 @@ one special character: !@#$%*?\n''', delay=.25)
         self.list_box_1.place_forget()
         self.list_box_2.place_forget()
         self.list_box_3.place_forget()
-        # self.make_another_bag_button.place_forget()
         self.list_box_1_label.place_forget()
         self.list_box_2_label.place_forget()
         self.list_box_3_label.place_forget()
 
     # clear check buttons
     def clear_makebag_screen(self):
-        self.checkbutton_label.place_forget()
 
-        self.many_bags_entry.place_forget()
-        self.make_many_bags_button.place_forget()
-        self.delete_label.place_forget()
+        self.Label_1.place_forget()
+        self.Label_2.place_forget()
+        self.Label_3.place_forget()
+        self.Label_4.place_forget()
 
-        self.food_bag_photo_label.place_forget()
-        self.substitute_foods_screen_button.place_forget()
-        self.substitute_foods_screen_label_3.place_forget()
-        self.make_theoretical_bags_button.place_forget()
-        self.theoretical_bags_entry.place_forget()
-        self.make_theoretical_bags_label.place_forget()
+        self.Button_1.place_forget()
+        self.Button_2.place_forget()
+        self.Button_3.place_forget()
+
+        self.Entry_1.place_forget()
+        self.Entry_2.place_forget()
 
     # clears user screen
     def clear_user_screen(self):
-        # self.adjust_inventory_button.place_forget()
-        self.make_bag_screen_button.place_forget()
-        self.manual_entry_button.place_forget()
-        self.barcode_scanner_button.place_forget()
-        self.display_inventory_user_button.place_forget()
-        self.create_new_item_button.place_forget()
+        self.Button_1.place_forget()
+        self.Button_2.place_forget()
+        self.Button_3.place_forget()
+        self.Button_4.place_forget()
+        self.Button_5.place_forget()
+
+        self.Label_5.place_forget()
 
     def clear_admin_screen(self):
         # self.admin_button.place_forget()
@@ -1883,7 +1763,6 @@ one special character: !@#$%*?\n''', delay=.25)
         self.display_users_button.place_forget()
         self.edit_inventory_button.place_forget()
         self.delete_user_button.place_forget()
-        self.create_new_item_button.place_forget()
         self.enter_email_add_label.place_forget()
         self.enter_email_add_entry.place_forget()
         self.admin_email_send_button.place_forget()
@@ -1934,8 +1813,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.clear_todo_label()
         self.list_of_items_label.place_forget()
         self.list_box_2_label.place_forget()
-        self.add_barcode_to_existing_button.place_forget()
-
+        self.Label_1.place_forget()
     # =================================================================================
     #                                            FULL SCREEN
     # =================================================================================
@@ -1989,7 +1867,6 @@ one special character: !@#$%*?\n''', delay=.25)
             elif item_info['amount'] <= item_info['lowlevel']:
                 print("running low on " + item_id)
 
-    # TODO add checkbox variables to dict
     def make_dict(self, d):
         try:
             with open("food.txt", "r+") as f:
@@ -2002,7 +1879,7 @@ one special character: !@#$%*?\n''', delay=.25)
                         amount = int(words[1])
                         lowlevel = int(words[2])
                         itemsperbag = int(words[3])
-                        barcodes = [''] * 100
+                        barcodes = [''] * 20
                         self.barcodesLenght = barcodes.__len__()
                         # could use None but '' looks better
                         d[item] = {}
@@ -2026,19 +1903,26 @@ one special character: !@#$%*?\n''', delay=.25)
             for key in item_info:
                 print(key + " : " + str(item_info[key]))
 
-    def append_food(self, d, newItem):
-        if (str(self.create_new_item_input_barcode.get()) in self.notFound) == True:
-            self.notFound.remove(str(self.create_new_item_input_barcode.get()))
+    def append_food(self, newItem):
+        '''
+        //// Adds newly created item to end of food.txt ////
+        //// also where modifying existing item happens ////
+        '''
 
+        # if the barcode entered (it is prefilled by default) is the unknown one, remove it from unknown barcodes
+        if (str(self.Entry_var_5.get()) in self.notFound) == True:
+            self.notFound.remove(str(self.Entry_var_5.get()))
+
+            # A label that has a list of all unknown barcodes (now one unknown is the max, but still works for multiple)
             if self.isBarcode == True:
                 self.codeList = ''
                 for codes in self.notFound:
                     self.codeList = self.codeList + "\n" + codes
-                self.notFound_label.configure(text="BARCODES\n" + self.codeList)
-                self.notFound_label.place(relx=.05, rely=.3)
+                self.Label_4.configure(text="BARCODES\n" + self.codeList, font=(self._font, self._font_small), fg='blue')
+                self.Label_4.place(relx=.05, rely=.3)
 
+        # when admin is modifying existing item
         if self.isModifying == "is_admin_modifying":
-            # 'fix' this later
             try:
                 s = open("food.txt").read()
                 s = s.replace(self.beautiful_string, newItem)
@@ -2049,19 +1933,19 @@ one special character: !@#$%*?\n''', delay=.25)
                 print("error in opening food.txt : append food : replace" + str(e))
             # forces a back button press on success
             self.previous_view = "admin_edit_main"
-            self.backup_button_with_d(d, self.previous_view)
+            self.back_button_func(self.previous_view)
             del self.d[self.toDelete]
-
-            self.edit_inventory_button_cmd(d)
-            self.create_new_added.configure(text="Item Modified")
-            self.create_new_added.place_forget()
-            place_object(self.create_new_added, .74, .58)
+            # deletes old version of item from dict
+            self.edit_inventory_button_cmd()
+            self.Label_3.configure(text="Item Modified", fg='black')
+            place_object(self.Label_3, .73, .57)
 
         else:
+            # Basic add new item after all checks pass
             try:
                 with open("food.txt", "a") as f:
                     f.write("\n" + newItem)
-            except Exception:
+            except Exception as e:
                 print("error in appending food.txt with open : " + str(e))
 
     # =============================================================================
@@ -2124,8 +2008,8 @@ one special character: !@#$%*?\n''', delay=.25)
     #                  TODO: split these into 2-3 sections for easier viewing
     # ===================================================================================
     # adjust inventory manually
-    def adjust_item_quantity_button_cmd(self, d):
-        self.view_inventory_one_list_box(d, 'middle')
+    def adjust_item_quantity_button_cmd(self):
+        self.view_inventory_one_list_box(self.d, 'middle')
         place_object(self.choose_an_item_button, .8, .835)
         # self.adjust_items_button['state'] = 'disabled'
         self.choose_new_item.place_forget()
@@ -2139,15 +2023,16 @@ one special character: !@#$%*?\n''', delay=.25)
         # self.previous_view = "manual_entry_screen"
         self.previous_view = "user_screen"
 
-    def choose_an_item_to_change_cmd(self, d):
+    def choose_an_item_to_change_cmd(self):
         try:
             self.selected_item_to_be_changed = self.list_box_2.curselection()
             if self.selected_item_to_be_changed != ():
                 self.change_inventory_by_this_much.set(0)
                 self.item_to_be_changed = self.list_box_2.get(self.selected_item_to_be_changed)
                 self.invalid_entry_error_label.place_forget()
-                self.change_value_of_item_chosen(d)
+                self.change_value_of_item_chosen()
             else:
+                self.Label_4.configure()
                 self.invalid_entry_error_label.config(text="Choose an Item")
                 place_object(self.invalid_entry_error_label, .8, .4)
         # TODO: change to pass
@@ -2155,7 +2040,7 @@ one special character: !@#$%*?\n''', delay=.25)
             print("Change to pass")
             print("Error inside choose_an_item_to_change_cmd : " + str(e))
 
-    def choose_an_item_to_edit_button_cmd(self, d):
+    def choose_an_item_to_edit_button_cmd(self):
         self.selected_item_to_be_changed = self.list_box_2.curselection()
         if self.selected_item_to_be_changed != ():
             self.change_inventory_by_this_much.set(0)
@@ -2169,14 +2054,13 @@ one special character: !@#$%*?\n''', delay=.25)
 
             self.beautifulString(string_key)
 
-            self.admin_modify_inventory_screen(d)
-            self.item_to_be_changed_label_2.configure(text="Currently:\n" + self.beautiful_string)
-            self.create_new_added.place_forget()
+            self.admin_modify_inventory_screen()
+            self.item_to_be_changed_label_2.configure(text="Currently:\n" + self.beautiful_string,font=(self._font, self._font_medium))
+            self.Label_1.place_forget()
 
         else:
-            self.invalid_entry_error_label.config(text="Choose an Item")
-            self.create_new_added.place_forget()
-            place_object(self.invalid_entry_error_label, .715, .4)
+            self.Label_4.configure(font=(self._font, self._font_big), fg='red', text="Choose an Item")
+            place_object(self.Label_4, .715, .4)
 
     def beautifulString(self, string_key):
         # turn into string with commas (pre-modified)
@@ -2198,74 +2082,74 @@ one special character: !@#$%*?\n''', delay=.25)
         # gets rid of all the empty values in barcodes[]
         self.beautiful_string = pre_beautiful_string
 
-    def choose_an_item_to_delete_button_cmd(self, d):
-        self.logout_button_place_with_d(d, "admin_edit_main")
+    def choose_an_item_to_delete_button_cmd(self):
+        '''
+        //// Delete item confirm screen, requires the admin to enter 'YES' and reminds them what they are deleting ////
+
+        Label_4 : error label
+
+        Entry_1 : delete confirm entry, where admin enters 'YES' to confirm
+
+        Button_1 : deleteItem submit
+
+        '''
         self.selected_item_to_be_changed = self.list_box_2.curselection()
         if self.selected_item_to_be_changed != ():
             self.change_inventory_by_this_much.set(0)
             self.item_to_be_changed = self.list_box_2.get(self.selected_item_to_be_changed)
-            self.invalid_entry_error_label.place_forget()
-            self.create_new_item_button.place_forget()
+
+            # clear last page
+            self.clear_modify_inventory()
+            self.Entry_var_1.set('')
             self.previous_view = "admin_edit_main"
-            self.backup_button_with_d_button.configure(text="Back to choose")
 
             self.list_box_2_label.configure(font=(self._font, self._font_big),
                                             text=f"Are you sure you want to delete\n{str(re.split(' :', self.item_to_be_changed.strip())[0]).upper()}?\n\n\n\n"
                                                  f"Enter YES to delete\n{str(re.split(' :', self.item_to_be_changed.strip())[0]).upper()}")
-            place_object(self.delete_confirm_entry, .435, .5)
-            self.deleteItem_button.place(relx=.47, rely=.55)
-            self.delete_label.place_forget()
 
-            self.choose_an_item_to_edit_button.place_forget()
-            self.choose_an_item_to_delete_button.place_forget()
+            self.Entry_1.configure(font=(self._font, self._font_big), textvariable=self.Entry_var_1, width=20,)
+            place_object(self.Entry_1, .435, .5, True)
+
+            self.Button_1.configure(text="Confirm Deletion", background=self._fgcolor, font=(self._font, self._font_medium),
+                                            command=lambda: self.deleteItem(), activebackground=self._activebgcolor)
+            self.Button_1.place(relx=.47, rely=.55)
+
             self.list_box_2.place_forget()
-            self.create_new_added.place_forget()
         else:
-            self.invalid_entry_error_label.config(text="Choose an Item")
-            self.create_new_added.place_forget()
-            place_object(self.invalid_entry_error_label, .175, .4)
+            self.Label_4.configure(font=(self._font, self._font_big), fg='red', image='', text="Choose an Item")
+            place_object(self.Label_4, .175, .4)
 
-    def deleteItem(self, testWord):
+    def deleteItem(self):
+        '''
+        //// Does the deletion ////
+
+        Label_2 : confirmation / error
+
+        '''
         string_key = re.split(' :', self.item_to_be_changed.strip())[0]
-        self.delete_confirm.set("")
-        if testWord == "YES":
-            self.beautifulString(string_key)
-            try:
-                s = open("food.txt").read()
-                s = s.replace(self.beautiful_string, '')
-                s = s.replace("\n\n", '\n')
-                f = open("food.txt", 'w')
-                f.write(s)
-                f.close()
-            except Exception:
-                print("error in opening food.txt delete item : " + str(e))
 
-            self.delete_label.configure(text=f"{str(string_key).upper()}\nWas Deleted")
+        if self.Entry_var_1.get() == "YES":
             del self.d[string_key]
+            self.make_food_txt()
+
+            self.Label_2.configure(font=(self._font, self._font_big), fg='red', text=f"{str(string_key).upper()}\nWas Deleted")
         else:
-            self.delete_label.configure(text="Not Deleted\nType YES to delete")
-
+            self.Label_2.configure(font=(self._font, self._font_big), text="Not Deleted\nType YES to delete", fg='red', anchor="center")
+        self.Entry_var_1.set("")
         # jump to last page with message
-        self.backup_button_with_d(self.d, self.previous_view)
-        self.delete_label.place(relx=.24, rely=.6, anchor="center")
+        self.back_button_func(self.previous_view)
+        self.Label_2.place(relx=.24, rely=.6, anchor="center")
 
-    def admin_modify_inventory_screen(self, d):
+    def admin_modify_inventory_screen(self):
         self.isModifying = "is_admin"
-        self.create_new_submit_error_num.configure(
-            text="Amount, Low level, Itemsperbag\nall need to be numbers only\n\n Barcode can have\nspaces, commas, and numbers only")
+        self.Label_3.configure(text='')
         # clears last screen
-        self.choose_an_item_to_edit_button.place_forget()
-        self.choose_an_item_to_delete_button.place_forget()
         self.list_box_2_label.place_forget()
         self.list_box_2.place_forget()
         # reusing inputs and checks screen passing beautiful/ iteminfo
-        self.create_new_item_submit_button_cmd(d)
-        self.create_new_item_submit_button.configure(text="Submit Edit")
-        self.create_new_item.place_forget()
-
-        # forgets unneeded reused labels/buttons
-        self.create_new_submit_error.place_forget()
-        self.delete_label.place_forget()
+        self.create_new_item_submit_button_cmd()
+        self.Button_1.configure(text="Submit Edit", background=self._fgcolor, font=(self._font, self._font_medium),
+                                                       command=lambda: self.create_new_item_submit_button_cmd(), activebackground=self._activebgcolor)
 
     def confirm_item_change(self, direction):
         self.add_button.place_forget()
@@ -2369,7 +2253,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     # change name to select new item
     # change value of inventory - manual screen
-    def change_value_of_item_chosen(self, d):
+    def change_value_of_item_chosen(self):
         try:
             self.item_to_be_changed_label_1.configure(text="Item to be changed")
             self.item_to_be_changed_label_2.configure(text=str(self.item_to_be_changed).upper())
@@ -2455,32 +2339,54 @@ one special character: !@#$%*?\n''', delay=.25)
             self.delete_user_button.place_forget()
             self.clear_list_box()
 
-    def edit_inventory_button_cmd(self, d):
+    def edit_inventory_button_cmd(self):
         self.previous_view = "admin_screen"
-        self.backup_button_with_d_button.place(relx=.02, rely=.9)
+        self.backup_button.place(relx=.02, rely=.9)
         self.clear_admin_screen()
         # Jump to modify screen and be able to modify and delete items
-        self.modify_inventory(d)
+        self.modify_inventory()
 
-    def modify_inventory(self, d):
+    def modify_inventory(self):
+        '''
+        //// Admin selects what item you want to modify/ delete then selects appropriate button ////
+
+        Button_1 : create_new_item_screen
+        Button_2 : choose_an_item_to_edit_button_cmd
+        Button_3 : choose_an_item_to_delete_button_cmd
+
+        '''
         # reuse select item code from manual entry
-        self.view_inventory_one_list_box(d, 'middle')
-        self.create_new_added.place_forget()
+        self.view_inventory_one_list_box(self.d, 'middle')
         self.list_box_2.place_forget()
         self.list_box_2_label.place_forget()
-        self.delete_confirm_entry.place_forget()
         self.isModifying = "is_admin_modifying_with_check"
-        place_object(self.create_new_item_button, .715, .625)
+
+        self.Button_1.configure(text="Create New Item", font=(self._font, self._font_medium), background=self._fgcolor,
+                                        command=lambda: self.create_new_item_screen(), activebackground=self._activebgcolor)
+        place_object(self.Button_1, .715, .625)
 
         self.list_box_2_label.configure(font=(self._font, self._font_big_big), text="\\\ Select Here! //")
+        self.Label_3.configure(text='')
         place_object(self.list_box_2_label, .41, .23)
         self.list_box_2.place(relx=.44, rely=.3, relwidth=.15, relheight=.55)
 
-        self.choose_an_item_to_edit_button.configure(text="Edit This Item")
-        place_object(self.choose_an_item_to_edit_button, .7, .5)
+        self.Button_2.configure(background=self._fgcolor, font=(self._font, self._font_medium),
+                                        command=lambda: self.choose_an_item_to_edit_button_cmd(), activebackground=self._activebgcolor, padx=47, text="Edit This Item")
+        place_object(self.Button_2, .7, .5)
         # New add delete button/ screen
-        place_object(self.choose_an_item_to_delete_button, .15, .5)
-        self.backup_button_with_d_button.configure(text="Back")
+
+        self.Button_3.configure(text="Delete This Item!", background=self._fgcolor, font=(self._font, self._font_medium),
+                                        command=lambda: self.choose_an_item_to_delete_button_cmd(), activebackground=self._activebgcolor, padx=47)
+        place_object(self.Button_3, .15, .5)
+
+        self.backup_button.configure(text="Back")
+
+    def clear_modify_inventory(self):
+        self.Label_2.place_forget()
+        self.Label_3.place_forget()
+        self.Label_4.place_forget()
+        self.Button_2.place_forget()
+        self.Button_3.place_forget()
 
     # displays users in a box
     def view_users(self):
@@ -2593,38 +2499,6 @@ one special character: !@#$%*?\n''', delay=.25)
         if box3count == 0:
             self.list_box_3.place_forget()
             self.list_box_3_label.place_forget()
-
-    # TODO: [Done] new decreases by 'itemsperbag' var from dict
-    def lower_inventory(self, d):
-        try:
-            self.make_dict(d)
-            totalLines = len(open("food.txt").readlines())
-            shutil.move("food.txt", "food.txt" + "~")
-            with open("food.txt", "w+") as dest:
-                with open("food.txt" + "~", "r+") as src:
-                    n = 0
-                    count = 0
-                    for line in src:
-                        count += 1
-                        if not re.match(r'^\s*$', line):
-                            if n == 0:
-                                dest.write(line)
-                                n += 1
-                            else:  # decrease amount by 'itemsperbag'
-                                line = line.strip()
-                                words = line.split(", ")
-                                words[1] = str(int(words[1]) - int(words[3]))
-                                line = ", ".join(words)
-                                line.strip()
-                                if count <= totalLines - 1:
-                                    line = line + '\n'
-                                dest.write(line)
-            self.bag_of_food_removed_from_inventory.configure(text=f"{int(self.numberofBags)} bag(s) of food removed")
-            self.bag_of_food_removed_from_inventory.place(relx=.4, rely=.9325)
-            # [fixed] the \n at the end of txt file, would leave gaps when bag was made then createnewitem appended
-        except Exception as e:
-            self.food_file_error_label.place(relx=.75, rely=.60)
-            print("error in lower inventory " + str(e))
 
     # =====================================================================================
     #                                                     REGISTRATION
@@ -2752,7 +2626,7 @@ one special character: !@#$%*?\n''', delay=.25)
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
         self.user_screen()
-        # self.admin_screen()
+        #self.admin_screen()
 
         # TODO: commnted out if/else to skip login steps while building program,
         #  put back in for finished product
