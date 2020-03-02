@@ -1210,71 +1210,77 @@ one special character: !@#$%*?\n''', delay=.25)
             self.invalid_entry_error_label.place_forget()
             intcheck = int(qty)
             intcheck = int(item_to_find)
-            try:
-                totalLines = len(open("food.txt").readlines())
-                shutil.move("food.txt", "food.txt" + "~")
-                with open("food.txt", "w+") as dest:
-                    dest.seek(0, os.SEEK_SET)
-                    with open("food.txt" + "~", "r+") as src:
-                        src.seek(0, os.SEEK_SET)
-                        newitem = True
-                        count = 0
-                        for line in src:
-                            count += 1
-                            if not re.match(r'^\s*$', line):  # skips blank lines
-                                found = False
-                                tokens = re.split(", ", line.strip())
-                                for ndex in range(len(tokens))[4:]:
-                                    if str(tokens[ndex].strip()) == str(item_to_find):
-                                        if direction == 'Barcodes for Adding':
-                                            if str(self.list_of_items_words).count('\n') > 20:
-                                                self.list_of_items_words = 'Inventory Changes\n\n'
-                                            tokens[1] = str(int(tokens[1]) + int(self.barcode_scanner_amount.get()))
-                                            self.list_of_items_words = self.list_of_items_words + \
-                                                                       'Added ' + \
-                                                                       str(self.barcode_scanner_amount.get()) + \
-                                                                       " to '" + tokens[0] + "' \n" + \
-                                                                       str(item_to_find) + ' New Qty: ' + \
-                                                                       tokens[1] + '\n'
-                                            self.list_of_items_label.config(text=self.list_of_items_words)
+            if qty.isnumeric() and item_to_find.isnumeric():
+                try:
+                    totalLines = len(open("food.txt").readlines())
+                    shutil.move("food.txt", "food.txt" + "~")
+                    with open("food.txt", "w+") as dest:
+                        dest.seek(0, os.SEEK_SET)
+                        with open("food.txt" + "~", "r+") as src:
+                            src.seek(0, os.SEEK_SET)
+                            newitem = True
+                            count = 0
+                            for line in src:
+                                count += 1
+                                if not re.match(r'^\s*$', line):  # skips blank lines
+                                    found = False
+                                    tokens = re.split(", ", line.strip())
+                                    for ndex in range(len(tokens))[4:]:
+                                        if str(tokens[ndex].strip()) == str(item_to_find):
+                                            if direction == 'Barcodes for Adding':
+                                                if str(self.list_of_items_words).count('\n') > 20:
+                                                    self.list_of_items_words = 'Inventory Changes\n\n'
+                                                tokens[1] = str(int(tokens[1]) + int(self.barcode_scanner_amount.get()))
+                                                self.list_of_items_words = self.list_of_items_words + \
+                                                                           'Added ' + \
+                                                                           str(self.barcode_scanner_amount.get()) + \
+                                                                           " to '" + tokens[0] + "' \n" + \
+                                                                           str(item_to_find) + ' New Qty: ' + \
+                                                                           tokens[1] + '\n'
+                                                self.list_of_items_label.config(text=self.list_of_items_words)
 
-                                        if direction == 'Barcodes for Subtracting':
-                                            if str(self.list_of_items_words).count('\n') > 20:
-                                                self.list_of_items_words = 'Inventory Changes\n\n'
-                                            tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
-                                            self.list_of_items_words = self.list_of_items_words + \
-                                                                       'Removed ' + \
-                                                                       str(self.barcode_scanner_amount.get()) + \
-                                                                       " from '" + tokens[0] + "' \n" + \
-                                                                       str(item_to_find) + ' New Qty: ' + \
-                                                                       tokens[1] + '\n'
+                                            if direction == 'Barcodes for Subtracting':
+                                                if str(self.list_of_items_words).count('\n') > 20:
+                                                    self.list_of_items_words = 'Inventory Changes\n\n'
+                                                tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
+                                                self.list_of_items_words = self.list_of_items_words + \
+                                                                           'Removed ' + \
+                                                                           str(self.barcode_scanner_amount.get()) + \
+                                                                           " from '" + tokens[0] + "' \n" + \
+                                                                           str(item_to_find) + ' New Qty: ' + \
+                                                                           tokens[1] + '\n'
 
-                                            self.list_of_items_label.config(text=self.list_of_items_words)
-                                        found = True
-                                        newitem = False
-                                        if count < totalLines:
-                                            dest.write(", ".join(tokens) + '\n')
-                                        else:
-                                            dest.write(", ".join(tokens))
-                                if found is False:
-                                    dest.write(line)
-                        if newitem:
-                            self.list_of_items_words = self.list_of_items_words + \
-                                                       ' not found : ' + str(item_to_find) + '\n'
-                            self.list_of_items_label.config(text=self.list_of_items_words)
-                            if (str(item_to_find) in self.notFound) == False:
-                                self.notFound.append(str(item_to_find))
+                                                self.list_of_items_label.config(text=self.list_of_items_words)
+                                            found = True
+                                            newitem = False
+                                            if count < totalLines:
+                                                dest.write(", ".join(tokens) + '\n')
+                                            else:
+                                                dest.write(", ".join(tokens))
+                                    if found is False:
+                                        dest.write(line)
+                            if newitem:
+                                self.list_of_items_words = self.list_of_items_words + \
+                                                           ' not found : ' + str(item_to_find) + '\n'
+                                self.list_of_items_label.config(text=self.list_of_items_words)
+                                if (str(item_to_find) in self.notFound) == False:
+                                    self.notFound.append(str(item_to_find))
 
-                self.barcode_scanner_add_remove_button_cmd(direction)
-                # to update inventory box every scan
-                self.view_inventory_one_list_box(self.d, 'left')
-                self.clear_list_box()
-                self.view_inventory_one_list_box(self.d, 'left')
-                if self.notFound.__len__()>0:
-                    self.add_barcode_to_existing()
-                    PlaySound("Wilhelm_Scream.wav", SND_FILENAME)
-            except Exception as e:
-                print("error writing to food file : " + str(e))
+                    self.barcode_scanner_add_remove_button_cmd(direction)
+                    # to update inventory box every scan
+                    self.view_inventory_one_list_box(self.d, 'left')
+                    self.clear_list_box()
+                    self.view_inventory_one_list_box(self.d, 'left')
+                    if self.notFound.__len__()>0:
+                        self.add_barcode_to_existing()
+                        PlaySound("Wilhelm_Scream.wav", SND_FILENAME)
+                except Exception as e:
+                    print("error writing to food file : " + str(e))
+            else:
+                self.invalid_entry_error_label.config(text='Enter positive numbers only')
+                place_object(self.invalid_entry_error_label, .67, .25)
+                self.barcode_scanner_input.set("")
+                self.barcode_scanner_amount.set(1)
         except Exception:
             # input a non int value, show error label to user
             self.invalid_entry_error_label.config(text='Enter numbers only')
