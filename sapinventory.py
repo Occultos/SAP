@@ -1298,7 +1298,7 @@ one special character: !@#$%*?\n''', delay=.25)
         '''
         self.Label_4.place_forget()
         self.unbind_return_func()
-        self.previous_view = "user_screen"
+        self.previous_view = "barcode_scanner_screen"
         self.clear_barcode_screen()
         self.display_inventory_left_side_button.place_forget()
 
