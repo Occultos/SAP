@@ -649,7 +649,7 @@ one special character: !@#$%*?\n''', delay=.25)
         Button_4 : calls manual_entry_screen
         Button_5 : calls create_new_item_screen
         '''
-
+        self.unbind_return_func()
         self.isModifying = "as_user"
         self.isPassingBarcode = "is_passing_false"
         self.clear_login_screen()
@@ -700,11 +700,23 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.loginbutton, .47, .55)
         place_object(self.username_label, .303, .4)
         place_object(self.passwordlabel, .315, .46)
+        self.bind('<Tab>', lambda x: self.bind_tab_to_User_Name_entry())
+        self.bind('<Return>', lambda x: self.login_verify())
+
         self.backup_place()
         self.previous_view = "login_screen"
 
+    def bind_tab_to_User_Name_entry(self):
+        self.username_entry.place_forget()
+        place_object(self.username_entry, .430, .4, True)
+
+    def unbind_return_func(self):
+        self.unbind('<Return>')
+        self.unbind('<Tab>')
+
     # load registration screen
     def registration_info_screen(self):
+        self.unbind_return_func()
         # clear any passwords
         self.clear_verify()
         # clear login/register buttons
