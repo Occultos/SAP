@@ -1296,6 +1296,7 @@ one special character: !@#$%*?\n''', delay=.25)
         Button_1 : create_new_item_screen
         Button_2 : append_barcode
         '''
+        self.Label_4.place_forget()
         self.unbind_return_func()
         self.previous_view = "user_screen"
         self.clear_barcode_screen()
@@ -1939,10 +1940,6 @@ one special character: !@#$%*?\n''', delay=.25)
         //// also where modifying existing item happens ////
         '''
 
-        # if the barcode entered (it is prefilled by default) is the unknown one, remove it from unknown barcodes
-        if (str(self.Entry_var_5.get()) in self.notFound) == True:
-            self.notFound.remove(str(self.Entry_var_5.get()))
-
         # when admin is modifying existing item
         if self.isModifying == "is_admin_modifying":
             try:
@@ -1969,6 +1966,18 @@ one special character: !@#$%*?\n''', delay=.25)
                     f.write("\n" + newItem)
             except Exception as e:
                 print("error in appending food.txt with open : " + str(e))
+
+            # if the barcode entered (it is prefilled by default) is the unknown one, remove it from unknown barcodes
+            if (str(self.Entry_var_5.get()) in self.notFound) == True:
+                self.notFound.remove(str(self.Entry_var_5.get()))
+            else:
+                self.clear_create_new_item()
+                self.barcode_scanner_screen()
+                self.Label_4.configure(
+                    text=f"Added {self.Entry_var_5.get()}\n to {str(self.Entry_var_1.get()).upper()} \n\nHowever, that was not the barcode passed!",
+                    font=(self._font, self._font_big), fg='orange')
+                self.Label_4.place(relx=.53, rely=.7, anchor='center')
+                return
 
             # A label that has a list of all unknown barcodes (now one unknown is the max, but still works for multiple)
             if self.isBarcode == True:
