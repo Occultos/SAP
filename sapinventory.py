@@ -1851,6 +1851,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.list_of_items_label.place_forget()
         self.list_box_2_label.place_forget()
         self.Label_1.place_forget()
+        self.invalid_entry_error_label.place_forget()
     # =================================================================================
     #                                            FULL SCREEN
     # =================================================================================
