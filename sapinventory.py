@@ -1970,7 +1970,7 @@ one special character: !@#$%*?\n''', delay=.25)
             # if the barcode entered (it is prefilled by default) is the unknown one, remove it from unknown barcodes
             if (str(self.Entry_var_5.get()) in self.notFound) == True:
                 self.notFound.remove(str(self.Entry_var_5.get()))
-            else:
+            elif self.isBarcode == True:
                 self.clear_create_new_item()
                 self.barcode_scanner_screen()
                 self.Label_4.configure(
