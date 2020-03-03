@@ -1984,6 +1984,7 @@ one special character: !@#$%*?\n''', delay=.25)
                     text=f"Added {self.Entry_var_5.get()}\n to {str(self.Entry_var_1.get()).upper()} \n\nHowever, that was not the barcode passed!",
                     font=(self._font, self._font_big), fg='orange')
                 self.Label_4.place(relx=.53, rely=.7, anchor='center')
+                self.Label_3.configure(text='')
                 return
 
             # A label that has a list of all unknown barcodes (now one unknown is the max, but still works for multiple)
