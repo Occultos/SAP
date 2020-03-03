@@ -1318,7 +1318,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
         self.list_box_2.place(relx=.02, rely=.3, relwidth=.125, relheight=.55)
         self.list_box_2_label.configure(font=(self._font, self._font_big_big),
-                                        text="BARCODE NOTE FOUND \n\nSelect from the list\n\n\nOr create a new item\n\nBarcode will be remembered",
+                                        text=f"BARCODE: {self.notFound[0]}\n\nNOT FOUND \n\nSelect from the list\n\n\nOr create a new item\n\nBarcode will be remembered",
                                         fg='red')
         self.list_box_2_label.place(x=1050, y=600, anchor="center")
 
