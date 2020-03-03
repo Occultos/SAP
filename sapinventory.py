@@ -50,6 +50,7 @@ class StartGui(tk.Tk):
         self._font_big = 26
         self._font_big_big = 40
         self._font_medium = 22
+        self._font_smallish = 20
         self._font_small = 18
         self._fgcolor = '#ff9194'
         self._fgcolor2 = '#ac73fb'
@@ -78,6 +79,7 @@ class StartGui(tk.Tk):
         self.comparison = ''
         self.list_l = []
         self.list_k = []
+        self.from_add_subtract = ''
 
         # ============================================================================================
         #                                    Universal Buttons
@@ -268,14 +270,14 @@ class StartGui(tk.Tk):
         self.barcode_scanner_add_button = tk.Button(self, text="Add items",
                                                     background=self._fgcolor, font=(self._font, self._font_medium),
                                                     command=lambda: self.barcode_scanner_add_remove_button_cmd(
-                                                        'Barcodes'))
+                                                        'Barcodes for Adding'))
         self.barcode_scanner_add_button.configure(activebackground=self._activebgcolor, padx=29)
 
         # go to add or remove items screen using barcode
         self.barcode_scanner_remove_button = tk.Button(self, text="Remove items",
                                                        background=self._fgcolor, font=(self._font, self._font_medium),
                                                        command=lambda: self.barcode_scanner_add_remove_button_cmd(
-                                                           'Barcodes '))
+                                                           'Barcodes for Subtracting'))
         self.barcode_scanner_remove_button.configure(activebackground=self._activebgcolor)
 
         # ===========================================================================
@@ -339,6 +341,19 @@ class StartGui(tk.Tk):
         self.make_csv_button = tk.Button(self, background=self._fgcolor, font=(self._font, self._font_medium),
                                          command=lambda: self.make_csv())
         self.make_csv_button.configure(activebackground=self._activebgcolor)
+
+        # view changelog
+        self.view_changelog_text = tk.Text(self, wrap=WORD)
+        self.view_changelog_button = tk.Button(self, text="View Changelog", background=self._fgcolor,
+                                               font=(self._font, self._font_smallish),
+                                               command=lambda: self.view_changelog())
+        self.view_changelog_button.configure(activebackground=self._activebgcolor, padx=10)
+
+        # email changelog
+        self.email_changelog_button = tk.Button(self, text="Email Changelog", background=self._fgcolor,
+                                                font=(self._font, self._font_smallish),
+                                                command=lambda: self.email_changelog_entry())
+        self.email_changelog_button.configure(activebackground=self._activebgcolor, padx=5)
 
         # =============================================================================
         #                 END Admin screen buttons
@@ -556,7 +571,12 @@ one special character: !@#$%*?\n''', delay=.25)
             self.cancel_inventory_manual_button.place_forget()
             self.invalid_entry_error_label.place_forget()
         elif words == "add_barcode_to_existing":
+            self.clear_create_new_item()
             self.add_barcode_to_existing()
+        elif words == 'barcode_scanner_screen':
+            self.clear_barcode_screen()
+            self.barcode_scanner_screen()
+            self.Label_4.place_forget()
         elif words == "admin_edit_main":
             self.clear_create_new_item()
             self.clear_admin_screen()
@@ -583,16 +603,57 @@ one special character: !@#$%*?\n''', delay=.25)
     # ====================================================================================
     #                                   EMAIL Functions
     # ===================================================================================
-    def email_entry(self, d):
+
+    def email_changelog_entry(self):
+        self.make_dict(self.d)
         self.admin_email_label.place_forget()
-        self.enter_email_add_label.configure(text='Enter Email Address', font=(self._font, self._font_big))
+        self.enter_email_add_label.configure(text='Enter Email Address\nto send changelog', font=(self._font, self._font_big))
         place_object(self.enter_email_add_label, .2, .9175)
         place_object(self.enter_email_add_entry, .3675, .92, True)
+        self.admin_email_send_button.configure(command=lambda: self.admin_email_changelog(self.d))
         place_object(self.admin_email_send_button, .73, .9125)
+        self.bind('<Return>', lambda x: self.admin_email_changelog(self.d))
+
+    def admin_email_changelog(self, d):
+        self.unbind_return_func()
+        self.print_dict_to_file(d)
+        self.admin_email_label.configure(text="Changelog Email Sent")
+        place_object(self.admin_email_label, .58, .9275)
+        emailpw = self.password_info
+        try:
+            yag = yagmail.SMTP('sanantoniopantrynoreply@gmail.com', emailpw)
+            contents = [
+                "Sent via SAP inventory program. Do not reply",
+                "You can find current changelog attached.", 'changelog.txt']
+            yag.send(self.email_add.get(), 'Food Inventory', contents)
+            self.changelog_text = self.changelog_text + '\tEmail sent to : ' + \
+                                  self.email_add.get() + ' : changelog status\n'
+        # Alternatively, with a simple one-liner:
+        # yagmail.SMTP('mygmailusername').send('to@someone.com', 'subject', contents)
+        except Exception as e:
+            # print("error " + str(e))
+            self.admin_email_label.configure(text="Email error", font=(self._font, self._font_big))
+            self.unbind_return_func()
+        self.email_add.set('')
+        self.enter_email_add_label.place_forget()
+        self.enter_email_add_entry.place_forget()
+        self.admin_email_send_button.place_forget()
+        self.view_changelog_text.place_forget()
+
+    def email_entry(self, d):
+        self.admin_email_label.place_forget()
+        self.enter_email_add_label.configure(text='Enter Email Address\nto send inventory', font=(self._font, self._font_big))
+        place_object(self.enter_email_add_label, .2, .9175)
+        place_object(self.enter_email_add_entry, .3675, .92, True)
+        self.admin_email_send_button.configure(command=lambda: self.admin_email_inventory(self.d))
+        place_object(self.admin_email_send_button, .73, .9125)
+        self.bind('<Return>', lambda x: self.admin_email_inventory(self.d))
 
     def admin_email_inventory(self, d):
+        self.unbind_return_func()
         self.print_dict_to_file(d)
-        place_object(self.admin_email_label, .68, .9275)
+        self.admin_email_label.configure(text="Inventory Email Sent")
+        place_object(self.admin_email_label, .58, .9275)
         emailpw = self.password_info
         try:
             yag = yagmail.SMTP('sanantoniopantrynoreply@gmail.com', emailpw)
@@ -607,6 +668,7 @@ one special character: !@#$%*?\n''', delay=.25)
         except Exception as e:
             # print("error " + str(e))
             self.admin_email_label.configure(text="Email error", font=(self._font, self._font_big))
+            self.unbind_return_func()
         self.email_add.set('')
         self.enter_email_add_label.place_forget()
         self.enter_email_add_entry.place_forget()
@@ -636,6 +698,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.backup_button.place_forget()
 
     def admin_screen(self):
+        self.unbind_return_func()
         self.clear_login_screen()
         self.logout_button_place()
         self.clear_login_info_error()
@@ -645,6 +708,8 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.display_inventory_high_low_outofstock_button, .845, .77)
         place_object(self.display_users_button, .845, .705)
         place_object(self.edit_inventory_button, .845, .64)
+        place_object(self.email_changelog_button, .845, .51)
+        place_object(self.view_changelog_button, .845, .44)
         # add export to csv button
         self.make_csv_button.configure(text="Make Excel .csv", padx=3)
         place_object(self.make_csv_button, .845, .575)
@@ -657,7 +722,7 @@ one special character: !@#$%*?\n''', delay=.25)
         Button_4 : calls manual_entry_screen
         Button_5 : calls create_new_item_screen
         '''
-
+        self.unbind_return_func()
         self.isModifying = "as_user"
         self.isPassingBarcode = "is_passing_false"
         self.clear_login_screen()
@@ -712,11 +777,22 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.loginbutton, .47, .55)
         place_object(self.username_label, .303, .4)
         place_object(self.passwordlabel, .315, .46)
+        self.bind('<Tab>', lambda x: self.bind_tab_to_User_Name_entry())
+        self.bind('<Return>', lambda x: self.login_verify())
         self.backup_place()
         self.previous_view = "login_screen"
 
+    def bind_tab_to_User_Name_entry(self):
+        self.username_entry.place_forget()
+        place_object(self.username_entry, .430, .4, True)
+
+    def unbind_return_func(self):
+        self.unbind('<Return>')
+        self.unbind('<Tab>')
+
     # load registration screen
     def registration_info_screen(self):
+        self.unbind_return_func()
         # clear any passwords
         self.clear_verify()
         # clear login/register buttons
@@ -1128,6 +1204,9 @@ one special character: !@#$%*?\n''', delay=.25)
             self.Label_4.place(relx=.66, rely=.75)
 
     def make_csv(self):
+        self.view_changelog_text.place_forget()
+        self.enter_email_add_label.place_forget()
+        self.admin_email_label.place_forget()
         # makes excel csv for viewing, some barcodes can end up in si
         count = 0
         try:
@@ -1177,15 +1256,16 @@ one special character: !@#$%*?\n''', delay=.25)
         place_object(self.barcode_scanner_remove_button, .47, .5)
         self.view_inventory_one_list_box(self.d, 'left')
         self.list_of_items_words = 'Inventory Changes\n'
+        self.list_of_items_words = 'Inventory Changes\n\n'
         self.list_of_items_label.config(text=self.list_of_items_words)
 
     def barcode_scanner_add_remove_button_cmd(self, direction):
         # TODO: add barcode & qty columns
-        self.previous_view = "user_screen"
+        self.previous_view = "barcode_scanner_screen"
         self.clear_barcode_screen()
         place_object(self.list_box_2_label, .08, .25)
         self.invalid_entry_error_label.place_forget()
-        self.barcode_scanner_label.configure(text=direction + '    \t\tEnter amount')
+        self.barcode_scanner_label.configure(text=direction + '  \tEnter amount')
         place_object(self.barcode_scanner_label, .3, .25)
         place_object(self.barcode_scanner_input_entry, .3, .3, True)
         place_object(self.barcode_scanner_amount_entry, .55, .3)
@@ -1210,6 +1290,11 @@ one special character: !@#$%*?\n''', delay=.25)
     def search_for_item_in_food_file(self, direction, item_to_find, qty):
         # TODO: add barcode & qty columns
         try:
+            self.Label_4.place_forget()
+            if direction == 'Barcodes for Adding':
+                self.from_add_subtract = 'add'
+            else:
+                self.from_add_subtract = 'subtract'
             self.invalid_entry_error_label.place_forget()
             intcheck = int(qty)
             intcheck = int(item_to_find)
@@ -1290,6 +1375,77 @@ one special character: !@#$%*?\n''', delay=.25)
                     PlaySound("Wilhelm_Scream.wav", SND_FILENAME)
             except Exception as e:
                 print("error writing to food file : " + str(e))
+            if qty.isnumeric() and item_to_find.isnumeric():
+                try:
+                    totalLines = len(open("food.txt").readlines())
+                    shutil.move("food.txt", "food.txt" + "~")
+                    with open("food.txt", "w+") as dest:
+                        dest.seek(0, os.SEEK_SET)
+                        with open("food.txt" + "~", "r+") as src:
+                            src.seek(0, os.SEEK_SET)
+                            newitem = True
+                            count = 0
+                            for line in src:
+                                count += 1
+                                if not re.match(r'^\s*$', line):  # skips blank lines
+                                    found = False
+                                    tokens = re.split(", ", line.strip())
+                                    for ndex in range(len(tokens))[4:]:
+                                        if str(tokens[ndex].strip()) == str(item_to_find):
+                                            if direction == 'Barcodes for Adding':
+                                                if str(self.list_of_items_words).count('\n') > 20:
+                                                    self.list_of_items_words = 'Inventory Changes\n\n'
+                                                tokens[1] = str(int(tokens[1]) + int(self.barcode_scanner_amount.get()))
+                                                self.list_of_items_words = self.list_of_items_words + \
+                                                                           'Added ' + \
+                                                                           str(self.barcode_scanner_amount.get()) + \
+                                                                           " to '" + tokens[0] + "' \n" + \
+                                                                           str(item_to_find) + ' New Qty: ' + \
+                                                                           tokens[1] + '\n'
+                                                self.list_of_items_label.config(text=self.list_of_items_words)
+
+                                            if direction == 'Barcodes for Subtracting':
+                                                if str(self.list_of_items_words).count('\n') > 20:
+                                                    self.list_of_items_words = 'Inventory Changes\n\n'
+                                                tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
+                                                self.list_of_items_words = self.list_of_items_words + \
+                                                                           'Removed ' + \
+                                                                           str(self.barcode_scanner_amount.get()) + \
+                                                                           " from '" + tokens[0] + "' \n" + \
+                                                                           str(item_to_find) + ' New Qty: ' + \
+                                                                           tokens[1] + '\n'
+
+                                                self.list_of_items_label.config(text=self.list_of_items_words)
+                                            found = True
+                                            newitem = False
+                                            if count < totalLines:
+                                                dest.write(", ".join(tokens) + '\n')
+                                            else:
+                                                dest.write(", ".join(tokens))
+                                    if found is False:
+                                        dest.write(line)
+                            if newitem:
+                                self.list_of_items_words = self.list_of_items_words + \
+                                                           ' not found : ' + str(item_to_find) + '\n'
+                                self.list_of_items_label.config(text=self.list_of_items_words)
+                                if (str(item_to_find) in self.notFound) == False:
+                                    self.notFound.append(str(item_to_find))
+
+                    self.barcode_scanner_add_remove_button_cmd(direction)
+                    # to update inventory box every scan
+                    self.view_inventory_one_list_box(self.d, 'left')
+                    self.clear_list_box()
+                    self.view_inventory_one_list_box(self.d, 'left')
+                    if self.notFound.__len__()>0:
+                        self.add_barcode_to_existing()
+                        PlaySound("bcNotfound1.wav", SND_FILENAME)
+                except Exception as e:
+                    print("error writing to food file : " + str(e))
+            else:
+                self.invalid_entry_error_label.config(text='Enter positive numbers only')
+                place_object(self.invalid_entry_error_label, .67, .25)
+                self.barcode_scanner_input.set("")
+                self.barcode_scanner_amount.set(1)
         except Exception:
             # input a non int value, show error label to user
             self.invalid_entry_error_label.config(text='Enter numbers only')
@@ -1311,8 +1467,9 @@ one special character: !@#$%*?\n''', delay=.25)
         Button_1 : create_new_item_screen
         Button_2 : append_barcode
         '''
+        self.Label_4.place_forget()
         self.unbind_return_func()
-        self.previous_view = "user_screen"
+        self.previous_view = "barcode_scanner_screen"
         self.clear_barcode_screen()
         self.display_inventory_left_side_button.place_forget()
 
@@ -1334,11 +1491,13 @@ one special character: !@#$%*?\n''', delay=.25)
         # place create new item button
         self.Button_1.configure(text="Create New Item", font=(self._font, self._font_medium), background=self._fgcolor,
                                 command=lambda: self.create_new_item_screen(), activebackground=self._activebgcolor)
+
+        self.Button_1.place_forget()
         self.Button_1.place(x=1700, y=600, anchor="center")
         # place append_barcode button
         self.Button_2.configure(text="Add barcode to item", background=self._fgcolor,
-                                font=(self._font, self._font_medium),
-                                command=lambda: self.append_barcode(), activebackground=self._activebgcolor)
+                                font=(self._font, self._font_medium), command=lambda: self.append_barcode(),
+                                activebackground=self._activebgcolor)
         self.Button_2.place(x=450, y=600, anchor="center")
 
     def append_barcode(self):
@@ -1383,6 +1542,14 @@ one special character: !@#$%*?\n''', delay=.25)
                                                                            f"{self.item_to_be_changed}", fg='blue',
                                    image='')
             self.Label_1.place(x=1000, y=320, anchor="center")
+            if self.from_add_subtract == "add":
+                self.barcode_scanner_add_remove_button_cmd('Barcodes for Adding')
+            else:
+                self.barcode_scanner_add_remove_button_cmd('Barcodes for Subtracting')
+
+            self.Label_4.configure(font=(self._font, self._font_big), text=f"Added {self.barcode_to_be_added}\nto "
+                                                                           f"{str(self.item_to_be_changed).upper()}", fg='blue', image='')
+            self.Label_4.place(relx=.4, rely=.4, anchor='center')
         else:
             self.Label_1.place_forget()
             self.Label_1.config(text="Choose an Item", fg='red', image='')
@@ -1456,6 +1623,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
         if self.isPassingBarcode == "is_passing_true":
             if self.notFound.__len__() > 0:
+                self.previous_view = "add_barcode_to_existing"
                 self.Entry_var_5.set(str(self.notFound[0]))
         # prefilling defaults for new item, user can set different values if they want
 
@@ -1809,6 +1977,9 @@ one special character: !@#$%*?\n''', delay=.25)
         self.enter_email_add_entry.place_forget()
         self.admin_email_send_button.place_forget()
         self.make_csv_button.place_forget()
+        self.view_changelog_text.place_forget()
+        self.email_changelog_button.place_forget()
+        self.view_changelog_button.place_forget()
 
     # clear remove items screen
     def clear_todo_label(self):
@@ -1856,6 +2027,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.list_of_items_label.place_forget()
         self.list_box_2_label.place_forget()
         self.Label_1.place_forget()
+        self.invalid_entry_error_label.place_forget()
 
     # =================================================================================
     #                                            FULL SCREEN
@@ -1997,6 +2169,43 @@ one special character: !@#$%*?\n''', delay=.25)
             except Exception as e:
                 print("error in appending food.txt with open : " + str(e))
 
+            # if the barcode entered (it is prefilled by default) is the unknown one, remove it from unknown barcodes
+            if (str(self.Entry_var_5.get()) in self.notFound) == True:
+                self.notFound.remove(str(self.Entry_var_5.get()))
+            elif self.isBarcode == True:
+                self.clear_create_new_item()
+                self.barcode_scanner_screen()
+                self.Label_4.configure(
+                    text=f"Added {self.Entry_var_5.get()}\n to {str(self.Entry_var_1.get()).upper()} \n\nHowever, that was not the barcode passed!",
+                    font=(self._font, self._font_big), fg='orange')
+                self.Label_4.place(relx=.53, rely=.7, anchor='center')
+                return
+
+            # A label that has a list of all unknown barcodes (now one unknown is the max, but still works for multiple)
+            if self.isBarcode == True:
+                self.codeList = ''
+                for codes in self.notFound:
+                    self.codeList = self.codeList + "\n" + codes
+                self.Label_4.configure(text="BARCODES\n" + self.codeList, font=(self._font, self._font_small),
+                                       fg='blue')
+                self.Label_4.place(relx=.05, rely=.3)
+                self.clear_create_new_item()
+                self.barcode_scanner_screen()
+
+                self.Label_4.configure(
+                    text=f"Added {self.Entry_var_5.get()}\n to {str(self.Entry_var_1.get()).upper()}",
+                    font=(self._font, self._font_big), fg='blue')
+                self.Label_4.place(relx=.4, rely=.4, anchor='center')
+                if self.from_add_subtract == "add":
+                    self.barcode_scanner_add_remove_button_cmd('Barcodes for Adding')
+                else:
+                    self.barcode_scanner_add_remove_button_cmd('Barcodes for Subtracting')
+
+                self.view_inventory_one_list_box(self.d, 'left')
+                self.clear_list_box()
+                self.view_inventory_one_list_box(self.d, 'left')
+                # to update list box right after a new item is added
+
     # =============================================================================
     #                Display inventory - user mode
     # =============================================================================
@@ -2013,6 +2222,18 @@ one special character: !@#$%*?\n''', delay=.25)
     # =============================================================================
     #                Change Log
     # =============================================================================
+    def view_changelog(self):
+        self.display_users_button.config(text="View Users")
+        self.display_inventory_high_low_outofstock_button.config(text="View Inventory")
+        self.delete_user_button.place_forget()
+        self.clear_list_box()
+        try:
+            with open("changelog.txt", 'r') as f:
+                self.view_changelog_text.insert(INSERT, f.read())
+        except Exception as e:
+            print("error viewing changelog : "+str(e))
+        place_object(self.view_changelog_text, .3, .3)
+
     def write_changelog(self):
         #print(self.inventory_comparison_before)
         #print(self.inventory_comparison_after)
@@ -2314,7 +2535,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 if not isinstance(int(self.change_inventory_by_this_much.get()), int):
                     print("test in isinstance")
             except Exception as e:
-                print("is instance error : " + str(e))
+                #print("is instance error : " + str(e))
                 self.catch_exception_bad_input()
                 return
             try:
@@ -2325,8 +2546,13 @@ one special character: !@#$%*?\n''', delay=.25)
                     if int(self.change_inventory_by_this_much.get()[0]) == 0 and \
                             ((len(self.change_inventory_by_this_much.get())) > 1):
                         self.change_inventory_by_this_much.set(self.change_inventory_by_this_much.get()[1:])
+
                 except Exception as e:
-                    print("bad input 1 : " + str(e))
+                    #print("bad input 1 : " + str(e))
+                    #print(int(self.change_inventory_by_this_much.get()))
+                    if int(self.change_inventory_by_this_much.get()) < 0:
+                        self.catch_exception_bad_input()
+                        return
 
                 try:
                     if direction == 'up':
@@ -2365,11 +2591,11 @@ one special character: !@#$%*?\n''', delay=.25)
                 print("bad input 4 : " + str(e))
 
         except Exception as e:
-            print("bottom exception:")
+            #print("bottom exception:")
             self.catch_exception_bad_input()
 
     def catch_exception_bad_input(self):
-        self.invalid_entry_error_label.config(text="Only Numbers allowed")
+        self.invalid_entry_error_label.config(text="Only Positive \nNumbers allowed")
         place_object(self.invalid_entry_error_label, .8, .4)
         place_object(self.adjust_inventory_entry, .5, .45)
         place_object(self.add_button, .4, .4)
@@ -2433,6 +2659,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     # delete user from list : list_box_2
     def remove_username_func(self):
+        self.admin_email_label.place_forget()
         try:
             sel = self.list_box_2.curselection()
             user_to_be_deleted = self.list_box_2.get(sel)
@@ -2460,6 +2687,8 @@ one special character: !@#$%*?\n''', delay=.25)
     # swap display inventory button
     # TODO: shows inventory button, not forgetting, fix this
     def swap_inventory_button(self, choice):
+        self.view_changelog_text.place_forget()
+        self.admin_email_label.place_forget()
         # inventory_button_for_three_boxes_text = self.display_inventory_high_low_outofstock_button.cget('text')
         # inventory_button_for_one_box_text = self.display_inventory_left_side_button.cget('text')
         if choice == 'all':
@@ -2481,6 +2710,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
     # show/hide users
     def swap_display_users_button(self):
+        self.view_changelog_text.place_forget()
+        self.admin_email_label.place_forget()
         users_button_text = self.display_users_button.cget('text')
         if users_button_text == 'View Users':
             self.display_users_button.config(text="Hide Users")
@@ -2493,6 +2724,8 @@ one special character: !@#$%*?\n''', delay=.25)
             self.clear_list_box()
 
     def edit_inventory_button_cmd(self):
+        self.view_changelog_text.place_forget()
+        self.admin_email_label.place_forget()
         self.previous_view = "admin_screen"
         self.backup_button.place(relx=.02, rely=.9)
         self.clear_admin_screen()
@@ -2590,7 +2823,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # adjust box height
         boxheight = .028
-        maxboxheight = .69
+        maxboxheight = .55
         if (box2count * boxheight) > maxboxheight:
             self.list_box_2.place(relheight=maxboxheight)
         else:
