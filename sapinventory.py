@@ -619,6 +619,21 @@ one special character: !@#$%*?\n''', delay=.25)
         self.print_dict_to_file(d)
         self.admin_email_label.configure(text="Changelog Email Sent")
         place_object(self.admin_email_label, .58, .9275)
+        
+        try:
+            if not os.path.isfile("changelog.txt"):
+                with open("changelog.txt", "a+") as f:
+                    f.write("Change Log" + '\n==============================================================\n')
+        except Exception as e:
+            print("error creating changelog " + str(e))
+        try:
+            if os.path.isfile("changelog.txt"):
+                with open("changelog.txt", "a+") as f:
+                    f.write(self.changelog_text)
+                    f.write('==============================================================\n')
+        except Exception as e:
+            print("error updating changelog " + str(e))
+            
         emailpw = self.password_info
         try:
             yag = yagmail.SMTP('sanantoniopantrynoreply@gmail.com', emailpw)
@@ -635,10 +650,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.admin_email_label.configure(text="Email error", font=(self._font, self._font_big))
             self.unbind_return_func()
         self.email_add.set('')
-        self.enter_email_add_label.place_forget()
-        self.enter_email_add_entry.place_forget()
-        self.admin_email_send_button.place_forget()
-        self.view_changelog_text.place_forget()
+        self.clear_changelog()
 
     def email_entry(self, d):
         self.admin_email_label.place_forget()
@@ -670,9 +682,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.admin_email_label.configure(text="Email error", font=(self._font, self._font_big))
             self.unbind_return_func()
         self.email_add.set('')
-        self.enter_email_add_label.place_forget()
-        self.enter_email_add_entry.place_forget()
-        self.admin_email_send_button.place_forget()
+        self.clear_changelog()
 
     # ===================================================================================
     #                                                 SCREENS
@@ -704,12 +714,14 @@ one special character: !@#$%*?\n''', delay=.25)
         self.clear_login_info_error()
         self.army_image_place()
         self.eyeball_button.place_forget()
-        place_object(self.admin_email_inventory_button, .845, .835)
-        place_object(self.display_inventory_high_low_outofstock_button, .845, .77)
-        place_object(self.display_users_button, .845, .705)
-        place_object(self.edit_inventory_button, .845, .64)
-        place_object(self.email_changelog_button, .845, .51)
-        place_object(self.view_changelog_button, .845, .44)
+
+        place_object(self.view_changelog_button, .845, .835)                         #view changelog
+        place_object(self.display_inventory_high_low_outofstock_button, .845, .77)  #show inventory
+        place_object(self.display_users_button, .845, .705)                         #show users
+        place_object(self.edit_inventory_button, .845, .64)                         #edit inventory
+        place_object(self.email_changelog_button, .845, .51)                        #email changelog
+        place_object(self.admin_email_inventory_button, .845, .44)                 #email inventory
+
         # add export to csv button
         self.make_csv_button.configure(text="Make Excel .csv", padx=3)
         place_object(self.make_csv_button, .845, .575)
@@ -817,11 +829,8 @@ one special character: !@#$%*?\n''', delay=.25)
     def made_a_bag_screen(self):
         '''
         //// This page is what you see after successful bag making ////
-
         Entry_var_1 : number of bags to be made
-
         Button_1 : Make more bags/ goes back
-
         Label_4 : Error label
         '''
         # Checks if int is entered, then checks if it is in bounds calculated in calculate_max_bags
@@ -853,7 +862,6 @@ one special character: !@#$%*?\n''', delay=.25)
         '''
         lowers inventory by subtracting 'itemsperbag' * self.numberofBags from 'amount' for each item in self.d
         Turned 0(n^2) into O(1), since the bag will almost always be around 20 unique items
-
         Label_5 : info label
         '''
         count = 0
@@ -882,15 +890,12 @@ one special character: !@#$%*?\n''', delay=.25)
     def make_bag_screen(self):
         '''
         //// Main screen for making food bags/ calculating Theoretical bags ////
-
         Label_1 : Food bag photo
         Label_2 : Theoretical bags info
         Label_3 : Make bags info
-
         Button_1 : Make food bags
         Button_2 : Make Theoretical bags/ calculate
         Button_3 : Substitution page when no more full food bags can be made
-
         Entry_1 : Number of bags to make, with Entry_var_1 default value of 1
         Entry_2 : Number of Theoretical bags to calculate, with Entry_var_2 default value of ''
         '''
@@ -945,7 +950,6 @@ one special character: !@#$%*?\n''', delay=.25)
     def make_theoretical_bags(self):
         '''
         //// Where the theoretical bags are calculated/ list box is shown/ theoretical.txt is writen ////
-
         Entry_var_2 : number of Theoretical bags to make/ calculate
         Label_2 : Theoretical bags info/ error label
         '''
@@ -1018,12 +1022,10 @@ one special character: !@#$%*?\n''', delay=.25)
         '''
         //// The fanciest page that will never be seen (⌣́_⌣̀) ////
         //// dynamically creates checkboxes with text and images as needed ////
-
         Label_1 : Too low for full bag
         Label_2 : instructions
         Label_3 : submit reminder
         Label_4 : error label
-
         Button_1 : submit, calls substitute_foods_submit
         '''
         self.d = {}
@@ -1144,7 +1146,6 @@ one special character: !@#$%*?\n''', delay=.25)
         '''
         //// When substitutions submit is pressed, check and stuff ////
         //// Looks at values of checkbox ////
-
         Label_4 : error label
         '''
         self.previous_view = "make_bag_screen"
@@ -1204,9 +1205,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.Label_4.place(relx=.66, rely=.75)
 
     def make_csv(self):
-        self.view_changelog_text.place_forget()
-        self.enter_email_add_label.place_forget()
-        self.admin_email_label.place_forget()
+        self.clear_changelog()
         # makes excel csv for viewing, some barcodes can end up in si
         count = 0
         try:
@@ -1261,6 +1260,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def barcode_scanner_add_remove_button_cmd(self, direction):
         # TODO: add barcode & qty columns
+        self.Label_4.place_forget()
         self.previous_view = "barcode_scanner_screen"
         self.clear_barcode_screen()
         place_object(self.list_box_2_label, .08, .25)
@@ -1298,83 +1298,6 @@ one special character: !@#$%*?\n''', delay=.25)
             self.invalid_entry_error_label.place_forget()
             intcheck = int(qty)
             intcheck = int(item_to_find)
-            try:
-                totalLines = len(open("food.txt").readlines())
-                shutil.move("food.txt", "food.txt" + "~")
-                with open("food.txt", "w+") as dest:
-                    dest.seek(0, os.SEEK_SET)
-                    with open("food.txt" + "~", "r+") as src:
-                        src.seek(0, os.SEEK_SET)
-                        newitem = True
-                        count = 0
-                        for line in src:
-                            count += 1
-                            if not re.match(r'^\s*$', line):  # skips blank lines
-                                found = False
-                                tokens = re.split(", ", line.strip())
-                                for ndex in range(len(tokens))[4:]:
-                                    if str(tokens[ndex].strip()) == str(item_to_find):
-                                        if direction == 'Barcodes':
-                                            if str(self.list_of_items_words).count('\n') > 20:
-                                                self.list_of_items_words = ''
-                                            tokens[1] = str(int(tokens[1]) + int(self.barcode_scanner_amount.get()))
-                                            self.changelog_text = self.changelog_text + \
-                                                                  '\tadded ' + \
-                                                                  str(self.barcode_scanner_amount.get()) + \
-                                                                  " to '" + tokens[0] + "' barcode: " + \
-                                                                  str(item_to_find) + ' New Qty: ' + \
-                                                                  tokens[1] + '\n'
-                                            self.list_of_items_words = self.list_of_items_words + \
-                                                                       'added ' + \
-                                                                       str(self.barcode_scanner_amount.get()) + \
-                                                                       " to '" + tokens[0] + "' barcode:" + \
-                                                                       str(item_to_find) + ' New Qty: ' + \
-                                                                       tokens[1] + '\n'
-                                            self.list_of_items_label.config(text=self.list_of_items_words)
-
-                                        if direction == 'Barcodes ':
-                                            if str(self.list_of_items_words).count('\n') > 20:
-                                                self.list_of_items_words = ''
-                                            tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
-                                            self.changelog_text = self.changelog_text + \
-                                                                  '\tremoved ' + \
-                                                                  str(self.barcode_scanner_amount.get()) + \
-                                                                  " from '" + tokens[0] + "' " + \
-                                                                  str(item_to_find) + ' New Qty: ' + \
-                                                                  tokens[1] + '\n'
-                                            self.list_of_items_words = self.list_of_items_words + \
-                                                                       'removed ' + \
-                                                                       str(self.barcode_scanner_amount.get()) + \
-                                                                       " from '" + tokens[0] + "' " + \
-                                                                       str(item_to_find) + ' New Qty: ' + \
-                                                                       tokens[1] + '\n'
-
-                                            self.list_of_items_label.config(text=self.list_of_items_words)
-                                        found = True
-                                        newitem = False
-                                        if count < totalLines:
-                                            dest.write(", ".join(tokens) + '\n')
-                                        else:
-                                            dest.write(", ".join(tokens))
-                                if found is False:
-                                    dest.write(line)
-                        if newitem:
-                            self.list_of_items_words = self.list_of_items_words + \
-                                                       ' not found : ' + str(item_to_find) + '\n'
-                            self.list_of_items_label.config(text=self.list_of_items_words)
-                            if (str(item_to_find) in self.notFound) == False:
-                                self.notFound.append(str(item_to_find))
-
-                self.barcode_scanner_add_remove_button_cmd(direction)
-                # to update inventory box every scan
-                self.view_inventory_one_list_box(self.d, 'left')
-                self.clear_list_box()
-                self.view_inventory_one_list_box(self.d, 'left')
-                if self.notFound.__len__() > 0:
-                    self.add_barcode_to_existing()
-                    PlaySound("Wilhelm_Scream.wav", SND_FILENAME)
-            except Exception as e:
-                print("error writing to food file : " + str(e))
             if qty.isnumeric() and item_to_find.isnumeric():
                 try:
                     totalLines = len(open("food.txt").readlines())
@@ -1396,6 +1319,12 @@ one special character: !@#$%*?\n''', delay=.25)
                                                 if str(self.list_of_items_words).count('\n') > 20:
                                                     self.list_of_items_words = 'Inventory Changes\n\n'
                                                 tokens[1] = str(int(tokens[1]) + int(self.barcode_scanner_amount.get()))
+                                                self.changelog_text = self.changelog_text + \
+                                                                  '\tadded ' + \
+                                                                  str(self.barcode_scanner_amount.get()) + \
+                                                                  " to '" + tokens[0] + "' barcode: " + \
+                                                                  str(item_to_find) + ' New Qty: ' + \
+                                                                  tokens[1] + '\n'
                                                 self.list_of_items_words = self.list_of_items_words + \
                                                                            'Added ' + \
                                                                            str(self.barcode_scanner_amount.get()) + \
@@ -1408,6 +1337,12 @@ one special character: !@#$%*?\n''', delay=.25)
                                                 if str(self.list_of_items_words).count('\n') > 20:
                                                     self.list_of_items_words = 'Inventory Changes\n\n'
                                                 tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
+                                                self.changelog_text = self.changelog_text + \
+                                                                  '\tremoved ' + \
+                                                                  str(self.barcode_scanner_amount.get()) + \
+                                                                  " from '" + tokens[0] + "' " + \
+                                                                  str(item_to_find) + ' New Qty: ' + \
+                                                                  tokens[1] + '\n'
                                                 self.list_of_items_words = self.list_of_items_words + \
                                                                            'Removed ' + \
                                                                            str(self.barcode_scanner_amount.get()) + \
@@ -1463,7 +1398,6 @@ one special character: !@#$%*?\n''', delay=.25)
     def add_barcode_to_existing(self):
         '''
         //// Main screen for assigning new barcode to food ////
-
         Button_1 : create_new_item_screen
         Button_2 : append_barcode
         '''
@@ -1483,7 +1417,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
         self.list_box_2.place(relx=.02, rely=.3, relwidth=.125, relheight=.55)
         self.list_box_2_label.configure(font=(self._font, self._font_big_big),
-                                        text="BARCODE NOTE FOUND \n\nSelect from the list\n\n\nOr then create a new item",
+                                        text=f"BARCODE: {self.notFound[0]}\n\nNOT FOUND \n\nSelect from the list\n\n\nOr create a new item\n\nBarcode will be remembered",
                                         fg='red')
         self.list_box_2_label.place(x=1050, y=600, anchor="center")
 
@@ -1503,7 +1437,6 @@ one special character: !@#$%*?\n''', delay=.25)
     def append_barcode(self):
         '''
         /// for appending barcode to existing food item ////
-
         Label_1 : confirmed/ error
         '''
         self.selected_item_to_be_changed = self.list_box_2.curselection()
@@ -1575,13 +1508,11 @@ one special character: !@#$%*?\n''', delay=.25)
         Label_1 : Title
         Label_2 : Entry boxes descriptions
         Label_3 : label from admin modify view
-
         Entry_1 / Entry_var_1 : item name
         Entry_2 / Entry_var_2 : amount
         Entry_3 / Entry_var_3 : lowlevel
         Entry_3 / Entry_var_4 : itemsperbag
         Entry_5 / Entry_var_5 : barcodes
-
         Button_1 : Submit
         '''
         self.invalid_entry_error_label.place_forget()
@@ -1646,13 +1577,11 @@ one special character: !@#$%*?\n''', delay=.25)
     def create_new_item_submit_button_cmd(self):
         '''
         //// When submit in create_new_item is hit ////
-
         Entry_var_1 : item name
         Entry_var_2 : amount
         Entry_var_3 : lowlevel
         Entry_var_4 : itemsperbag
         Entry_var_5 : barcodes
-
         '''
         self.newItem = self.Entry_var_1.get() + ", " + \
                        str(self.Entry_var_2.get()) + ", " + \
@@ -1705,7 +1634,6 @@ one special character: !@#$%*?\n''', delay=.25)
     def auto_fill_edit_item(self):
         '''
         //// admin auto-fill on select and on fail when modifying ////
-
         Entry_var_1 : item name
         Entry_var_2 : amount
         Entry_var_3 : lowlevel
@@ -1729,13 +1657,11 @@ one special character: !@#$%*?\n''', delay=.25)
     def isAllFilled(self):
         '''
         //// Checks all the Entry inputs starting with if they are all filled ////
-
         Entry_var_1 : item name
         Entry_var_2 : amount
         Entry_var_3 : lowlevel
         Entry_var_4 : itemsperbag
         Entry_var_5 : barcodes
-
         Label_3 : universal label for all errors/ notifications for create_new_item
         '''
         self.make_dict(self.d)
@@ -1980,6 +1906,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.view_changelog_text.place_forget()
         self.email_changelog_button.place_forget()
         self.view_changelog_button.place_forget()
+        self.clear_changelog()
 
     # clear remove items screen
     def clear_todo_label(self):
@@ -2179,6 +2106,7 @@ one special character: !@#$%*?\n''', delay=.25)
                     text=f"Added {self.Entry_var_5.get()}\n to {str(self.Entry_var_1.get()).upper()} \n\nHowever, that was not the barcode passed!",
                     font=(self._font, self._font_big), fg='orange')
                 self.Label_4.place(relx=.53, rely=.7, anchor='center')
+                self.Label_3.configure(text='')
                 return
 
             # A label that has a list of all unknown barcodes (now one unknown is the max, but still works for multiple)
@@ -2324,7 +2252,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.changelog_text = ''
         self.bags_made_per_login = 0
         self.partial_bags_made_per_login = 0
-        self.changelog_text = self.username_for_event_log.cget("text") + " logging in " + str(self.login_time) + '\n'
+        self.changelog_text = self.username_for_event_log.cget("text") + " logging in  " + str(self.login_time) + '\n'
 
     def snapshot_on_logout(self):
         # copyfile(file, file + "_logout")
@@ -2452,13 +2380,9 @@ one special character: !@#$%*?\n''', delay=.25)
     def choose_an_item_to_delete_button_cmd(self):
         '''
         //// Delete item confirm screen, requires the admin to enter 'YES' and reminds them what they are deleting ////
-
         Label_4 : error label
-
         Entry_1 : delete confirm entry, where admin enters 'YES' to confirm
-
         Button_1 : deleteItem submit
-
         '''
         self.selected_item_to_be_changed = self.list_box_2.curselection()
         if self.selected_item_to_be_changed != ():
@@ -2490,9 +2414,7 @@ one special character: !@#$%*?\n''', delay=.25)
     def deleteItem(self):
         '''
         //// Does the deletion ////
-
         Label_2 : confirmation / error
-
         '''
         string_key = re.split(' :', self.item_to_be_changed.strip())[0]
 
@@ -2684,11 +2606,18 @@ one special character: !@#$%*?\n''', delay=.25)
         except Exception as e:
             pass
 
+    def clear_changelog(self):
+        self.view_changelog_text.place_forget()
+        self.admin_email_label.place_forget()
+        self.enter_email_add_label.place_forget()
+        self.enter_email_add_entry.place_forget()
+        self.admin_email_send_button.place_forget()
+        self.view_changelog_text.place_forget()
+
     # swap display inventory button
     # TODO: shows inventory button, not forgetting, fix this
     def swap_inventory_button(self, choice):
-        self.view_changelog_text.place_forget()
-        self.admin_email_label.place_forget()
+        self.clear_changelog()
         # inventory_button_for_three_boxes_text = self.display_inventory_high_low_outofstock_button.cget('text')
         # inventory_button_for_one_box_text = self.display_inventory_left_side_button.cget('text')
         if choice == 'all':
@@ -2710,8 +2639,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     # show/hide users
     def swap_display_users_button(self):
-        self.view_changelog_text.place_forget()
-        self.admin_email_label.place_forget()
+        self.clear_changelog()
         users_button_text = self.display_users_button.cget('text')
         if users_button_text == 'View Users':
             self.display_users_button.config(text="Hide Users")
@@ -2724,8 +2652,7 @@ one special character: !@#$%*?\n''', delay=.25)
             self.clear_list_box()
 
     def edit_inventory_button_cmd(self):
-        self.view_changelog_text.place_forget()
-        self.admin_email_label.place_forget()
+        self.clear_changelog()
         self.previous_view = "admin_screen"
         self.backup_button.place(relx=.02, rely=.9)
         self.clear_admin_screen()
@@ -2735,11 +2662,9 @@ one special character: !@#$%*?\n''', delay=.25)
     def modify_inventory(self):
         '''
         //// Admin selects what item you want to modify/ delete then selects appropriate button ////
-
         Button_1 : create_new_item_screen
         Button_2 : choose_an_item_to_edit_button_cmd
         Button_3 : choose_an_item_to_delete_button_cmd
-
         '''
         # reuse select item code from manual entry
         self.view_inventory_one_list_box(self.d, 'middle')
