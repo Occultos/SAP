@@ -1206,6 +1206,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def make_csv(self):
         self.clear_changelog()
+        self.admin_email_label.place_forget()
         # makes excel csv for viewing, some barcodes can end up in si
         count = 0
         try:
@@ -1906,6 +1907,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.view_changelog_text.place_forget()
         self.email_changelog_button.place_forget()
         self.view_changelog_button.place_forget()
+        self.admin_email_label.place_forget()
         self.clear_changelog()
 
     # clear remove items screen
@@ -2151,6 +2153,7 @@ one special character: !@#$%*?\n''', delay=.25)
     #                Change Log
     # =============================================================================
     def view_changelog(self):
+        self.admin_email_label.place_forget()
         self.display_users_button.config(text="View Users")
         self.display_inventory_high_low_outofstock_button.config(text="View Inventory")
         self.delete_user_button.place_forget()
@@ -2608,16 +2611,15 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def clear_changelog(self):
         self.view_changelog_text.place_forget()
-        self.admin_email_label.place_forget()
         self.enter_email_add_label.place_forget()
         self.enter_email_add_entry.place_forget()
         self.admin_email_send_button.place_forget()
-        self.view_changelog_text.place_forget()
 
     # swap display inventory button
     # TODO: shows inventory button, not forgetting, fix this
     def swap_inventory_button(self, choice):
         self.clear_changelog()
+        self.admin_email_label.place_forget()
         # inventory_button_for_three_boxes_text = self.display_inventory_high_low_outofstock_button.cget('text')
         # inventory_button_for_one_box_text = self.display_inventory_left_side_button.cget('text')
         if choice == 'all':
@@ -2640,6 +2642,7 @@ one special character: !@#$%*?\n''', delay=.25)
     # show/hide users
     def swap_display_users_button(self):
         self.clear_changelog()
+        self.admin_email_label.place_forget()
         users_button_text = self.display_users_button.cget('text')
         if users_button_text == 'View Users':
             self.display_users_button.config(text="Hide Users")
@@ -2653,6 +2656,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def edit_inventory_button_cmd(self):
         self.clear_changelog()
+        self.admin_email_label.place_forget()
         self.previous_view = "admin_screen"
         self.backup_button.place(relx=.02, rely=.9)
         self.clear_admin_screen()
