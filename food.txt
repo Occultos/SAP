@@ -5,14 +5,14 @@ meat item, 100, 50, 3, 6543, 6535
 soup can, 100, 50, 1, 1234234, 4532234
 spaghetti sauce can, 100, 50, 1, 67664, 34564, 999989, 165165
 tomato sauce can, 100, 50, 2, 2345
-bean cans, 100, 50, 1, 2345
-ravioli, 100, 50, 1, 2345, 6156, 46565, 6515
-peanut butter, 100, 50, 1, 234566
-jelly, 100, 50, 1, 2345
-mac and cheeses, 100, 50, 2, 234522
-rice bag, 100, 50, 1, 2345
-juice drink, 100, 50, 1, 2345
+bean cans, 100, 50, 1, 23456
+ravioli, 100, 50, 1, 23457, 6156, 46565, 6515
+peanut butter, 100, 50, 1, 2345866
+jelly, 100, 50, 1, 23459
+mac and cheeses, 100, 50, 2, 2345022
+rice bag, 100, 50, 1, 234587
+juice drink, 100, 50, 1, 234577
 snacks, 100, 50, 5, 456
-miscellaneous item, 100, 50, 1, 2345679, 65161
-cereal, 100, 50, 1, 2345
+miscellaneous item, 100, 50, 1, 234566679, 65161
+cereal, 100, 50, 1, 234555
 large bag of nuts, 100, 50, 1, 66516
