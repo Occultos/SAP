@@ -2143,6 +2143,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.display_inventory_high_low_outofstock_button.config(text="View Inventory")
         self.delete_user_button.place_forget()
         self.clear_list_box()
+        self.view_changelog_text.delete('1.0', END)
         try:
             with open("changelog.txt", 'r') as f:
                 self.view_changelog_text.insert(INSERT, f.read())
@@ -2934,9 +2935,9 @@ one special character: !@#$%*?\n''', delay=.25)
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
         #self.user_screen()
-        #self.admin_screen()
+        self.admin_screen()
 
-        # TODO: commnted out if/else to skip login steps while building program,
+        '''# TODO: commnted out if/else to skip login steps while building program,
         #  put back in for finished product
         if self.ready_to_login:
             self.clear_verify()
@@ -2959,7 +2960,7 @@ one special character: !@#$%*?\n''', delay=.25)
         else:
             self.login_failure("username & password invalid", .65, .4)
             self.clear_verify()
-            self.login_info_screen()
+            self.login_info_screen()'''
 
 
 # ======================================================
