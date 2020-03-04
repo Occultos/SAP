@@ -1261,6 +1261,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def barcode_scanner_add_remove_button_cmd(self, direction):
         # TODO: add barcode & qty columns
+        self.Label_4.place_forget()
         self.previous_view = "barcode_scanner_screen"
         self.clear_barcode_screen()
         place_object(self.list_box_2_label, .08, .25)
@@ -1298,83 +1299,6 @@ one special character: !@#$%*?\n''', delay=.25)
             self.invalid_entry_error_label.place_forget()
             intcheck = int(qty)
             intcheck = int(item_to_find)
-            try:
-                totalLines = len(open("food.txt").readlines())
-                shutil.move("food.txt", "food.txt" + "~")
-                with open("food.txt", "w+") as dest:
-                    dest.seek(0, os.SEEK_SET)
-                    with open("food.txt" + "~", "r+") as src:
-                        src.seek(0, os.SEEK_SET)
-                        newitem = True
-                        count = 0
-                        for line in src:
-                            count += 1
-                            if not re.match(r'^\s*$', line):  # skips blank lines
-                                found = False
-                                tokens = re.split(", ", line.strip())
-                                for ndex in range(len(tokens))[4:]:
-                                    if str(tokens[ndex].strip()) == str(item_to_find):
-                                        if direction == 'Barcodes':
-                                            if str(self.list_of_items_words).count('\n') > 20:
-                                                self.list_of_items_words = ''
-                                            tokens[1] = str(int(tokens[1]) + int(self.barcode_scanner_amount.get()))
-                                            self.changelog_text = self.changelog_text + \
-                                                                  '\tadded ' + \
-                                                                  str(self.barcode_scanner_amount.get()) + \
-                                                                  " to '" + tokens[0] + "' barcode: " + \
-                                                                  str(item_to_find) + ' New Qty: ' + \
-                                                                  tokens[1] + '\n'
-                                            self.list_of_items_words = self.list_of_items_words + \
-                                                                       'added ' + \
-                                                                       str(self.barcode_scanner_amount.get()) + \
-                                                                       " to '" + tokens[0] + "' barcode:" + \
-                                                                       str(item_to_find) + ' New Qty: ' + \
-                                                                       tokens[1] + '\n'
-                                            self.list_of_items_label.config(text=self.list_of_items_words)
-
-                                        if direction == 'Barcodes ':
-                                            if str(self.list_of_items_words).count('\n') > 20:
-                                                self.list_of_items_words = ''
-                                            tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
-                                            self.changelog_text = self.changelog_text + \
-                                                                  '\tremoved ' + \
-                                                                  str(self.barcode_scanner_amount.get()) + \
-                                                                  " from '" + tokens[0] + "' " + \
-                                                                  str(item_to_find) + ' New Qty: ' + \
-                                                                  tokens[1] + '\n'
-                                            self.list_of_items_words = self.list_of_items_words + \
-                                                                       'removed ' + \
-                                                                       str(self.barcode_scanner_amount.get()) + \
-                                                                       " from '" + tokens[0] + "' " + \
-                                                                       str(item_to_find) + ' New Qty: ' + \
-                                                                       tokens[1] + '\n'
-
-                                            self.list_of_items_label.config(text=self.list_of_items_words)
-                                        found = True
-                                        newitem = False
-                                        if count < totalLines:
-                                            dest.write(", ".join(tokens) + '\n')
-                                        else:
-                                            dest.write(", ".join(tokens))
-                                if found is False:
-                                    dest.write(line)
-                        if newitem:
-                            self.list_of_items_words = self.list_of_items_words + \
-                                                       ' not found : ' + str(item_to_find) + '\n'
-                            self.list_of_items_label.config(text=self.list_of_items_words)
-                            if (str(item_to_find) in self.notFound) == False:
-                                self.notFound.append(str(item_to_find))
-
-                self.barcode_scanner_add_remove_button_cmd(direction)
-                # to update inventory box every scan
-                self.view_inventory_one_list_box(self.d, 'left')
-                self.clear_list_box()
-                self.view_inventory_one_list_box(self.d, 'left')
-                if self.notFound.__len__() > 0:
-                    self.add_barcode_to_existing()
-                    PlaySound("Wilhelm_Scream.wav", SND_FILENAME)
-            except Exception as e:
-                print("error writing to food file : " + str(e))
             if qty.isnumeric() and item_to_find.isnumeric():
                 try:
                     totalLines = len(open("food.txt").readlines())
@@ -3020,10 +2944,10 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        # self.user_screen()
+        self.user_screen()
         # self.admin_screen()
 
-        # TODO: commnted out if/else to skip login steps while building program,
+        '''# TODO: commnted out if/else to skip login steps while building program,
         #  put back in for finished product
         if self.ready_to_login:
             self.clear_verify()
@@ -3046,7 +2970,7 @@ one special character: !@#$%*?\n''', delay=.25)
         else:
             self.login_failure("username & password invalid", .65, .4)
             self.clear_verify()
-            self.login_info_screen()
+            self.login_info_screen()'''
 
 
 # ======================================================
