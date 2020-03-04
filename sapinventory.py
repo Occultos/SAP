@@ -2143,6 +2143,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.display_inventory_high_low_outofstock_button.config(text="View Inventory")
         self.delete_user_button.place_forget()
         self.clear_list_box()
+        self.view_changelog_text.delete('1.0', END)
         try:
             with open("changelog.txt", 'r') as f:
                 self.view_changelog_text.insert(INSERT, f.read())
