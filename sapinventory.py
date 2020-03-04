@@ -1391,6 +1391,7 @@ one special character: !@#$%*?\n''', delay=.25)
     def barcode_exist(self, code):
         # quick easy check to see if barcode exist
         for key, value in self.d.items():
+            print(code, self.d[key]['barcodes'])
             if code in self.d[key]['barcodes']:
                 return True
         return False
@@ -1439,6 +1440,8 @@ one special character: !@#$%*?\n''', delay=.25)
         /// for appending barcode to existing food item ////
         Label_1 : confirmed/ error
         '''
+        #self.make_food_txt()
+        self.print_dict_to_file(self.d)
         self.selected_item_to_be_changed = self.list_box_2.curselection()
         if self.selected_item_to_be_changed != ():
             self.previous_view = "user_screen"
@@ -1600,7 +1603,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
                 if self.isPassingBarcode == "is_passing_true":
                     if self.notFound.__len__() > 0:
-                        self.Entry_var_5.set(int(self.notFound[0]))
+                        self.Entry_var_5.set(str(self.notFound[0]))
 
                 self.create_new_item_screen()
 
@@ -1615,7 +1618,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
                 if self.isPassingBarcode == "is_passing_true":
                     if self.notFound.__len__() > 0:
-                        self.Entry_var_5.set(int(self.notFound[0]))
+                        self.Entry_var_5.set(str(self.notFound[0]))
 
     def user_create_new_clear(self):
         self.Entry_var_1.set('')
@@ -1708,9 +1711,10 @@ one special character: !@#$%*?\n''', delay=.25)
 
             barcodes_to_check = str(self.Entry_var_5.get()).split(", ")
             for i in barcodes_to_check:
+                print(i)
                 if self.barcode_exist(
-                        int(i)) == True and self.isModifying == "is_admin_modifying_with_check" or self.barcode_exist(
-                    int(i)) == True and self.isModifying == "as_user":
+                        i) == True and self.isModifying == "is_admin_modifying_with_check" or self.barcode_exist(
+                    i) == True and self.isModifying == "as_user":
                     self.Label_3.configure(text="Barcode Already Exist", fg='black')
                     return 0
 
@@ -2033,7 +2037,7 @@ one special character: !@#$%*?\n''', delay=.25)
                         number_of_barcodes = len(words) - 4
                         n = 1
                         while n <= number_of_barcodes:
-                            barcodes[n - 1] = int(words[3 + n])
+                            barcodes[n - 1] = str(words[3 + n]).replace(" ",'').replace("\n","")
                             n += 1
                         d[item]['barcodes'] = barcodes
         except Exception as e:
@@ -2120,7 +2124,9 @@ one special character: !@#$%*?\n''', delay=.25)
                 self.clear_list_box()
                 self.view_inventory_one_list_box(self.d, 'left')
                 # to update list box right after a new item is added
-
+        self.d = {}
+        self.make_dict(self.d)
+        print(self.d)
     # =============================================================================
     #                Display inventory - user mode
     # =============================================================================
@@ -2934,10 +2940,10 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        #self.user_screen()
+        self.user_screen()
         #self.admin_screen()
 
-        # TODO: commnted out if/else to skip login steps while building program,
+        '''# TODO: commnted out if/else to skip login steps while building program,
         #  put back in for finished product
         if self.ready_to_login:
             self.clear_verify()
@@ -2960,7 +2966,7 @@ one special character: !@#$%*?\n''', delay=.25)
         else:
             self.login_failure("username & password invalid", .65, .4)
             self.clear_verify()
-            self.login_info_screen()
+            self.login_info_screen()'''
 
 
 # ======================================================
