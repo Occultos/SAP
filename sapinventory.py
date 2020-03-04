@@ -2639,7 +2639,7 @@ one special character: !@#$%*?\n''', delay=.25)
         if users_button_text == 'View Users':
             self.display_users_button.config(text="Hide Users")
             self.display_inventory_high_low_outofstock_button.config(text="View Inventory")
-            place_object(self.delete_user_button, .845, .640)
+            place_object(self.delete_user_button, .71, .705)
             self.view_users()
         else:
             self.display_users_button.config(text="View Users")
@@ -2940,8 +2940,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        self.user_screen()
-        #self.admin_screen()
+        #self.user_screen()
+        self.admin_screen()
 
         '''# TODO: commnted out if/else to skip login steps while building program,
         #  put back in for finished product
