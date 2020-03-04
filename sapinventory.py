@@ -1261,7 +1261,6 @@ one special character: !@#$%*?\n''', delay=.25)
 
     def barcode_scanner_add_remove_button_cmd(self, direction):
         # TODO: add barcode & qty columns
-        self.Label_4.place_forget()
         self.previous_view = "barcode_scanner_screen"
         self.clear_barcode_screen()
         place_object(self.list_box_2_label, .08, .25)
@@ -1521,7 +1520,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.clear_user_screen()
         # creates blank screen
         self.backup_place()
-        if self.Label_3.cget("text") == "Item Modified":
+        if self.Label_3.cget("text") == "Item Modified" or self.Label_3.cget("text") == "Added item":
             self.Label_3.configure(text='')
         self.Label_4.place_forget()
 
@@ -2053,19 +2052,6 @@ one special character: !@#$%*?\n''', delay=.25)
         //// also where modifying existing item happens ////
         '''
 
-        # if the barcode entered (it is prefilled by default) is the unknown one, remove it from unknown barcodes
-        if (str(self.Entry_var_5.get()) in self.notFound) == True:
-            self.notFound.remove(str(self.Entry_var_5.get()))
-
-            # A label that has a list of all unknown barcodes (now one unknown is the max, but still works for multiple)
-            if self.isBarcode == True:
-                self.codeList = ''
-                for codes in self.notFound:
-                    self.codeList = self.codeList + "\n" + codes
-                self.Label_4.configure(text="BARCODES\n" + self.codeList, font=(self._font, self._font_small),
-                                       fg='blue')
-                self.Label_4.place(relx=.05, rely=.3)
-
         # when admin is modifying existing item
         if self.isModifying == "is_admin_modifying":
             try:
@@ -2121,7 +2107,6 @@ one special character: !@#$%*?\n''', delay=.25)
                 self.Label_4.place(relx=.05, rely=.3)
                 self.clear_create_new_item()
                 self.barcode_scanner_screen()
-
                 self.Label_4.configure(
                     text=f"Added {self.Entry_var_5.get()}\n to {str(self.Entry_var_1.get()).upper()}",
                     font=(self._font, self._font_big), fg='blue')
@@ -2948,8 +2933,8 @@ one special character: !@#$%*?\n''', delay=.25)
 
         # TODO: uncomment next few lines to skip login
         # TODO: comment out the screen you don't want --- remove both for login verification
-        # self.user_screen()
-        # self.admin_screen()
+        #self.user_screen()
+        #self.admin_screen()
 
         # TODO: commnted out if/else to skip login steps while building program,
         #  put back in for finished product
