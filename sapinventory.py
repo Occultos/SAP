@@ -12,6 +12,7 @@ import sys
 from winsound import *
 import os.path
 from os import path
+import textwrap
 
 
 # git notes:
@@ -80,6 +81,13 @@ class StartGui(tk.Tk):
         self.list_l = []
         self.list_k = []
         self.from_add_subtract = ''
+        self.from_admin_message = False
+        self.admin_message = 'Thank you for volunteering.\nToday please put any food items for pallets \nonto back shelves.' \
+                             ' Once that is complete please\n restock the front shelves with items off the\n back shelves. When ' \
+                             'these task are complete please make emergency \nfood bags. At this time, add these additional\n items ' \
+                             'to all food bags: canned salmon\n and bean soup packages. Thank you!'
+        self.admin_message = '\n'.join(textwrap.wrap(self.admin_message, 64))
+
 
         # ============================================================================================
         #                                    Universal Buttons
@@ -355,6 +363,13 @@ class StartGui(tk.Tk):
                                                 command=lambda: self.email_changelog_entry())
         self.email_changelog_button.configure(activebackground=self._activebgcolor, padx=5)
 
+        # volunteer instructions
+        self.volunteer_instructions_button = tk.Button(self, text="Volunteer Instructions", background=self._fgcolor,
+                                                font=(self._font, self._font_smallish),
+                                                command=lambda: self.volunteer_instructions_screen())
+        self.volunteer_instructions_button.configure(activebackground=self._activebgcolor)
+
+        self.textBox = tk.Text(self, wrap=WORD, height=14, width=64, font=(self._font, self._font_big))
         # =============================================================================
         #                 END Admin screen buttons
         # =============================================================================
@@ -416,13 +431,13 @@ class StartGui(tk.Tk):
         # =======================================================================================
 
         ToolTip(self.help_label, self._font, '''Username must be atleast 8 letters\n
-Only use letters a-z for username\n
-Password must be 8-20 characters\n
-Password must contain atleast:\n
-one uppercase,\n
-one lowercase, \n
-one number,\n
-one special character: !@#$%*?\n''', delay=.25)
+                Only use letters a-z for username\n
+                Password must be 8-20 characters\n
+                Password must contain atleast:\n
+                one uppercase,\n
+                one lowercase, \n
+                one number,\n
+                one special character: !@#$%*?\n''', delay=.25)
 
         # =======================================================================================
         #                                         entry boxes - INIT
@@ -529,7 +544,19 @@ one special character: !@#$%*?\n''', delay=.25)
             self.invalid_entry_error_label.place_forget()
             self.display_inventory_left_side_button.place_forget()
             self.clear_add_barcode_to_existing()
+            self.textBox.place_forget()
+            self.clear_volunteer_instructions_screen()
+
             self.user_screen()
+        elif words == "volunteer_instructions_screen":
+            self.clear_admin_message_configure()
+            self.volunteer_instructions_screen()
+
+        elif words == "admin_message_configure":
+            self.clear_modify_inventory()
+            self.list_box_2_label.place_forget()
+            self.list_box_2.place_forget()
+            self.admin_message_configure()
 
         # goes back to make a bag screen
         elif words == "make_bag_screen":
@@ -714,6 +741,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.clear_login_info_error()
         self.army_image_place()
         self.eyeball_button.place_forget()
+        self.from_admin_message = False
 
         place_object(self.view_changelog_button, .845, .835)                         #view changelog
         place_object(self.display_inventory_high_low_outofstock_button, .845, .77)  #show inventory
@@ -743,6 +771,9 @@ one special character: !@#$%*?\n''', delay=.25)
         self.backup_button.place_forget()
         self.eyeball_button.place_forget()
         self.army_image_place()
+        self.Entry_1.config(show='')
+
+        place_object(self.volunteer_instructions_button, .27, .5)
 
         self.Button_1.configure(text="Make A New Bag", background=self._fgcolor, font=(self._font, self._font_medium),
                                 command=lambda: self.make_bag_screen(), activebackground=self._activebgcolor, padx=0)
@@ -824,6 +855,117 @@ one special character: !@#$%*?\n''', delay=.25)
         self.previous_view = "login_screen"
         # TODO: help labels
         # todo: confirm pw label
+
+    def volunteer_instructions_screen(self):
+        self.clear_user_screen()
+        self.previous_view = "user_screen"
+        self.backup_place()
+
+        self.Label_1.configure(text=f"{self.admin_message}", font=(self._font, self._font_big), anchor='nw', image='')
+        self.Label_1.place(relx=0.05, rely=0.35)
+
+        self.Label_2.configure(text="Admin Password", font=(self._font, self._font_big), fg='black')
+        self.Label_2.place(relx=0.78, rely=0.38)
+
+        self.Entry_var_1.set('')
+        self.Entry_1.place(relx=0.75, rely=0.45)
+        self.Entry_1.configure(textvariable=self.Entry_var_1)
+        self.Entry_1.focus_set()
+        self.Entry_1.config(show='*')
+
+        self.Button_1.place_forget()
+        self.Button_1.configure(text="Submit", background=self._fgcolor,
+                                font=(self._font, self._font_medium),
+                                command=lambda: self.admin_message_screen(),
+                                activebackground=self._activebgcolor, padx=10)
+        self.Button_1.place(relx=0.815, rely=0.52)
+
+    def clear_volunteer_instructions_screen(self):
+        self.Label_1.place_forget()
+        self.Label_2.place_forget()
+        self.Label_3.place_forget()
+
+        self.Entry_1.place_forget()
+        self.Button_1.place_forget()
+        self.edit_inventory_button.place_forget()
+
+    def admin_message_screen(self):
+        self.previous_view = "volunteer_instructions_screen"
+
+        ready_to_login = False
+        try:
+            with open('username_password_file.txt', "a+") as readf:
+                readf.seek(0, os.SEEK_SET)
+                for line in readf:
+                    tokens = re.split(" ", line.strip())
+                    if tokens[0] == "adminarmy" and len(tokens[0]) > 7 and pbkdf2_sha256.verify(
+                            self.Entry_var_1.get(), tokens[1]):
+                        ready_to_login = True
+                        break
+        except Exception as e:
+            print("login verify: " + str(e))
+
+        if ready_to_login == False:
+            self.Label_3.configure(text='Wrong Password', fg='red')
+            self.Label_3.place(relx=0.79, rely=0.6)
+            self.volunteer_instructions_screen()
+        else:
+            self.clear_volunteer_instructions_screen()
+            self.admin_message_configure()
+            self.Entry_1.config(show='')
+
+        self.Entry_var_1.set('')
+
+    def admin_message_configure(self):
+        self.previous_view = "volunteer_instructions_screen"
+        self.Entry_var_1.set('')
+
+        self.Label_1.configure(text="Enter new message\t\t\tDon't let words hit end of box! ~ 75 letters", font=(self._font, self._font_big), image='')
+        self.Label_1.place(relx=0.05, rely=0.3)
+
+        self.Label_2.configure(text="To modify what is in a bag\n go to Edit Inventory and \nmodify itemsperbag",
+                               font=(self._font, self._font_big), fg='red')
+        self.Label_2.place(relx=0.725, rely=0.6)
+
+        self.from_admin_message = True
+        self.edit_inventory_button.place(relx=0.77, rely=0.75)
+
+        self.textBox.focus_set()
+        #self.admin_message = '\n'.join(textwrap.wrap(self.admin_message, 64))
+
+        self.textBox.delete('1.0', END)
+        self.textBox.insert(INSERT, self.admin_message)
+        self.textBox.place(relx=0.05, rely=0.35)
+
+        self.Button_1.place_forget()
+        self.Button_1.configure(text="Update Message", background=self._fgcolor,
+                                font=(self._font, self._font_medium),
+                                command=lambda: self.retrieve_input(),
+                                activebackground=self._activebgcolor, padx=10)
+
+        self.Button_1.place(relx=0.76, rely=0.35)
+
+    def clear_admin_message_configure(self):
+        self.Label_1.place_forget()
+        self.Label_2.place_forget()
+        self.textBox.place_forget()
+        self.Button_1.place_forget()
+        self.edit_inventory_button.place_forget()
+
+    def retrieve_input(self):
+        self.inputValue = self.textBox.get("1.0", END)
+        x_list = self.inputValue.split("\n")
+        for str in x_list:
+            if len(str) > 75:
+                self.Label_3.configure(text="Don't let words hit end of box!", fg='red')
+                self.Label_3.place(relx=0.73, rely=0.3)
+                return
+        self.admin_message = self.inputValue
+        self.clear_admin_message_configure()
+        self.back_button_func(self.previous_view)
+        self.volunteer_instructions_screen()
+        self.Label_3.configure(text="Message updated", fg='blue')
+        self.Label_3.place(relx=0.785, rely=0.325)
 
     # made a bag
     def made_a_bag_screen(self):
@@ -978,7 +1120,7 @@ one special character: !@#$%*?\n''', delay=.25)
                 self.list_box_2_label.configure(text=f"If it is blank then you have enough\n in stock to make "
                                                      f"{int(self.Entry_var_2.get())} bags\n\n\n\n\nElse it will show the\nfood and number "
                                                      f"needed to buy\nfor {int(self.Entry_var_2.get())} bags\n\n\n\nAlso, theoretical.txt\n has a copy of this info",
-                                                fg="black")
+                                                fg="black", font=(self._font, self._font_medium))
                 self.list_box_2_label.place(relx=.75, rely=.6, anchor='center')
 
                 # Populating list_box_1 with d_needed items and amount needed for Entry_var_2 bags to be made
@@ -1397,7 +1539,6 @@ one special character: !@#$%*?\n''', delay=.25)
     def barcode_exist(self, code):
         # quick easy check to see if barcode exist
         for key, value in self.d.items():
-            print(code, self.d[key]['barcodes'])
             if code in self.d[key]['barcodes']:
                 return True
         return False
@@ -1597,6 +1738,16 @@ one special character: !@#$%*?\n''', delay=.25)
                        str(self.Entry_var_3.get()) + ", " + \
                        str(self.Entry_var_4.get()) + ", " + \
                        str(self.Entry_var_5.get())
+
+        try:
+            self.newItem = self.Entry_var_1.get() + ", " + \
+                           str(int(self.Entry_var_2.get())) + ", " + \
+                           str(int(self.Entry_var_3.get())) + ", " + \
+                           str(int(self.Entry_var_4.get())) + ", " + \
+                           str(self.Entry_var_5.get())
+        except Exception as e:
+            print(" '' cant be casted " + str(e))
+
         if self.isModifying == "is_admin":
             self.create_new_item_screen()
             self.auto_fill_edit_item()
@@ -1710,14 +1861,16 @@ one special character: !@#$%*?\n''', delay=.25)
                 fg='black')
             return 0
         else:
-            if int(self.newItem.count(",")) > int(self.barcodesLenght - 2):
-                place_object(self.exceeds_barcode_length, .655, .6)
-                return 0
+            try:
+                if int(self.newItem.count(",")) > int(self.barcodesLenght - 2):
+                    place_object(self.exceeds_barcode_length, .655, .6)
+                    return 0
+            except Exception as e:
+                print("barcodesLenght to short " + str(e))
             # check to see if barcode limit is reached via comma count
 
             barcodes_to_check = str(self.Entry_var_5.get()).split(", ")
             for i in barcodes_to_check:
-                print(i)
                 if self.barcode_exist(
                         i) == True and self.isModifying == "is_admin_modifying_with_check" or self.barcode_exist(
                     i) == True and self.isModifying == "as_user":
@@ -1864,6 +2017,7 @@ one special character: !@#$%*?\n''', delay=.25)
         self.clear_add_barcode_to_existing()
         self.clear_substitutions_page()
         self.clear_admin_screen()
+        self.clear_admin_message_configure()
 
     # clear list boxes
     def clear_list_box(self):
@@ -1894,6 +2048,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
     # clears user screen
     def clear_user_screen(self):
+        self.volunteer_instructions_button.place_forget()
         self.Button_1.place_forget()
         self.Button_2.place_forget()
         self.Button_3.place_forget()
@@ -2039,7 +2194,7 @@ one special character: !@#$%*?\n''', delay=.25)
                         d[item]['item'] = item
                         d[item]['amount'] = amount
                         d[item]['lowlevel'] = lowlevel
-                        d[item]['itemsperbag'] = itemsperbag
+                        d[item]['itemsperbag'] = int(itemsperbag)
                         number_of_barcodes = len(words) - 4
                         n = 1
                         while n <= number_of_barcodes:
@@ -2050,11 +2205,11 @@ one special character: !@#$%*?\n''', delay=.25)
             self.food_file_error_label.place(relx=.75, rely=.60)
             print("error in open: make dict : " + str(e))
 
-    def print_dict(self, d):
+    '''def print_dict(self, d):
         for item_id, item_info in d.items():
             print('\n')
             for key in item_info:
-                print(key + " : " + str(item_info[key]))
+                print(key + " : " + str(item_info[key]))'''
 
     def append_food(self, newItem):
         '''
@@ -2132,7 +2287,6 @@ one special character: !@#$%*?\n''', delay=.25)
                 # to update list box right after a new item is added
         self.d = {}
         self.make_dict(self.d)
-        print(self.d)
     # =============================================================================
     #                Display inventory - user mode
     # =============================================================================
@@ -2655,7 +2809,11 @@ one special character: !@#$%*?\n''', delay=.25)
     def edit_inventory_button_cmd(self):
         self.clear_changelog()
         self.admin_email_label.place_forget()
-        self.previous_view = "admin_screen"
+        if self.from_admin_message == True:
+            self.clear_admin_message_configure()
+            self.previous_view = "admin_message_configure"
+        else:
+            self.previous_view = "admin_screen"
         self.backup_button.place(relx=.02, rely=.9)
         self.clear_admin_screen()
         # Jump to modify screen and be able to modify and delete items
@@ -2676,7 +2834,7 @@ one special character: !@#$%*?\n''', delay=.25)
 
         self.Button_1.configure(text="Create New Item", font=(self._font, self._font_medium), background=self._fgcolor,
                                 command=lambda: self.create_new_item_screen(), activebackground=self._activebgcolor)
-        place_object(self.Button_1, .715, .625)
+        place_object(self.Button_1, .71, .625)
 
         self.list_box_2_label.configure(font=(self._font, self._font_big_big), text="\\\ Select Here! //")
         self.Label_3.configure(text='')
