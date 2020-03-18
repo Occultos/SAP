@@ -925,7 +925,9 @@ class StartGui(tk.Tk):
         self.previous_view = "volunteer_instructions_screen"
         self.Entry_var_1.set('')
 
-        self.Label_1.configure(text="Enter new message\t\t\tDon't let words hit end of box! ~ 75 letters", font=(self._font, self._font_big), image='')
+        #self.Label_1.configure(text="Enter new message\t\t\tDon't let words hit end of box! ~ 75 letters", font=(self._font, self._font_big), image='')
+        self.Label_1.configure(text="Enter new message", font=(self._font, self._font_big), image='')
+
         self.Label_1.place(relx=0.05, rely=0.3)
 
         self.Label_2.configure(text="To modify what is in a bag\n go to Edit Inventory and \nmodify itemsperbag",
@@ -960,12 +962,12 @@ class StartGui(tk.Tk):
 
     def retrieve_input(self):
         self.inputValue = self.textBox.get("1.0", END)
-        x_list = self.inputValue.split("\n")
+        '''x_list = self.inputValue.split("\n")
         for str in x_list:
             if len(str) > 75:
                 self.Label_3.configure(text="Don't let words hit end of box!", fg='red')
                 self.Label_3.place(relx=0.73, rely=0.3)
-                return
+                return'''
         self.admin_message = self.inputValue
         self.clear_admin_message_configure()
         self.back_button_func(self.previous_view)
