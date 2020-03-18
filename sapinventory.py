@@ -861,8 +861,13 @@ class StartGui(tk.Tk):
         self.previous_view = "user_screen"
         self.backup_place()
 
-        self.Label_1.configure(text=f"{self.admin_message}", font=(self._font, self._font_big), anchor='nw', image='')
-        self.Label_1.place(relx=0.05, rely=0.35)
+        #self.Label_1.configure(text=f"{self.admin_message}", font=(self._font, self._font_big), anchor='nw', image='')
+        #self.Label_1.place(relx=0.05, rely=0.35)
+
+        self.textBox.delete('1.0', END)
+        self.textBox.insert(INSERT, self.admin_message)
+        self.textBox.place(relx=0.05, rely=0.35)
+        self.textBox.config(state=DISABLED)
 
         self.Label_2.configure(text="Admin Password", font=(self._font, self._font_big), fg='black')
         self.Label_2.place(relx=0.78, rely=0.38)
@@ -936,6 +941,7 @@ class StartGui(tk.Tk):
         self.textBox.delete('1.0', END)
         self.textBox.insert(INSERT, self.admin_message)
         self.textBox.place(relx=0.05, rely=0.35)
+        self.textBox.config(state='normal')
 
         self.Button_1.place_forget()
         self.Button_1.configure(text="Update Message", background=self._fgcolor,
