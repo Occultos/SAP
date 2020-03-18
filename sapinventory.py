@@ -1336,21 +1336,27 @@ one special character: !@#$%*?\n''', delay=.25)
                                             if direction == 'Barcodes for Subtracting':
                                                 if str(self.list_of_items_words).count('\n') > 20:
                                                     self.list_of_items_words = 'Inventory Changes\n\n'
-                                                tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
-                                                self.changelog_text = self.changelog_text + \
-                                                                  '\tremoved ' + \
-                                                                  str(self.barcode_scanner_amount.get()) + \
-                                                                  " from '" + tokens[0] + "' " + \
-                                                                  str(item_to_find) + ' New Qty: ' + \
-                                                                  tokens[1] + '\n'
-                                                self.list_of_items_words = self.list_of_items_words + \
-                                                                           'Removed ' + \
-                                                                           str(self.barcode_scanner_amount.get()) + \
-                                                                           " from '" + tokens[0] + "' \n" + \
-                                                                           str(item_to_find) + ' New Qty: ' + \
-                                                                           tokens[1] + '\n'
+                                                if int(self.barcode_scanner_amount.get()) > int(tokens[1]):
+                                                    self.Label_3.config(
+                                                        text=f'Cannot subtract over {int(tokens[1])} for {tokens[0]}', fg='red')
+                                                    place_object(self.Label_3, .67, .25)
+                                                else:
+                                                    self.Label_3.place_forget()
+                                                    tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
+                                                    self.changelog_text = self.changelog_text + \
+                                                                      '\tremoved ' + \
+                                                                      str(self.barcode_scanner_amount.get()) + \
+                                                                      " from '" + tokens[0] + "' " + \
+                                                                      str(item_to_find) + ' New Qty: ' + \
+                                                                      tokens[1] + '\n'
+                                                    self.list_of_items_words = self.list_of_items_words + \
+                                                                               'Removed ' + \
+                                                                               str(self.barcode_scanner_amount.get()) + \
+                                                                               " from '" + tokens[0] + "' \n" + \
+                                                                               str(item_to_find) + ' New Qty: ' + \
+                                                                               tokens[1] + '\n'
 
-                                                self.list_of_items_label.config(text=self.list_of_items_words)
+                                                    self.list_of_items_label.config(text=self.list_of_items_words)
                                             found = True
                                             newitem = False
                                             if count < totalLines:
@@ -2938,35 +2944,35 @@ one special character: !@#$%*?\n''', delay=.25)
 
         self.clear_verify()
 
-        # TODO: uncomment next few lines to skip login
-        # TODO: comment out the screen you don't want --- remove both for login verification
-        #self.user_screen()
-        self.admin_screen()
-
-        '''# TODO: commnted out if/else to skip login steps while building program,
-        #  put back in for finished product
-        if self.ready_to_login:
-            self.clear_verify()
-            self.clear_login_screen()
-            self.username_for_event_log.configure(text=str(tokens[0]))
-            place_object(self.username_for_event_log, .02, .85)
-            # logging in,
-            # snapshot of inventory on login - timestamp, username_for_event_log
-            # check that logged in
-            # on logout :
-            # snapshot of inventory on logout - timestamp
-            # compare snapshots
-            # append changes from snapshot to changelog
-            # email changelog button simliar to email inventory
-            self.snapshot_on_login()
-            if tokens[0] == 'adminarmy':
-                self.admin_screen()
+        # TODO: change login to 1, 2, or 3
+        login = 1
+        if login == 1:
+            self.user_screen()
+        elif login == 2:
+            self.admin_screen()
+        elif login == 3:
+            if self.ready_to_login:
+                self.clear_verify()
+                self.clear_login_screen()
+                self.username_for_event_log.configure(text=str(tokens[0]))
+                place_object(self.username_for_event_log, .02, .85)
+                # logging in,
+                # snapshot of inventory on login - timestamp, username_for_event_log
+                # check that logged in
+                # on logout :
+                # snapshot of inventory on logout - timestamp
+                # compare snapshots
+                # append changes from snapshot to changelog
+                # email changelog button simliar to email inventory
+                self.snapshot_on_login()
+                if tokens[0] == 'adminarmy':
+                    self.admin_screen()
+                else:
+                    self.user_screen()
             else:
-                self.user_screen()
-        else:
-            self.login_failure("username & password invalid", .65, .4)
-            self.clear_verify()
-            self.login_info_screen()'''
+                self.login_failure("username & password invalid", .65, .4)
+                self.clear_verify()
+                self.login_info_screen()
 
 
 # ======================================================
