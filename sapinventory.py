@@ -392,6 +392,12 @@ class StartGui(tk.Tk):
         self.food_file_error_label = tk.Label(self, font=(self._font, self._font_small),
                                               text="food.txt file missing")
 
+        self.volunteer_instructions_label = tk.Label(self, text="Volunteer Instructions",
+                                   background='#c1bcf5', font=(self._font, self._font_medium))
+        self.volunteer_instructions_label.configure(padx=20, pady=15)
+        self.food_bag_contents_title = tk.Label(self, text="What is in a Bag",
+                                                background='#c1bcf5', font=(self._font, self._font_medium))
+
         # ==================================================================
         #                    end new item labels
         # ==================================================================
@@ -430,14 +436,7 @@ class StartGui(tk.Tk):
         #                                           TOOLTIP - INIT
         # =======================================================================================
 
-        ToolTip(self.help_label, self._font, '''Username must be atleast 8 letters\n
-                Only use letters a-z for username\n
-                Password must be 8-20 characters\n
-                Password must contain atleast:\n
-                one uppercase,\n
-                one lowercase, \n
-                one number,\n
-                one special character: !@#$%*?\n''', delay=.25)
+        ToolTip(self.volunteer_instructions_label, self._font, self.admin_message, delay=0.0)
 
         # =======================================================================================
         #                                         entry boxes - INIT
@@ -772,8 +771,9 @@ class StartGui(tk.Tk):
         self.eyeball_button.place_forget()
         self.army_image_place()
         self.Entry_1.config(show='')
+        self.volunteer_instructions_label.place(relx=.01, rely=.05)
 
-        place_object(self.volunteer_instructions_button, .27, .5)
+        place_object(self.volunteer_instructions_button, .458, .3)
 
         self.Button_1.configure(text="Make A New Bag", background=self._fgcolor, font=(self._font, self._font_medium),
                                 command=lambda: self.make_bag_screen(), activebackground=self._activebgcolor, padx=0)
@@ -922,6 +922,7 @@ class StartGui(tk.Tk):
         self.Entry_var_1.set('')
 
     def admin_message_configure(self):
+        self.volunteer_instructions_label.place(relx=.01, rely=.05)
         self.previous_view = "volunteer_instructions_screen"
         self.Entry_var_1.set('')
 
@@ -1050,6 +1051,17 @@ class StartGui(tk.Tk):
         Entry_2 : Number of Theoretical bags to calculate, with Entry_var_2 default value of ''
         '''
         self.clear_user_screen()
+
+        self.food_bag_contents_title.configure(padx=20, pady=15)
+        self.food_bag_contents_title.place(relx=.01, rely=.5)
+
+        self.food_bag_contents = ''
+        for key, value in self.d.items():
+            if self.d[key]['itemsperbag'] > 0:
+                self.food_bag_contents += str(self.d[key]['item']) + ': ' + str(self.d[key]['itemsperbag']) + '\n'
+
+        ToolTip(self.food_bag_contents_title, self._font, self.food_bag_contents, delay=0.0)
+
         # calculate max number of bag that can be made now
         # get the lowest ratio (amount / itmesperbag)
         self.calculate_max_bags()
@@ -2026,6 +2038,7 @@ class StartGui(tk.Tk):
         self.clear_substitutions_page()
         self.clear_admin_screen()
         self.clear_admin_message_configure()
+        self.volunteer_instructions_label.place_forget()
 
     # clear list boxes
     def clear_list_box(self):
@@ -2053,6 +2066,7 @@ class StartGui(tk.Tk):
 
         self.Entry_1.place_forget()
         self.Entry_2.place_forget()
+        self.food_bag_contents_title.place_forget()
 
     # clears user screen
     def clear_user_screen(self):
@@ -2835,6 +2849,7 @@ class StartGui(tk.Tk):
         Button_3 : choose_an_item_to_delete_button_cmd
         '''
         # reuse select item code from manual entry
+        self.volunteer_instructions_label.place_forget()
         self.view_inventory_one_list_box(self.d, 'middle')
         self.list_box_2.place_forget()
         self.list_box_2_label.place_forget()
@@ -3224,7 +3239,7 @@ class ToolTip(tk.Toplevel):
             self.withdraw()
             self.visible = 1
         # Offset the ToolTip 10x10 pixes southwest of the pointer
-        self.geometry('+%i+%i' % (event.x_root + 10, event.y_root - 350))
+        self.geometry('+%i+%i' % (event.x_root + 10, event.y_root ))
         try:
             # Try to call the message function.  Will not change
             # the message if the message function is None or
