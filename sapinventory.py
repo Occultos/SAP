@@ -976,6 +976,16 @@ class StartGui(tk.Tk):
         self.Label_3.configure(text="Message updated", fg='blue')
         self.Label_3.place(relx=0.785, rely=0.325)
 
+        self.volunteer_instructions_ToolTip_update()
+
+    def volunteer_instructions_ToolTip_update(self):
+        self.volunteer_instructions_label.destroy()
+        self.volunteer_instructions_label = tk.Label(self, text="Volunteer Instructions",
+                                                     background='#c1bcf5', font=(self._font, self._font_medium))
+        self.volunteer_instructions_label.configure(padx=20, pady=15)
+        self.volunteer_instructions_label.place(relx=.01, rely=.05)
+        ToolTip(self.volunteer_instructions_label, self._font, self.admin_message, delay=0.0)
+
     # made a bag
     def made_a_bag_screen(self):
         '''
@@ -1037,6 +1047,20 @@ class StartGui(tk.Tk):
         except Exception as e:
             print("error in opening food.txt : lower_inventory_new " + str(e))
 
+    def food_bag_contents_title_ToolTip_update(self):
+        self.food_bag_contents_title.destroy()
+        self.food_bag_contents_title = tk.Label(self, text="What is in a Bag",
+                                                background='#c1bcf5', font=(self._font, self._font_medium))
+        self.food_bag_contents_title.configure(padx=20, pady=15)
+        self.food_bag_contents_title.place(relx=.01, rely=.5)
+
+        self.food_bag_contents = ''
+        for key, value in self.d.items():
+            if self.d[key]['itemsperbag'] > 0:
+                self.food_bag_contents += str(self.d[key]['item']) + ': ' + str(self.d[key]['itemsperbag']) + '\n'
+
+        ToolTip(self.food_bag_contents_title, self._font, self.food_bag_contents, delay=0.0)
+
     # make bag screen
     def make_bag_screen(self):
         '''
@@ -1051,16 +1075,7 @@ class StartGui(tk.Tk):
         Entry_2 : Number of Theoretical bags to calculate, with Entry_var_2 default value of ''
         '''
         self.clear_user_screen()
-
-        self.food_bag_contents_title.configure(padx=20, pady=15)
-        self.food_bag_contents_title.place(relx=.01, rely=.5)
-
-        self.food_bag_contents = ''
-        for key, value in self.d.items():
-            if self.d[key]['itemsperbag'] > 0:
-                self.food_bag_contents += str(self.d[key]['item']) + ': ' + str(self.d[key]['itemsperbag']) + '\n'
-
-        ToolTip(self.food_bag_contents_title, self._font, self.food_bag_contents, delay=0.0)
+        self.food_bag_contents_title_ToolTip_update()
 
         # calculate max number of bag that can be made now
         # get the lowest ratio (amount / itmesperbag)
