@@ -44,7 +44,7 @@ class StartGui(tk.Tk):
         self.bind("<F11>", self.toggle_fullscreen)
         self.bind("<Escape>", self.end_fullscreen)
         self.title("Salvation Army Pantry Inventory")  # app title
-        self.iconbitmap(r'salogo_YMx_icon.ico')  # icon
+        self.iconbitmap(r'images/salogo_YMx_icon.ico')  # icon
         self._bgcolor = 'white'
         self._activebgcolor = '#e4fcdc'
         self._font = "Helvetica"
@@ -190,13 +190,13 @@ class StartGui(tk.Tk):
         self.registerbutton.configure(activebackground=self._activebgcolor, padx=45)
 
         # eyeball to show/hide passwords
-        self.eyeball_closed_photo = tk.PhotoImage(file="closedeye.png").subsample(9, 9)
-        self.eyeball_open_photo = tk.PhotoImage(file="openeye.png").subsample(9, 9)
+        self.eyeball_closed_photo = tk.PhotoImage(file="images/closedeye.png").subsample(9, 9)
+        self.eyeball_open_photo = tk.PhotoImage(file="images/openeye.png").subsample(9, 9)
 
         self.eyeball_button = tk.Button(self, image=self.eyeball_closed_photo, text='closed',
                                         command=lambda: self.swap_eyeball())
         # bag photo
-        self.food_bag_photo = tk.PhotoImage(file="foodbag.png").subsample(2, 2)
+        self.food_bag_photo = tk.PhotoImage(file="images/foodbag.png").subsample(2, 2)
 
         # =================================================================================
         # buttons in user add items screen
@@ -426,7 +426,7 @@ class StartGui(tk.Tk):
         # ======================================================================================
         #                                         SA army logo - INIT
         # ======================================================================================
-        self.login_army_logo = tk.PhotoImage(file="SA_doing_the_most_good.png").subsample(3, 3)
+        self.login_army_logo = tk.PhotoImage(file="images/SA_doing_the_most_good.png").subsample(3, 3)
         self.login_army_label = tk.Label(self, image=self.login_army_logo)
         self.image = self.login_army_logo  # save a reference through garbarge pickup
 
@@ -645,14 +645,14 @@ class StartGui(tk.Tk):
         place_object(self.admin_email_label, .58, .9275)
         
         try:
-            if not os.path.isfile("changelog.txt"):
-                with open("changelog.txt", "a+") as f:
+            if not os.path.isfile("text/changelog.txt"):
+                with open("text/changelog.txt", "a+") as f:
                     f.write("Change Log" + '\n==============================================================\n')
         except Exception as e:
             print("error creating changelog " + str(e))
         try:
-            if os.path.isfile("changelog.txt"):
-                with open("changelog.txt", "a+") as f:
+            if os.path.isfile("text/changelog.txt"):
+                with open("text/changelog.txt", "a+") as f:
                     f.write(self.changelog_text)
                     f.write('==============================================================\n')
         except Exception as e:
@@ -663,7 +663,7 @@ class StartGui(tk.Tk):
             yag = yagmail.SMTP('sanantoniopantrynoreply@gmail.com', emailpw)
             contents = [
                 "Sent via SAP inventory program. Do not reply",
-                "You can find current changelog attached.", 'changelog.txt']
+                "You can find current changelog attached.", 'text/changelog.txt']
             yag.send(self.email_add.get(), 'Food Inventory', contents)
             self.changelog_text = self.changelog_text + '\tEmail sent to : ' + \
                                   self.email_add.get() + ' : changelog status\n'
@@ -695,7 +695,7 @@ class StartGui(tk.Tk):
             yag = yagmail.SMTP('sanantoniopantrynoreply@gmail.com', emailpw)
             contents = [
                 "Sent via SAP inventory program. Do not reply",
-                "You can find current inventory status attached.", 'food_status.txt']
+                "You can find current inventory status attached.", 'text/food_status.txt']
             yag.send(self.email_add.get(), 'Food Inventory', contents)
             self.changelog_text = self.changelog_text + '\tEmail sent to : ' + \
                                   self.email_add.get() + ' : inventory levels\n'
@@ -856,7 +856,7 @@ class StartGui(tk.Tk):
 
     def default_admin_message(self):
         try:
-            with open('admin_message.txt', 'r+') as file:
+            with open('text/admin_message.txt', 'r+') as file:
                 self.admin_message = file.read()
         except Exception as e:
             print("admin_message read" + str(e))
@@ -871,7 +871,7 @@ class StartGui(tk.Tk):
 
         self.textBox.delete('1.0', END)
         self.textBox.insert(INSERT, self.admin_message)
-        self.textBox.place(relx=0.05, rely=0.35)
+        self.textBox.place(relx=0.05, rely=0.30)
         self.textBox.config(state=DISABLED)
 
         self.Label_2.configure(text="Admin Password", font=(self._font, self._font_big), fg='black')
@@ -904,7 +904,7 @@ class StartGui(tk.Tk):
 
         ready_to_login = False
         try:
-            with open('username_password_file.txt', "a+") as readf:
+            with open('text/username_password_file.txt', "a+") as readf:
                 readf.seek(0, os.SEEK_SET)
                 for line in readf:
                     tokens = re.split(" ", line.strip())
@@ -934,7 +934,7 @@ class StartGui(tk.Tk):
         #self.Label_1.configure(text="Enter new message\t\t\tDon't let words hit end of box! ~ 75 letters", font=(self._font, self._font_big), image='')
         self.Label_1.configure(text="Enter new message", font=(self._font, self._font_big), image='')
 
-        self.Label_1.place(relx=0.05, rely=0.3)
+        self.Label_1.place(relx=0.05, rely=0.25)
 
         self.Label_2.configure(text="To modify what is in a bag\n go to Edit Inventory and \nmodify itemsperbag",
                                font=(self._font, self._font_big), fg='red')
@@ -948,7 +948,7 @@ class StartGui(tk.Tk):
 
         self.textBox.delete('1.0', END)
         self.textBox.insert(INSERT, self.admin_message)
-        self.textBox.place(relx=0.05, rely=0.35)
+        self.textBox.place(relx=0.05, rely=0.30)
         self.textBox.config(state='normal')
 
         self.Button_1.place_forget()
@@ -975,7 +975,7 @@ class StartGui(tk.Tk):
                 self.Label_3.place(relx=0.73, rely=0.3)
                 return'''
         try:
-            with open('admin_message.txt', 'w+') as file:
+            with open('text/admin_message.txt', 'w+') as file:
                 file.write(self.inputValue)
         except Exception as e:
             print("admin_message write" + str(e))
@@ -1038,8 +1038,8 @@ class StartGui(tk.Tk):
         '''
         count = 0
         try:
-            totalLines = len(open("food.txt").readlines())
-            with open('food.txt', 'w') as f:
+            totalLines = len(open("text/food.txt").readlines())
+            with open('text/food.txt', 'w') as f:
                 print("item, amount, lowlevel, itemsperbag, barcode", file=f)
                 for p_id, p_info in self.d.items():
                     self.d[p_id]['amount'] -= self.d[p_id]['itemsperbag'] * self.numberofBags
@@ -1176,7 +1176,7 @@ class StartGui(tk.Tk):
                     self.list_box_1.insert(box1count, item_id + ' : ' + str(item_info))
                 try:
                     # Printing to a text file for a 'hard' copy, rewrites to same file every submit
-                    with open('theoretical.txt', 'w') as f:
+                    with open('text/theoretical.txt', 'w') as f:
                         print(
                             f"Amount and items needed for {int(self.Entry_var_2.get())} bags\nThis is after current stocks goes to zero\nitem: amount\n",
                             file=f)
@@ -1275,7 +1275,7 @@ class StartGui(tk.Tk):
             self.make_bag_screen()
             self.Label_4.configure(font=(self._font, self._font_medium), text="Too many missing items", fg='red')
             self.Label_4.place(relx=.665, rely=.75)
-            PlaySound("Wilhelm_Scream.wav", SND_FILENAME)
+            PlaySound("audio/Wilhelm_Scream.wav", SND_FILENAME)
             return
 
         # Creates the needed amount of checkboxes with text, image, and checkbox variable for d_outofstock
@@ -1341,7 +1341,7 @@ class StartGui(tk.Tk):
         # notevenOne is for detecting if at least one checkbox was selected on submit
 
         try:
-            totalLines = len(open("food.txt").readlines())
+            totalLines = len(open("text/food.txt").readlines())
             count = 0
         except Exception as e:
             print("error in reading food.txt: substitute_foods_submit : total lines : " + str(e))
@@ -1371,7 +1371,7 @@ class StartGui(tk.Tk):
         else:
             try:
                 # Updates food.txt after making the substitute bag
-                with open('food.txt', 'w') as f:
+                with open('text/food.txt', 'w') as f:
                     print("item, amount, lowlevel, itemsperbag, barcode", file=f)
                     for p_id, p_info in self.d.items():
                         self.beautifulString(str(p_id))
@@ -1398,7 +1398,7 @@ class StartGui(tk.Tk):
         # makes excel csv for viewing, some barcodes can end up in si
         count = 0
         try:
-            totalLines = len(open("food.txt").readlines())
+            totalLines = len(open("text/food.txt").readlines())
             with open("food.csv", "w") as f:
                 print(
                     "'Name of food', 'Current Amount', 'Low Level Threshold', 'Items per food bag', 'List of Barcodes'\n",
@@ -1416,10 +1416,10 @@ class StartGui(tk.Tk):
     def make_food_txt(self):
         count = 0
         try:
-            totalLines = len(open("food.txt").readlines())
+            totalLines = len(open("text/food.txt").readlines())
             if self.Entry_var_1.get() == 'YES':
                 totalLines -= 1
-            with open("food.txt", "w") as f:
+            with open("text/food.txt", "w") as f:
                 print("item, amount, lowlevel, itemsperbag, barcode", file=f)
                 for p_id, p_info in self.d.items():
                     self.beautifulString(str(p_id))
@@ -1489,11 +1489,11 @@ class StartGui(tk.Tk):
             intcheck = int(item_to_find)
             if qty.isnumeric() and item_to_find.isnumeric():
                 try:
-                    totalLines = len(open("food.txt").readlines())
-                    shutil.move("food.txt", "food.txt" + "~")
-                    with open("food.txt", "w+") as dest:
+                    totalLines = len(open("text/food.txt").readlines())
+                    shutil.move("text/food.txt", "text/food.txt" + "~")
+                    with open("text/food.txt", "w+") as dest:
                         dest.seek(0, os.SEEK_SET)
-                        with open("food.txt" + "~", "r+") as src:
+                        with open("text/food.txt" + "~", "r+") as src:
                             src.seek(0, os.SEEK_SET)
                             newitem = True
                             count = 0
@@ -1568,7 +1568,7 @@ class StartGui(tk.Tk):
                     self.view_inventory_one_list_box(self.d, 'left')
                     if self.notFound.__len__()>0:
                         self.add_barcode_to_existing()
-                        PlaySound("bcNotfound1.wav", SND_FILENAME)
+                        PlaySound("audio/bcNotfound1.wav", SND_FILENAME)
                 except Exception as e:
                     print("error writing to food file : " + str(e))
             else:
@@ -1653,9 +1653,9 @@ class StartGui(tk.Tk):
             # do the appending
             self.beautifulString(self.item_to_be_changed)
             try:
-                s = open("food.txt").read()
+                s = open("text/food.txt").read()
                 s = s.replace(self.beautiful_string, self.beautiful_string + ", " + str(self.barcode_to_be_added))
-                f = open("food.txt", 'w')
+                f = open("text/food.txt", 'w')
                 f.write(s)
                 self.changelog_text = self.changelog_text + '\tBarcode: ' + \
                                       str(self.barcode_to_be_added) + ' associated with ' + \
@@ -2197,7 +2197,7 @@ class StartGui(tk.Tk):
         monthday = str(printlocaltime.tm_mon) + "/" + str(printlocaltime.tm_mday) + " "
         currenttime = monthday + str(printlocaltime.tm_hour) + ":" + str(printlocaltime.tm_min)
         try:
-            with open("food_status.txt", "w") as dest:
+            with open("text/food_status.txt", "w") as dest:
                 for item_id, item_info in d.items():
                     if item_info['amount'] <= 0:
                         out_of_line += item_id + '\n'
@@ -2226,7 +2226,7 @@ class StartGui(tk.Tk):
 
     def make_dict(self, d):
         try:
-            with open("food.txt", "r+") as f:
+            with open("text/food.txt", "r+") as f:
                 f.seek(0, os.SEEK_SET)
                 next(f)
                 for line in f:
@@ -2269,9 +2269,9 @@ class StartGui(tk.Tk):
         # when admin is modifying existing item
         if self.isModifying == "is_admin_modifying":
             try:
-                s = open("food.txt").read()
+                s = open("text/food.txt").read()
                 s = s.replace(self.beautiful_string, newItem)
-                f = open("food.txt", 'w')
+                f = open("text/food.txt", 'w')
                 f.write(s)
                 self.inventory_comparison_after = str(newItem)
                 self.compare_before_after_changes_admin()
@@ -2290,7 +2290,7 @@ class StartGui(tk.Tk):
         else:
             # Basic add new item after all checks pass
             try:
-                with open("food.txt", "a") as f:
+                with open("text/food.txt", "a") as f:
                     f.write("\n" + newItem)
                     self.changelog_text = self.changelog_text + '\tnew item: name, amount, lowlevel, itemsperbag, barcode\n'
                     self.changelog_text = self.changelog_text + '\t\t' + \
@@ -2360,7 +2360,7 @@ class StartGui(tk.Tk):
         self.clear_list_box()
         self.view_changelog_text.delete('1.0', END)
         try:
-            with open("changelog.txt", 'r') as f:
+            with open("text/changelog.txt", 'r') as f:
                 self.view_changelog_text.insert(INSERT, f.read())
         except Exception as e:
             print("error viewing changelog : "+str(e))
@@ -2370,14 +2370,14 @@ class StartGui(tk.Tk):
         #print(self.inventory_comparison_before)
         #print(self.inventory_comparison_after)
         try:
-            if not os.path.isfile("changelog.txt"):
+            if not os.path.isfile("text/changelog.txt"):
                 with open("changelog.txt", "a+") as f:
                     f.write("Change Log" + '\n==============================================================\n')
         except Exception as e:
             print("error creating changelog " + str(e))
         try:
-            if os.path.isfile("changelog.txt"):
-                with open("changelog.txt", "a+") as f:
+            if os.path.isfile("text/changelog.txt"):
+                with open("text/changelog.txt", "a+") as f:
                     f.write(self.changelog_text)
                     f.write('==============================================================\n')
         except Exception as e:
@@ -2731,11 +2731,11 @@ class StartGui(tk.Tk):
     def confirm_inventory_manual_button_cmd(self):
         try:
             parsed_name_to_be_changed = re.split(":", self.item_to_be_changed.strip())[0]
-            totalLines = len(open("food.txt").readlines())
-            shutil.move("food.txt", "food.txt" + "~")
-            with open("food.txt", "w+") as dest:
+            totalLines = len(open("text/food.txt").readlines())
+            shutil.move("text/food.txt", "text/food.txt" + "~")
+            with open("text/food.txt", "w+") as dest:
                 dest.seek(0, os.SEEK_SET)
-                with open("food.txt" + "~", "r+") as src:
+                with open("text/food.txt" + "~", "r+") as src:
                     src.seek(0, os.SEEK_SET)
                     count = 0
                     for line in src:
@@ -2791,10 +2791,10 @@ class StartGui(tk.Tk):
             user_to_be_deleted = self.list_box_2.get(sel)
             self.list_box_2.delete(sel)
             try:
-                shutil.move("username_password_file.txt", "username_password_file.txt" + "~")
-                with open("username_password_file.txt", "w+") as dest:
+                shutil.move("text/username_password_file.txt", "text/username_password_file.txt" + "~")
+                with open("text/username_password_file.txt", "w+") as dest:
                     dest.seek(0, os.SEEK_SET)
-                    with open("username_password_file.txt" + "~", "r+") as src:
+                    with open("text/username_password_file.txt" + "~", "r+") as src:
                         src.seek(0, os.SEEK_SET)
                         for line in src:
                             if not re.match(r'^\s*$', line):
@@ -2920,7 +2920,7 @@ class StartGui(tk.Tk):
         self.list_box_2_label.config(font=(self._font, self._font_medium), text="USERS", fg='black')
         box2count = 0
         try:
-            with open('username_password_file.txt', "r+") as readf:
+            with open('text/username_password_file.txt', "r+") as readf:
                 readf.seek(0, os.SEEK_SET)
                 for line in readf:
                     if not re.match(r'^\s*$', line):
@@ -3082,7 +3082,7 @@ class StartGui(tk.Tk):
         # check if username to register already exists
         else:
             try:
-                with open('username_password_file.txt', "r+") as readf:
+                with open('text/username_password_file.txt', "r+") as readf:
                     readf.seek(0, os.SEEK_SET)
                     for line in readf:
                         tokens = re.split(" ", line.strip())
@@ -3099,7 +3099,7 @@ class StartGui(tk.Tk):
 
             # add username to the username file
             try:
-                with open('username_password_file.txt', "a+") as writef:
+                with open('text/username_password_file.txt', "a+") as writef:
                     writef.write(self.username_info + " ")
                     writef.write(self.hash + "\n")
                     try:
@@ -3138,7 +3138,7 @@ class StartGui(tk.Tk):
         # check username and hashed password
         self.ready_to_login = False
         try:
-            with open('username_password_file.txt', "a+") as readf:
+            with open('text/username_password_file.txt', "a+") as readf:
                 readf.seek(0, os.SEEK_SET)
                 for line in readf:
                     tokens = re.split(" ", line.strip())
