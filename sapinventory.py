@@ -82,11 +82,9 @@ class StartGui(tk.Tk):
         self.list_k = []
         self.from_add_subtract = ''
         self.from_admin_message = False
-        self.admin_message = 'Thank you for volunteering.\nToday please put any food items for pallets \nonto back shelves.' \
-                             ' Once that is complete please\n restock the front shelves with items off the\n back shelves. When ' \
-                             'these task are complete please make emergency \nfood bags. At this time, add these additional\n items ' \
-                             'to all food bags: canned salmon\n and bean soup packages. Thank you!'
-        self.admin_message = '\n'.join(textwrap.wrap(self.admin_message, 64))
+        self.admin_message = ''
+        self.default_admin_message()
+        #self.admin_message = '\n'.join(textwrap.wrap(self.admin_message, 64))
 
 
         # ============================================================================================
@@ -856,6 +854,13 @@ class StartGui(tk.Tk):
         # TODO: help labels
         # todo: confirm pw label
 
+    def default_admin_message(self):
+        try:
+            with open('admin_message.txt', 'r+') as file:
+                self.admin_message = file.read()
+        except Exception as e:
+            print("admin_message read" + str(e))
+
     def volunteer_instructions_screen(self):
         self.clear_user_screen()
         self.previous_view = "user_screen"
@@ -969,6 +974,12 @@ class StartGui(tk.Tk):
                 self.Label_3.configure(text="Don't let words hit end of box!", fg='red')
                 self.Label_3.place(relx=0.73, rely=0.3)
                 return'''
+        try:
+            with open('admin_message.txt', 'w+') as file:
+                file.write(self.inputValue)
+        except Exception as e:
+            print("admin_message write" + str(e))
+
         self.admin_message = self.inputValue
         self.clear_admin_message_configure()
         self.back_button_func(self.previous_view)
