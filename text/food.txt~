@@ -1,0 +1,18 @@
+item, amount, lowlevel, itemsperbag, barcode
+vegetable can, 93, 50, 4, 1000, 2000, 3000
+fruit can, 94, 50, 3, 1234
+meat item, 94, 50, 3, 6543, 6535
+soup can, 98, 50, 1, 1234234, 4532234
+spaghetti sauce can, 98, 50, 1, 67664, 34564, 999989, 165165
+tomato sauce can, 96, 50, 2, 2345
+bean cans, 98, 50, 1, 23456
+ravioli, 98, 50, 1, 23457, 6156, 46565, 6515
+peanut butter, 98, 50, 1, 2345866, 213231
+jelly, 98, 50, 1, 23459
+mac and cheeses, 96, 50, 2, 2345022
+rice bag, 98, 50, 1, 234587
+juice drink, 98, 50, 1, 234577
+snacks, 90, 50, 5, 456
+miscellaneous item, 98, 50, 1, 234566679, 65161
+cereal, 98, 50, 1, 234555
+large bag of nuts, 98, 50, 1, 66516

@@ -1,0 +1,21 @@
+Amount and items needed for 1001 bags
+This is after current stocks goes to zero
+item: amount
+
+vegetable can: 3911
+fruit can: 2909
+meat item: 2909
+soup can: 903
+spaghetti sauce can: 903
+tomato sauce can: 1906
+bean cans: 903
+ravioli: 903
+peanut butter: 903
+jelly: 903
+mac and cheeses: 1906
+rice bag: 903
+juice drink: 903
+snacks: 4915
+miscellaneous item: 903
+cereal: 903
+large bag of nuts: 903
