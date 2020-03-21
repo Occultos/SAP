@@ -1446,6 +1446,7 @@ class StartGui(tk.Tk):
         self.list_of_items_words = 'Inventory Changes\n'
         self.list_of_items_words = 'Inventory Changes\n\n'
         self.list_of_items_label.config(text=self.list_of_items_words)
+        self.Label_3.place_forget()
 
     def barcode_scanner_add_remove_button_cmd(self, direction):
         # TODO: add barcode & qty columns
@@ -1526,7 +1527,7 @@ class StartGui(tk.Tk):
                                                     self.list_of_items_words = 'Inventory Changes\n\n'
                                                 if int(self.barcode_scanner_amount.get()) > int(tokens[1]):
                                                     self.Label_3.config(
-                                                        text=f'Cannot subtract over {int(tokens[1])} for {tokens[0]}', fg='red')
+                                                        text=f'Cannot subtract past {int(tokens[1])} for {tokens[0]}', fg='red')
                                                     place_object(self.Label_3, .67, .25)
                                                 else:
                                                     self.Label_3.place_forget()
