@@ -335,13 +335,19 @@ class StartGui(tk.Tk):
         self.admin_email_inventory_button = tk.Button(self, text="Email inventory", background=self._fgcolor,
                                                       font=(self._font, self._font_medium),
                                                       command=lambda: self.email_entry(self.d))
-        self.admin_email_inventory_button.configure(activebackground=self._activebgcolor, padx=9)
+        self.admin_email_inventory_button.configure(activebackground=self._activebgcolor, padx=8)
 
         # send email
         self.admin_email_send_button = tk.Button(self, text="Send", background=self._fgcolor,
                                                  font=(self._font, self._font_medium),
                                                  command=lambda: self.admin_email_inventory(self.d))
         self.admin_email_send_button.configure(activebackground=self._activebgcolor)
+
+        # admin_email_partners_button
+        self.admin_email_partners_button = tk.Button(self, text="Email Partners", background=self._fgcolor,
+                                                      font=(self._font, self._font_medium),
+                                                      command=lambda: self.email_partners())
+        self.admin_email_partners_button.configure(activebackground=self._activebgcolor, padx=10)
 
         # make csv for excel
         self.make_csv_button = tk.Button(self, background=self._fgcolor, font=(self._font, self._font_medium),
@@ -614,6 +620,7 @@ class StartGui(tk.Tk):
             self.list_box_2.place_forget()
             self.list_box_2_label.place_forget()
             self.backup_button.place_forget()
+            self.clear_email_partners()
 
             self.Label_1.place_forget()
             self.Label_2.place_forget()
@@ -684,6 +691,137 @@ class StartGui(tk.Tk):
         self.admin_email_send_button.configure(command=lambda: self.admin_email_inventory(self.d))
         place_object(self.admin_email_send_button, .73, .9125)
         self.bind('<Return>', lambda x: self.admin_email_inventory(self.d))
+        self.email_box_update()
+        self.list_box_2.bind("<Double-Button-1>", self.on_double)
+
+    def email_partners(self):
+        self.clear_admin_screen()
+        self.clear_list_box()
+        self.previous_view = "admin_screen"
+        self.backup_button.place(relx=.02, rely=.9)
+        self.already_exist = False
+        self.Label_2.place_forget()
+        self.Label_2.place(relx=.6, rely=.3, anchor='center')
+        self.Label_2.configure(text='Modify Email Partners List', fg='Black')
+
+        self.email_box_update()
+
+        self.email_to_be_changed = self.list_box_2.curselection()
+        self.Entry_1.configure(width=30)
+        self.Entry_1.place(relx=.45, rely=.5)
+        self.Entry_var_1.set('')
+        self.list_box_2.bind("<Double-Button-1>", self.on_double)
+
+        self.button_select = ''
+        self.Button_1.configure(text="Edit Email", background=self._fgcolor, font=(self._font, self._font_medium),
+                                command=lambda *args: self.button_select_cmd("Edit"), activebackground=self._activebgcolor, padx=0)
+        place_object(self.Button_1, .45, .4)
+
+        self.Button_2.configure(text="Delete Email", background=self._fgcolor, font=(self._font, self._font_medium),
+                                command=lambda *args: self.button_select_cmd("Delete"),
+                                activebackground=self._activebgcolor, padx=0)
+        place_object(self.Button_2, .55, .4)
+
+        self.Button_3.configure(text="Add Email", background=self._fgcolor, font=(self._font, self._font_medium),
+                                command=lambda *args: self.button_select_cmd("Add"),
+                                activebackground=self._activebgcolor, padx=0)
+        place_object(self.Button_3, .67, .4)
+
+    def email_box_update(self):
+        self.list_box_2.place_forget()
+        self.list_box_2_label.place_forget()
+        self.list_box_2.delete(0, tk.END)
+        box2count = 0
+        with open('text/food_partners.txt') as food_partners:
+            for line in food_partners:
+                box2count += 1
+                self.list_box_2.insert(box2count, str(line).replace('\n', ''))
+        self.list_box_2.place(relx=.15, rely=.3, relwidth=.25, relheight=.6)
+
+        self.list_box_2_label.configure(text='            Double click to select', font=(self._font, self._font_medium))
+        self.list_box_2_label.place(relx=.15, rely=.25)
+
+    def button_select_cmd(self, words):
+        self.Label_2.place_forget()
+        self.Label_2.place(relx=.6, rely=.3, anchor='center')
+
+        if self.email_to_be_changed != () or words == "Add":
+            self.button_select = words
+            if self.button_select == "Edit":
+                try:
+                    with open("text/food_partners.txt", "r") as f:
+                        lines = f.readlines()
+                    with open("text/food_partners.txt", "w") as f:
+                        for line in lines:
+                            if line.strip("\n") != self.email_to_be_changed:
+                                f.write(line)
+                            else:
+                                f.write(str(self.Entry_var_1.get() + '\n'))
+                except Exception as e:
+                    print("error in opening food_partners.txt : delete email : replace" + str(e))
+                if str(self.Entry_var_1.get()) == '':
+                    self.Label_2.configure(text='Select or Enter Email', fg='red')
+                else:
+                    self.Label_2.configure(text=f'Edited Email: {str(self.email_to_be_changed)}\n to {str(self.Entry_var_1.get())}', fg='blue')
+                self.Entry_var_1.set('')
+
+            elif self.button_select == "Delete":
+                try:
+                    with open("text/food_partners.txt", "r") as f:
+                        lines = f.readlines()
+                    with open("text/food_partners.txt", "w") as f:
+                        for line in lines:
+                            if line.strip("\n") != str(self.Entry_var_1.get()):
+                                f.write(line)
+                except Exception as e:
+                    print("error in opening food_partners.txt : delete email : replace" + str(e))
+                if str(self.Entry_var_1.get()) == '':
+                    self.Label_2.configure(text='Select or Enter Email', fg='red')
+                else:
+                    self.Label_2.configure(text=f'Deleted Email: {str(self.Entry_var_1.get())}', fg='blue')
+                self.Entry_var_1.set('')
+
+            elif self.button_select == "Add":
+                try:
+                    with open('text/food_partners.txt') as food_partners:
+                        for line in food_partners:
+                            if str(self.Entry_var_1.get()).replace('\n', '') == str(line).replace('\n', ''):
+                                self.already_exist = True
+                except Exception as e:
+                    print('add email' + str(e))
+
+                if str(self.Entry_var_1.get()) == '':
+                    self.Label_2.configure(text='Select or Enter Email', fg='red')
+                elif self.already_exist:
+                    self.Label_2.configure(text='Already exist', fg='red')
+                    self.already_exist = False
+                else:
+                    with open('text/food_partners.txt', 'a+') as food_partners:
+                        food_partners.write('\n' + str(self.Entry_var_1.get()))
+                        self.Label_2.configure(text=f'Added Email: {str(self.Entry_var_1.get())}', fg='blue')
+                        self.Entry_var_1.set('')
+        else:
+            self.Label_2.configure(text='Select or Enter Email', fg='red')
+        self.email_box_update()
+
+    def on_double(self, event):
+        try:
+            widget = event.widget
+            self.email_to_be_changed = widget.get(widget.curselection()[0])
+            self.Entry_var_1.set(str(self.email_to_be_changed))
+            self.email_add.set(str(self.email_to_be_changed))
+            self.Label_2.place_forget()
+            self.unbind('<Double-Button-1>')
+        except Exception as e:
+            print("on_double  " + str(e))
+
+    def clear_email_partners(self):
+        self.backup_button.place_forget()
+        self.list_box_2.place_forget()
+        self.Entry_1.place_forget()
+        self.list_box_2_label.place_forget()
+        self.Button_1.place_forget()
+        self.Button_2.place_forget()
 
     def admin_email_inventory(self, d):
         self.unbind_return_func()
@@ -740,12 +878,13 @@ class StartGui(tk.Tk):
         self.eyeball_button.place_forget()
         self.from_admin_message = False
 
-        place_object(self.view_changelog_button, .845, .835)                         #view changelog
+        place_object(self.view_changelog_button, .845, .835)                        #view changelog
         place_object(self.display_inventory_high_low_outofstock_button, .845, .77)  #show inventory
         place_object(self.display_users_button, .845, .705)                         #show users
         place_object(self.edit_inventory_button, .845, .64)                         #edit inventory
         place_object(self.email_changelog_button, .845, .51)                        #email changelog
-        place_object(self.admin_email_inventory_button, .845, .44)                 #email inventory
+        place_object(self.admin_email_inventory_button, .845, .44)                  #email inventory
+        place_object(self.admin_email_partners_button, .845, .37)                   #email_partners_button
 
         # add export to csv button
         self.make_csv_button.configure(text="Make Excel .csv", padx=3)
@@ -2041,6 +2180,8 @@ class StartGui(tk.Tk):
         self.clear_list_box()
         self.enter_email_add_label.place_forget()
         self.enter_email_add_entry.place_forget()
+        self.list_box_2_label.place_forget()
+        self.list_box_2.place_forget()
         self.admin_email_send_button.place_forget()
         # remove buttons from manual entry
         self.submit_changes_button.place_forget()
@@ -2108,6 +2249,9 @@ class StartGui(tk.Tk):
 
     def clear_admin_screen(self):
         # self.admin_button.place_forget()
+        self.email_add.set('')
+        self.list_box_2_label.place_forget()
+        self.list_box_2.place_forget()
         self.admin_email_inventory_button.place_forget()
         self.display_inventory_high_low_outofstock_button.place_forget()
         self.display_users_button.place_forget()
@@ -2121,6 +2265,7 @@ class StartGui(tk.Tk):
         self.email_changelog_button.place_forget()
         self.view_changelog_button.place_forget()
         self.admin_email_label.place_forget()
+        self.admin_email_partners_button.place_forget()
         self.clear_changelog()
 
     # clear remove items screen
@@ -2357,6 +2502,8 @@ class StartGui(tk.Tk):
         self.display_users_button.config(text="View Users")
         self.display_inventory_high_low_outofstock_button.config(text="View Inventory")
         self.delete_user_button.place_forget()
+        self.list_box_2.place_forget()
+        self.list_box_2_label.place_forget()
         self.clear_list_box()
         self.view_changelog_text.delete('1.0', END)
         try:
@@ -2814,6 +2961,8 @@ class StartGui(tk.Tk):
         self.view_changelog_text.place_forget()
         self.enter_email_add_label.place_forget()
         self.enter_email_add_entry.place_forget()
+        self.list_box_2_label.place_forget()
+        self.list_box_2.place_forget()
         self.admin_email_send_button.place_forget()
 
     # swap display inventory button
@@ -3153,7 +3302,7 @@ class StartGui(tk.Tk):
         self.clear_verify()
 
         # TODO: change login to 1, 2, or 3
-        login = 1
+        login = 2
         if login == 1:
             self.user_screen()
         elif login == 2:
