@@ -961,6 +961,7 @@ class StartGui(tk.Tk):
         self.army_image_place()
         self.eyeball_button.place_forget()
         self.from_admin_message = False
+        self.volunteer_instructions_label.place_forget()
 
         place_object(self.view_changelog_button, .845, .835)  # view changelog
         place_object(self.display_inventory_high_low_outofstock_button, .845, .77)  # show inventory
@@ -996,6 +997,7 @@ class StartGui(tk.Tk):
         self.army_image_place()
         self.Entry_1.config(show='')
         self.volunteer_instructions_label.place(relx=.01, rely=.05)
+        self.volunteer_instructions_ToolTip_update()
 
         # place_object(self.volunteer_instructions_button, .458, .3)
 
@@ -1198,7 +1200,7 @@ class StartGui(tk.Tk):
         self.volunteer_instructions_screen()
         self.Label_3.configure(text="Message updated", fg='blue')
         self.Label_3.place(relx=0.05, rely=0.25)
-        self.volunteer_instructions_ToolTip_update()
+
 
     def volunteer_instructions_ToolTip_update(self):
         self.volunteer_instructions_label.destroy()
@@ -3398,7 +3400,7 @@ class StartGui(tk.Tk):
         self.clear_verify()
 
         # TODO: change login to 1, 2, or 3
-        login = 2
+        login = 3
         if login == 1:
             self.default_admin_message()
             self.user_screen()
