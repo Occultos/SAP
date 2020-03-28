@@ -13,6 +13,11 @@ from winsound import *
 import os.path
 from os import path
 import textwrap
+import smtplib
+import imaplib
+import email
+import datetime
+from datetime import datetime
 
 
 # git notes:
@@ -83,9 +88,11 @@ class StartGui(tk.Tk):
         self.from_add_subtract = ''
         self.from_admin_message = False
         self.admin_message = ''
-        self.default_admin_message()
-        #self.admin_message = '\n'.join(textwrap.wrap(self.admin_message, 64))
+        self.set_default_times()
 
+        # moved to login screen
+        # self.default_admin_message()
+        # self.admin_message = '\n'.join(textwrap.wrap(self.admin_message, 64))
 
         # ============================================================================================
         #                                    Universal Buttons
@@ -167,7 +174,7 @@ class StartGui(tk.Tk):
         # login button
         self.loginbutton = tk.Button(self, text="Login",
                                      background=self._fgcolor, font=(self._font, self._font_big),
-                                     command=lambda: self.login_verify())
+                                     command=lambda: self.login_load_screen())
         self.loginbutton.configure(activebackground=self._activebgcolor, padx=66)
 
         # back button to return to previous screen
@@ -345,8 +352,8 @@ class StartGui(tk.Tk):
 
         # admin_email_partners_button
         self.admin_email_partners_button = tk.Button(self, text="Email Partners", background=self._fgcolor,
-                                                      font=(self._font, self._font_medium),
-                                                      command=lambda: self.email_partners())
+                                                     font=(self._font, self._font_medium),
+                                                     command=lambda: self.email_partners())
         self.admin_email_partners_button.configure(activebackground=self._activebgcolor, padx=10)
 
         # make csv for excel
@@ -368,10 +375,10 @@ class StartGui(tk.Tk):
         self.email_changelog_button.configure(activebackground=self._activebgcolor, padx=5)
 
         # volunteer instructions
-        self.volunteer_instructions_button = tk.Button(self, text="Volunteer Instructions", background=self._fgcolor,
-                                                font=(self._font, self._font_smallish),
-                                                command=lambda: self.volunteer_instructions_screen())
-        self.volunteer_instructions_button.configure(activebackground=self._activebgcolor)
+        self.volunteer_instructions_button = tk.Button(self, text="Volunteer\nInstructions", background=self._fgcolor,
+                                                       font=(self._font, self._font_smallish),
+                                                       command=lambda: self.volunteer_instructions_screen())
+        self.volunteer_instructions_button.configure(activebackground=self._activebgcolor, padx=36)
 
         self.textBox = tk.Text(self, wrap=WORD, height=14, width=64, font=(self._font, self._font_big))
         # =============================================================================
@@ -397,7 +404,7 @@ class StartGui(tk.Tk):
                                               text="food.txt file missing")
 
         self.volunteer_instructions_label = tk.Label(self, text="Volunteer Instructions",
-                                   background='#c1bcf5', font=(self._font, self._font_medium))
+                                                     background='#c1bcf5', font=(self._font, self._font_medium))
         self.volunteer_instructions_label.configure(padx=20, pady=15)
         self.food_bag_contents_title = tk.Label(self, text="What is in a Bag",
                                                 background='#c1bcf5', font=(self._font, self._font_medium))
@@ -514,6 +521,10 @@ class StartGui(tk.Tk):
     #                                           MISC Functions
     # ======================================================================================
 
+    def set_default_times(self):
+        self.updated_time = '2020-01-01 00:00:00'
+        self.updated_time = datetime.strptime(self.updated_time, '%Y-%m-%d %H:%M:%S')
+
     # hides or shows password
     def swap_eyeball(self):
         eyeball_text = self.eyeball_button.cget('text')
@@ -620,7 +631,10 @@ class StartGui(tk.Tk):
             self.list_box_2.place_forget()
             self.list_box_2_label.place_forget()
             self.backup_button.place_forget()
+            self.clear_volunteer_instructions_screen()
             self.clear_email_partners()
+            self.clear_email_entry_inventory()
+            self.unbind_return_func()
 
             self.Label_1.place_forget()
             self.Label_2.place_forget()
@@ -631,14 +645,74 @@ class StartGui(tk.Tk):
             self.Button_2.place_forget()
             self.Button_3.place_forget()
 
+            self.display_users_button.config(text="View Users")
+            self.display_inventory_high_low_outofstock_button.config(text="View Inventory")
+
     # ====================================================================================
     #                                   EMAIL Functions
     # ===================================================================================
 
+    def read_email(self):
+        try:
+            ORG_EMAIL = "@gmail.com"
+            FROM_EMAIL = "volunteerinstructions" + ORG_EMAIL
+            FROM_PWD = "1qaz!QAZ1qaz!QAZ"
+            SMTP_SERVER = "imap.gmail.com"
+            SMTP_PORT = 993
+            mail = imaplib.IMAP4_SSL(SMTP_SERVER)
+            mail.login(FROM_EMAIL, FROM_PWD)
+            mail.select('inbox')
+            typ, data = mail.search(None, 'ALL')
+            mail_ids = data[0]
+            id_list = mail_ids.split()
+            first_email_id = int(id_list[0])
+            latest_email_id = id_list[-1]
+            typ, data = mail.fetch(latest_email_id, '(RFC822)')
+
+            for response_part in data:
+                if isinstance(response_part, tuple):
+                    msg = email.message_from_string(response_part[1].decode('utf-8'))
+                    email_subject = msg['subject']
+                    email_from = msg['from']
+                    self.email_time = msg['Date']
+                    self.email_msg = ''
+                    self.email_msg = 'Date: ' + str(self.email_time) + '\n' + 'From: ' + str(email_from) + '\n' + \
+                                     'Subject : ' + str(email_subject) + '\n' + '\n'
+
+                    # email date & time of most recent email
+                    self.email_datetime = self.email_time[:-6]
+                    self.email_date_time = datetime.strptime(self.email_datetime, '%a, %d %b %Y %H:%M:%S')
+                    # just the day of email
+                    self.email_day = str(self.email_date_time).split(" ")[0]
+                    self.email_day = datetime.strptime(self.email_day, '%Y-%m-%d')
+
+                    if msg.is_multipart():
+                        for payload in msg.get_payload():
+                            if payload.get_payload()[0] == '<':
+                                continue
+                            self.email_msg = self.email_msg + payload.get_payload()
+                    else:
+                        print("Does this else statment do anything?")
+                        print(msg.get_payload())
+
+
+        except Exception as e:
+            print("Error in reading email : vars : " + str(e))
+
+    def set_instructions(self):
+        pass
+
     def email_changelog_entry(self):
         self.make_dict(self.d)
+        self.clear_volunteer_instructions_screen()
+        self.display_users_button.config(text="View Users")
+        self.delete_user_button.place_forget()
+        self.clear_list_box()
+        self.display_inventory_high_low_outofstock_button.config(text="View Inventory")
+
         self.admin_email_label.place_forget()
-        self.enter_email_add_label.configure(text='Enter Email Address\nto send changelog', font=(self._font, self._font_big))
+        self.enter_email_add_label.configure(text='Enter Email Address\nto send changelog',
+                                             font=(self._font, self._font_big))
         place_object(self.enter_email_add_label, .2, .9175)
         place_object(self.enter_email_add_entry, .3675, .92, True)
         self.admin_email_send_button.configure(command=lambda: self.admin_email_changelog(self.d))
@@ -650,7 +724,7 @@ class StartGui(tk.Tk):
         self.print_dict_to_file(d)
         self.admin_email_label.configure(text="Changelog Email Sent")
         place_object(self.admin_email_label, .58, .9275)
-        
+
         try:
             if not os.path.isfile("text/changelog.txt"):
                 with open("text/changelog.txt", "a+") as f:
@@ -664,7 +738,7 @@ class StartGui(tk.Tk):
                     f.write('==============================================================\n')
         except Exception as e:
             print("error updating changelog " + str(e))
-            
+
         emailpw = self.password_info
         try:
             yag = yagmail.SMTP('sanantoniopantrynoreply@gmail.com', emailpw)
@@ -684,8 +758,12 @@ class StartGui(tk.Tk):
         self.clear_changelog()
 
     def email_entry(self, d):
+        self.clear_volunteer_instructions_screen()
         self.admin_email_label.place_forget()
-        self.enter_email_add_label.configure(text='Enter Email Address\nto send inventory', font=(self._font, self._font_big))
+        self.clear_changelog()
+
+        self.enter_email_add_label.configure(text='Enter Email Address\nto send inventory',
+                                             font=(self._font, self._font_big))
         place_object(self.enter_email_add_label, .2, .9175)
         place_object(self.enter_email_add_entry, .3675, .92, True)
         self.admin_email_send_button.configure(command=lambda: self.admin_email_inventory(self.d))
@@ -693,10 +771,13 @@ class StartGui(tk.Tk):
         self.bind('<Return>', lambda x: self.admin_email_inventory(self.d))
         self.email_box_update()
         self.list_box_2.bind("<Double-Button-1>", self.on_double)
+        self.previous_view = "admin_screen"
+        self.backup_place()
 
     def email_partners(self):
         self.clear_admin_screen()
         self.clear_list_box()
+        self.clear_volunteer_instructions_screen()
         self.previous_view = "admin_screen"
         self.backup_button.place(relx=.02, rely=.9)
         self.already_exist = False
@@ -714,7 +795,8 @@ class StartGui(tk.Tk):
 
         self.button_select = ''
         self.Button_1.configure(text="Edit Email", background=self._fgcolor, font=(self._font, self._font_medium),
-                                command=lambda *args: self.button_select_cmd("Edit"), activebackground=self._activebgcolor, padx=0)
+                                command=lambda *args: self.button_select_cmd("Edit"),
+                                activebackground=self._activebgcolor, padx=0)
         place_object(self.Button_1, .45, .4)
 
         self.Button_2.configure(text="Delete Email", background=self._fgcolor, font=(self._font, self._font_medium),
@@ -762,7 +844,9 @@ class StartGui(tk.Tk):
                 if str(self.Entry_var_1.get()) == '':
                     self.Label_2.configure(text='Select or Enter Email', fg='red')
                 else:
-                    self.Label_2.configure(text=f'Edited Email: {str(self.email_to_be_changed)}\n to {str(self.Entry_var_1.get())}', fg='blue')
+                    self.Label_2.configure(
+                        text=f'Edited Email: {str(self.email_to_be_changed)}\n to {str(self.Entry_var_1.get())}',
+                        fg='blue')
                 self.Entry_var_1.set('')
 
             elif self.button_select == "Delete":
@@ -878,17 +962,20 @@ class StartGui(tk.Tk):
         self.eyeball_button.place_forget()
         self.from_admin_message = False
 
-        place_object(self.view_changelog_button, .845, .835)                        #view changelog
-        place_object(self.display_inventory_high_low_outofstock_button, .845, .77)  #show inventory
-        place_object(self.display_users_button, .845, .705)                         #show users
-        place_object(self.edit_inventory_button, .845, .64)                         #edit inventory
-        place_object(self.email_changelog_button, .845, .51)                        #email changelog
-        place_object(self.admin_email_inventory_button, .845, .44)                  #email inventory
-        place_object(self.admin_email_partners_button, .845, .37)                   #email_partners_button
+        place_object(self.view_changelog_button, .845, .835)  # view changelog
+        place_object(self.display_inventory_high_low_outofstock_button, .845, .77)  # show inventory
+        place_object(self.display_users_button, .845, .705)  # show users
+        place_object(self.edit_inventory_button, .845, .64)  # edit inventory
+        place_object(self.email_changelog_button, .845, .51)  # email changelog
+        place_object(self.admin_email_inventory_button, .845, .44)  # email inventory
+        place_object(self.admin_email_partners_button, .845, .37)  # email_partners_button
 
         # add export to csv button
         self.make_csv_button.configure(text="Make Excel .csv", padx=3)
         place_object(self.make_csv_button, .845, .575)
+
+        # volunteer instructions
+        place_object(self.volunteer_instructions_button, .845, .275)
 
     def user_screen(self):
         '''
@@ -910,7 +997,7 @@ class StartGui(tk.Tk):
         self.Entry_1.config(show='')
         self.volunteer_instructions_label.place(relx=.01, rely=.05)
 
-        place_object(self.volunteer_instructions_button, .458, .3)
+        # place_object(self.volunteer_instructions_button, .458, .3)
 
         self.Button_1.configure(text="Make A New Bag", background=self._fgcolor, font=(self._font, self._font_medium),
                                 command=lambda: self.make_bag_screen(), activebackground=self._activebgcolor, padx=0)
@@ -958,7 +1045,7 @@ class StartGui(tk.Tk):
         place_object(self.username_label, .303, .4)
         place_object(self.passwordlabel, .315, .46)
         self.bind('<Tab>', lambda x: self.bind_tab_to_User_Name_entry())
-        self.bind('<Return>', lambda x: self.login_verify())
+        self.bind('<Return>', lambda x: self.login_load_screen())
         self.backup_place()
         self.previous_view = "login_screen"
 
@@ -994,97 +1081,76 @@ class StartGui(tk.Tk):
         # todo: confirm pw label
 
     def default_admin_message(self):
-        try:
-            with open('text/admin_message.txt', 'r+') as file:
-                self.admin_message = file.read()
-        except Exception as e:
-            print("admin_message read" + str(e))
+        # check email / if else to thisu
+        self.read_email()
+
+        # current time
+        self.current_time = datetime.now()
+        self.current_time = str(self.current_time).split(".")[0]
+        self.current_time = datetime.strptime(self.current_time, '%Y-%m-%d %H:%M:%S')
+        # current day
+        self.current_day = str(self.current_time).split(" ")[0]
+        self.current_day = datetime.strptime(self.current_day, '%Y-%m-%d')
+
+        # update admin msg
+        if self.email_day == self.current_day and self.email_date_time > self.updated_time:
+            self.admin_message = self.email_msg
+        else:
+            try:
+                with open('text/admin_message.txt', 'r+') as file:
+                    self.admin_message = file.read()
+            except Exception as e:
+                print("admin_message read" + str(e))
+
+        self.volunteer_instructions_ToolTip_update()
 
     def volunteer_instructions_screen(self):
-        self.clear_user_screen()
-        self.previous_view = "user_screen"
-        self.backup_place()
-
-        #self.Label_1.configure(text=f"{self.admin_message}", font=(self._font, self._font_big), anchor='nw', image='')
-        #self.Label_1.place(relx=0.05, rely=0.35)
-
+        self.clear_volunteer_instructions_screen()
+        self.previous_view = "admin_screen"
         self.textBox.delete('1.0', END)
         self.textBox.insert(INSERT, self.admin_message)
         self.textBox.place(relx=0.05, rely=0.30)
         self.textBox.config(state=DISABLED)
 
-        self.Label_2.configure(text="Admin Password", font=(self._font, self._font_big), fg='black')
-        self.Label_2.place(relx=0.78, rely=0.38)
-
-        self.Entry_var_1.set('')
-        self.Entry_1.place(relx=0.75, rely=0.45)
-        self.Entry_1.configure(textvariable=self.Entry_var_1)
-        self.Entry_1.focus_set()
-        self.Entry_1.config(show='*')
-
         self.Button_1.place_forget()
-        self.Button_1.configure(text="Submit", background=self._fgcolor,
+        self.Button_1.configure(text="Edit Message", background=self._fgcolor,
                                 font=(self._font, self._font_medium),
-                                command=lambda: self.admin_message_screen(),
-                                activebackground=self._activebgcolor, padx=10)
-        self.Button_1.place(relx=0.815, rely=0.52)
+                                command=lambda: self.admin_message_configure(),
+                                activebackground=self._activebgcolor, padx=30)
+        self.Button_1.place(relx=0.2, rely=0.875)
+
+        self.display_users_button.config(text="View Users")
+        self.delete_user_button.place_forget()
+        self.clear_list_box()
+        self.display_inventory_high_low_outofstock_button.config(text="View Inventory")
+        self.clear_email_entry_inventory()
+        self.clear_changelog()
+
+    # TODO: check email in user screen
 
     def clear_volunteer_instructions_screen(self):
+        self.Button_1.place_forget()
+        self.textBox.place_forget()
         self.Label_1.place_forget()
         self.Label_2.place_forget()
         self.Label_3.place_forget()
+#TODO: remove tooltip
 
-        self.Entry_1.place_forget()
-        self.Button_1.place_forget()
-        self.edit_inventory_button.place_forget()
-
-    def admin_message_screen(self):
-        self.previous_view = "volunteer_instructions_screen"
-
-        ready_to_login = False
-        try:
-            with open('text/username_password_file.txt', "a+") as readf:
-                readf.seek(0, os.SEEK_SET)
-                for line in readf:
-                    tokens = re.split(" ", line.strip())
-                    if tokens[0] == "adminarmy" and len(tokens[0]) > 7 and pbkdf2_sha256.verify(
-                            self.Entry_var_1.get(), tokens[1]):
-                        ready_to_login = True
-                        break
-        except Exception as e:
-            print("login verify: " + str(e))
-
-        if ready_to_login == False:
-            self.Label_3.configure(text='Wrong Password', fg='red')
-            self.Label_3.place(relx=0.79, rely=0.6)
-            self.volunteer_instructions_screen()
-        else:
-            self.clear_volunteer_instructions_screen()
-            self.admin_message_configure()
-            self.Entry_1.config(show='')
-
-        self.Entry_var_1.set('')
+    def clear_email_entry_inventory(self):
+        self.enter_email_add_label.place_forget()
+        self.enter_email_add_entry.place_forget()
+        self.admin_email_send_button.place_forget()
 
     def admin_message_configure(self):
-        self.volunteer_instructions_label.place(relx=.01, rely=.05)
-        self.previous_view = "volunteer_instructions_screen"
+        self.Label_3.place_forget()
+
+        # TODO: Danny, is this next line neccessary?
         self.Entry_var_1.set('')
 
-        #self.Label_1.configure(text="Enter new message\t\t\tDon't let words hit end of box! ~ 75 letters", font=(self._font, self._font_big), image='')
         self.Label_1.configure(text="Enter new message", font=(self._font, self._font_big), image='')
-
         self.Label_1.place(relx=0.05, rely=0.25)
 
-        self.Label_2.configure(text="To modify what is in a bag\n go to Edit Inventory and \nmodify itemsperbag",
-                               font=(self._font, self._font_big), fg='red')
-        self.Label_2.place(relx=0.725, rely=0.6)
-
-        self.from_admin_message = True
-        self.edit_inventory_button.place(relx=0.77, rely=0.75)
-
         self.textBox.focus_set()
-        #self.admin_message = '\n'.join(textwrap.wrap(self.admin_message, 64))
-
         self.textBox.delete('1.0', END)
         self.textBox.insert(INSERT, self.admin_message)
         self.textBox.place(relx=0.05, rely=0.30)
@@ -1096,16 +1162,18 @@ class StartGui(tk.Tk):
                                 command=lambda: self.retrieve_input(),
                                 activebackground=self._activebgcolor, padx=10)
 
-        self.Button_1.place(relx=0.76, rely=0.35)
+        self.Button_1.place(relx=0.2, rely=0.875)
 
     def clear_admin_message_configure(self):
         self.Label_1.place_forget()
         self.Label_2.place_forget()
+        self.Label_3.place_forget()
         self.textBox.place_forget()
         self.Button_1.place_forget()
         self.edit_inventory_button.place_forget()
 
     def retrieve_input(self):
+        self.Label_3.place_forget()
         self.inputValue = self.textBox.get("1.0", END)
         '''x_list = self.inputValue.split("\n")
         for str in x_list:
@@ -1119,13 +1187,17 @@ class StartGui(tk.Tk):
         except Exception as e:
             print("admin_message write" + str(e))
 
+        #time when msg was manually updated
+        self.updated_time = datetime.now()
+        self.updated_time = str(self.updated_time).split(".")[0]
+        self.updated_time = datetime.strptime(self.updated_time, '%Y-%m-%d %H:%M:%S')
+
         self.admin_message = self.inputValue
         self.clear_admin_message_configure()
         self.back_button_func(self.previous_view)
         self.volunteer_instructions_screen()
         self.Label_3.configure(text="Message updated", fg='blue')
-        self.Label_3.place(relx=0.785, rely=0.325)
-
+        self.Label_3.place(relx=0.05, rely=0.25)
         self.volunteer_instructions_ToolTip_update()
 
     def volunteer_instructions_ToolTip_update(self):
@@ -1147,7 +1219,7 @@ class StartGui(tk.Tk):
         # Checks if int is entered, then checks if it is in bounds calculated in calculate_max_bags
         if str(self.Entry_var_1.get()).isnumeric() == True and int(self.Entry_var_1.get()) <= int(
                 self.lowestRatio) and int(
-                self.Entry_var_1.get()) > 0:
+            self.Entry_var_1.get()) > 0:
             self.numberofBags = int(self.Entry_var_1.get())
             self.Entry_var_1.set("")
             # lowers inventory by Entry_var_1/self.numberofBags full food bags
@@ -1533,6 +1605,7 @@ class StartGui(tk.Tk):
 
     def make_csv(self):
         self.clear_changelog()
+        self.clear_volunteer_instructions_screen()
         self.admin_email_label.place_forget()
         # makes excel csv for viewing, some barcodes can end up in si
         count = 0
@@ -1648,11 +1721,11 @@ class StartGui(tk.Tk):
                                                     self.list_of_items_words = 'Inventory Changes\n\n'
                                                 tokens[1] = str(int(tokens[1]) + int(self.barcode_scanner_amount.get()))
                                                 self.changelog_text = self.changelog_text + \
-                                                                  '\tadded ' + \
-                                                                  str(self.barcode_scanner_amount.get()) + \
-                                                                  " to '" + tokens[0] + "' barcode: " + \
-                                                                  str(item_to_find) + ' New Qty: ' + \
-                                                                  tokens[1] + '\n'
+                                                                      '\tadded ' + \
+                                                                      str(self.barcode_scanner_amount.get()) + \
+                                                                      " to '" + tokens[0] + "' barcode: " + \
+                                                                      str(item_to_find) + ' New Qty: ' + \
+                                                                      tokens[1] + '\n'
                                                 self.list_of_items_words = self.list_of_items_words + \
                                                                            'Added ' + \
                                                                            str(self.barcode_scanner_amount.get()) + \
@@ -1666,17 +1739,19 @@ class StartGui(tk.Tk):
                                                     self.list_of_items_words = 'Inventory Changes\n\n'
                                                 if int(self.barcode_scanner_amount.get()) > int(tokens[1]):
                                                     self.Label_3.config(
-                                                        text=f'Cannot subtract past {int(tokens[1])} for {tokens[0]}', fg='red')
+                                                        text=f'Cannot subtract past {int(tokens[1])} for {tokens[0]}',
+                                                        fg='red')
                                                     place_object(self.Label_3, .67, .25)
                                                 else:
                                                     self.Label_3.place_forget()
-                                                    tokens[1] = str(int(tokens[1]) - int(self.barcode_scanner_amount.get()))
+                                                    tokens[1] = str(
+                                                        int(tokens[1]) - int(self.barcode_scanner_amount.get()))
                                                     self.changelog_text = self.changelog_text + \
-                                                                      '\tremoved ' + \
-                                                                      str(self.barcode_scanner_amount.get()) + \
-                                                                      " from '" + tokens[0] + "' " + \
-                                                                      str(item_to_find) + ' New Qty: ' + \
-                                                                      tokens[1] + '\n'
+                                                                          '\tremoved ' + \
+                                                                          str(self.barcode_scanner_amount.get()) + \
+                                                                          " from '" + tokens[0] + "' " + \
+                                                                          str(item_to_find) + ' New Qty: ' + \
+                                                                          tokens[1] + '\n'
                                                     self.list_of_items_words = self.list_of_items_words + \
                                                                                'Removed ' + \
                                                                                str(self.barcode_scanner_amount.get()) + \
@@ -1705,7 +1780,7 @@ class StartGui(tk.Tk):
                     self.view_inventory_one_list_box(self.d, 'left')
                     self.clear_list_box()
                     self.view_inventory_one_list_box(self.d, 'left')
-                    if self.notFound.__len__()>0:
+                    if self.notFound.__len__() > 0:
                         self.add_barcode_to_existing()
                         PlaySound("audio/bcNotfound1.wav", SND_FILENAME)
                 except Exception as e:
@@ -1773,7 +1848,7 @@ class StartGui(tk.Tk):
         /// for appending barcode to existing food item ////
         Label_1 : confirmed/ error
         '''
-        #self.make_food_txt()
+        # self.make_food_txt()
         self.print_dict_to_file(self.d)
         self.selected_item_to_be_changed = self.list_box_2.curselection()
         if self.selected_item_to_be_changed != ():
@@ -1817,7 +1892,8 @@ class StartGui(tk.Tk):
                 self.barcode_scanner_add_remove_button_cmd('Barcodes for Subtracting')
 
             self.Label_4.configure(font=(self._font, self._font_big), text=f"Added {self.barcode_to_be_added}\nto "
-                                                                           f"{str(self.item_to_be_changed).upper()}", fg='blue', image='')
+                                                                           f"{str(self.item_to_be_changed).upper()}",
+                                   fg='blue', image='')
             self.Label_4.place(relx=.4, rely=.4, anchor='center')
         else:
             self.Label_1.place_forget()
@@ -2178,11 +2254,13 @@ class StartGui(tk.Tk):
         self.clear_makebag_screen()
         self.clear_user_screen()
         self.clear_list_box()
-        self.enter_email_add_label.place_forget()
-        self.enter_email_add_entry.place_forget()
+        self.clear_email_entry_inventory()
+        # self.enter_email_add_label.place_forget()
+        # self.enter_email_add_entry.place_forget()
+
         self.list_box_2_label.place_forget()
         self.list_box_2.place_forget()
-        self.admin_email_send_button.place_forget()
+        # self.admin_email_send_button.place_forget()
         # remove buttons from manual entry
         self.submit_changes_button.place_forget()
         self.invalid_entry_error_label.place_forget()
@@ -2248,6 +2326,7 @@ class StartGui(tk.Tk):
         self.Label_5.place_forget()
 
     def clear_admin_screen(self):
+        self.volunteer_instructions_button.place_forget()
         # self.admin_button.place_forget()
         self.email_add.set('')
         self.list_box_2_label.place_forget()
@@ -2257,9 +2336,10 @@ class StartGui(tk.Tk):
         self.display_users_button.place_forget()
         self.edit_inventory_button.place_forget()
         self.delete_user_button.place_forget()
-        self.enter_email_add_label.place_forget()
-        self.enter_email_add_entry.place_forget()
-        self.admin_email_send_button.place_forget()
+        self.clear_email_entry_inventory()
+        # self.enter_email_add_label.place_forget()
+        # self.enter_email_add_entry.place_forget()
+        # self.admin_email_send_button.place_forget()
         self.make_csv_button.place_forget()
         self.view_changelog_text.place_forget()
         self.email_changelog_button.place_forget()
@@ -2392,7 +2472,7 @@ class StartGui(tk.Tk):
                         number_of_barcodes = len(words) - 4
                         n = 1
                         while n <= number_of_barcodes:
-                            barcodes[n - 1] = str(words[3 + n]).replace(" ",'').replace("\n","")
+                            barcodes[n - 1] = str(words[3 + n]).replace(" ", '').replace("\n", "")
                             n += 1
                         d[item]['barcodes'] = barcodes
         except Exception as e:
@@ -2481,6 +2561,7 @@ class StartGui(tk.Tk):
                 # to update list box right after a new item is added
         self.d = {}
         self.make_dict(self.d)
+
     # =============================================================================
     #                Display inventory - user mode
     # =============================================================================
@@ -2498,7 +2579,9 @@ class StartGui(tk.Tk):
     #                Change Log
     # =============================================================================
     def view_changelog(self):
-        self.admin_email_label.place_forget()
+        # self.admin_email_label.place_forget()
+        self.clear_email_entry_inventory()
+        self.clear_volunteer_instructions_screen()
         self.display_users_button.config(text="View Users")
         self.display_inventory_high_low_outofstock_button.config(text="View Inventory")
         self.delete_user_button.place_forget()
@@ -2510,12 +2593,12 @@ class StartGui(tk.Tk):
             with open("text/changelog.txt", 'r') as f:
                 self.view_changelog_text.insert(INSERT, f.read())
         except Exception as e:
-            print("error viewing changelog : "+str(e))
+            print("error viewing changelog : " + str(e))
         place_object(self.view_changelog_text, .3, .3)
 
     def write_changelog(self):
-        #print(self.inventory_comparison_before)
-        #print(self.inventory_comparison_after)
+        # print(self.inventory_comparison_before)
+        # print(self.inventory_comparison_after)
         try:
             if not os.path.isfile("text/changelog.txt"):
                 with open("changelog.txt", "a+") as f:
@@ -2545,16 +2628,16 @@ class StartGui(tk.Tk):
             print("barcodes error : " + str(e))
 
         if before[0] != after[0]:
-            self.comparison = self.comparison + '\t New Name : ' + str(after[0]) +\
+            self.comparison = self.comparison + '\t New Name : ' + str(after[0]) + \
                               ' Old Name : ' + str(before[0]) + '\n'
         if before[1] != after[1]:
-            self.comparison = self.comparison + '\t New Amount : ' + str(after[1]) +\
+            self.comparison = self.comparison + '\t New Amount : ' + str(after[1]) + \
                               ' Old Amount : ' + str(before[1]) + '\n'
         if before[2] != after[2]:
-            self.comparison = self.comparison + '\t New low level : ' + str(after[2]) +\
+            self.comparison = self.comparison + '\t New low level : ' + str(after[2]) + \
                               ' Old low level : ' + str(before[2]) + '\n'
         if before[3] != after[3]:
-            self.comparison = self.comparison + '\t New items per bag : ' + str(after[3]) +\
+            self.comparison = self.comparison + '\t New items per bag : ' + str(after[3]) + \
                               ' Old items per bag : ' + str(before[3]) + '\n'
         self.changelog_text = self.changelog_text + self.comparison
 
@@ -2566,7 +2649,6 @@ class StartGui(tk.Tk):
         if len(diff_list) > 0:
             self.comparison = self.comparison + '\tAdded barcodes : ' + \
                               str(diff_list) + '\n'
-
 
     def barcode_arr(self, arr):
         barcodes = [''] * (arr.__len__() - 4)
@@ -2584,7 +2666,7 @@ class StartGui(tk.Tk):
             currenttime = monthday + str(printlocaltime.tm_hour) + ":" + str(printlocaltime.tm_min)
             try:
                 self.changelog_text = self.changelog_text + '- Registered new user: ' + \
-                                  str(username) + 'at ' + str(currenttime) + '\n'
+                                      str(username) + 'at ' + str(currenttime) + '\n'
             except Exception as e:
                 print("error updating changelog text " + str(e))
             try:
@@ -2808,7 +2890,7 @@ class StartGui(tk.Tk):
                 if not isinstance(int(self.change_inventory_by_this_much.get()), int):
                     print("test in isinstance")
             except Exception as e:
-                #print("is instance error : " + str(e))
+                # print("is instance error : " + str(e))
                 self.catch_exception_bad_input()
                 return
             try:
@@ -2821,8 +2903,8 @@ class StartGui(tk.Tk):
                         self.change_inventory_by_this_much.set(self.change_inventory_by_this_much.get()[1:])
 
                 except Exception as e:
-                    #print("bad input 1 : " + str(e))
-                    #print(int(self.change_inventory_by_this_much.get()))
+                    # print("bad input 1 : " + str(e))
+                    # print(int(self.change_inventory_by_this_much.get()))
                     if int(self.change_inventory_by_this_much.get()) < 0:
                         self.catch_exception_bad_input()
                         return
@@ -2864,7 +2946,7 @@ class StartGui(tk.Tk):
                 print("bad input 4 : " + str(e))
 
         except Exception as e:
-            #print("bottom exception:")
+            # print("bottom exception:")
             self.catch_exception_bad_input()
 
     def catch_exception_bad_input(self):
@@ -2892,7 +2974,7 @@ class StartGui(tk.Tk):
                             if tokens[0] == parsed_name_to_be_changed.strip():
                                 tokens[1] = ' ' + str(self.new_inventory_amount)
                                 self.changelog_text = self.changelog_text + \
-                                    '\t' + self.item_to_be_changed_label_2.cget('text') + '\n'
+                                                      '\t' + self.item_to_be_changed_label_2.cget('text') + '\n'
                                 if count < totalLines:
                                     dest.write(",".join(tokens) + '\n')
                                 else:
@@ -2959,17 +3041,20 @@ class StartGui(tk.Tk):
 
     def clear_changelog(self):
         self.view_changelog_text.place_forget()
-        self.enter_email_add_label.place_forget()
-        self.enter_email_add_entry.place_forget()
+        self.clear_email_entry_inventory()
+        # self.enter_email_add_label.place_forget()
+        # self.enter_email_add_entry.place_forget()
         self.list_box_2_label.place_forget()
         self.list_box_2.place_forget()
-        self.admin_email_send_button.place_forget()
+        # self.admin_email_send_button.place_forget()
 
     # swap display inventory button
     # TODO: shows inventory button, not forgetting, fix this
     def swap_inventory_button(self, choice):
         self.clear_changelog()
-        self.admin_email_label.place_forget()
+        # self.admin_email_label.place_forget()
+        self.clear_email_entry_inventory()
+        self.clear_volunteer_instructions_screen()
         # inventory_button_for_three_boxes_text = self.display_inventory_high_low_outofstock_button.cget('text')
         # inventory_button_for_one_box_text = self.display_inventory_left_side_button.cget('text')
         if choice == 'all':
@@ -2992,6 +3077,7 @@ class StartGui(tk.Tk):
     # show/hide users
     def swap_display_users_button(self):
         self.clear_changelog()
+        self.clear_volunteer_instructions_screen()
         self.admin_email_label.place_forget()
         users_button_text = self.display_users_button.cget('text')
         if users_button_text == 'View Users':
@@ -3006,7 +3092,10 @@ class StartGui(tk.Tk):
 
     def edit_inventory_button_cmd(self):
         self.clear_changelog()
+        self.clear_volunteer_instructions_screen()
         self.admin_email_label.place_forget()
+
+        # TODO: Danny, i dont think this is neccessary now
         if self.from_admin_message == True:
             self.clear_admin_message_configure()
             self.previous_view = "admin_message_configure"
@@ -3014,6 +3103,7 @@ class StartGui(tk.Tk):
             self.previous_view = "admin_screen"
         self.backup_button.place(relx=.02, rely=.9)
         self.clear_admin_screen()
+        self.clear_volunteer_instructions_screen()
         # Jump to modify screen and be able to modify and delete items
         self.modify_inventory()
 
@@ -3274,11 +3364,17 @@ class StartGui(tk.Tk):
     #                                              LOGIN VERIFICATION
     # ===============================================================================
 
-    def login_verify(self):
-        # TODO: i think the following lines can be removed - test them
+    def login_load_screen(self):
         self.clear_registration_errors()
         self.clear_registration_success()
         self.backup_button.place_forget()
+        self.login_verify()
+
+    def login_verify(self):
+        # TODO: i think the following lines can be removed - test them
+        # self.clear_registration_errors()
+        # self.clear_registration_success()
+        # self.backup_button.place_forget()
 
         # self.clear_login_screen()  # test
         self.username_info = self.username_verify.get()
@@ -3304,23 +3400,18 @@ class StartGui(tk.Tk):
         # TODO: change login to 1, 2, or 3
         login = 2
         if login == 1:
+            self.default_admin_message()
             self.user_screen()
         elif login == 2:
+            self.default_admin_message()
             self.admin_screen()
         elif login == 3:
             if self.ready_to_login:
+                self.default_admin_message()
                 self.clear_verify()
                 self.clear_login_screen()
                 self.username_for_event_log.configure(text=str(tokens[0]))
                 place_object(self.username_for_event_log, .02, .85)
-                # logging in,
-                # snapshot of inventory on login - timestamp, username_for_event_log
-                # check that logged in
-                # on logout :
-                # snapshot of inventory on logout - timestamp
-                # compare snapshots
-                # append changes from snapshot to changelog
-                # email changelog button simliar to email inventory
                 self.snapshot_on_login()
                 if tokens[0] == 'adminarmy':
                     self.admin_screen()
@@ -3415,7 +3506,7 @@ class ToolTip(tk.Toplevel):
             self.withdraw()
             self.visible = 1
         # Offset the ToolTip 10x10 pixes southwest of the pointer
-        self.geometry('+%i+%i' % (event.x_root + 10, event.y_root ))
+        self.geometry('+%i+%i' % (event.x_root + 10, event.y_root))
         try:
             # Try to call the message function.  Will not change
             # the message if the message function is None or
